@@ -11,6 +11,19 @@ node server.js          # or: PORT=4000 node server.js
 Colleagues on the same network open `http://<your-laptop-ip>:3000` in a browser.
 Message history (the last 500 messages) is saved to `history.json`.
 
+## RAD Craft (`/game`)
+
+Type `/game` in the chat to open a shared, Minecraft-style block world. Everyone who
+joins is in the same world: you can see each other, and blocks you build or break show
+up for everyone. Chat keeps working inside the game (press `T`).
+
+- **Controls:** `WASD` to move, `Space` to jump, `Shift` to sprint, `F` to fly. Left click
+  breaks a block, right click places one, and `1`–`0` or the scroll wheel picks the block.
+  `Esc` pauses.
+- **Saved world:** the terrain is generated from a seed. The seed and all player edits are
+  saved in `world.json`. Delete that file (with the server stopped) to start a fresh world.
+- **Offline:** three.js is bundled in `public/vendor/`, so the game works without internet.
+
 ## WSL2: let the LAN reach the server
 
 WSL2 runs behind NAT by default, so the 172.x address the server prints only

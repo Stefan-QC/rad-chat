@@ -6,7 +6,18 @@ const path = require('path');
 const os = require('os');
 
 const PORT = Number(process.env.PORT) || 3000;
+const PUBLIC_DIR = path.join(__dirname, 'public');
 const HISTORY_FILE = path.join(__dirname, 'history.json');
+const WORLD_FILE = path.join(__dirname, 'world.json');
+const WORLD_SIZE = 128;
+const WORLD_HEIGHT = 64;
+const MAX_BLOCK_ID = 10; // placeable blocks; 11 (bedrock) is generated only
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.png': 'image/png',
+};
 const HISTORY_LIMIT = 500;
 const MAX_MSG_LEN = 2000;
 const MAX_NAME_LEN = 32;
@@ -21,6 +32,20 @@ function saveHistory() {
     fs.writeFile(HISTORY_FILE, JSON.stringify(history.slice(-HISTORY_LIMIT)), () => {});
   }, 500);
 }
+
+// Shared game world: the terrain is generated client-side from `seed`;
+// the server only stores player edits as "x,y,z" -> blockId.
+let world = { seed: Math.floor(Math.random() * 2 ** 31), edits: {} };
+try { world = JSON.parse(fs.readFileSync(WORLD_FILE, 'utf8')); } catch { /* new world */ }
+
+let worldTimer = null;
+function saveWorld() {
+  clearTimeout(worldTimer);
+  worldTimer = setTimeout(() => fs.writeFile(WORLD_FILE, JSON.stringify(world), () => {}), 1000);
+}
+
+// name -> { x, y, z, yaw, t } for players currently in the game
+const players = new Map();
 
 // clientId -> { res, name }
 const clients = new Map();
@@ -60,12 +85,66 @@ function readBody(req) {
   });
 }
 
+function removePlayer(name) {
+  if (players.delete(name)) pushMessage({ type: 'system', text: `${name} left the game`, ts: Date.now() });
+}
+
+// Broadcast player positions 10x/sec while anyone is in the game.
+let hadPlayers = false;
+setInterval(() => {
+  const now = Date.now();
+  for (const [name, p] of players) if (now - p.t > 5000) removePlayer(name);
+  if (players.size || hadPlayers) {
+    broadcast('players', [...players].map(([name, { x, y, z, yaw }]) => ({ name, x, y, z, yaw })));
+  }
+  hadPlayers = players.size > 0;
+}, 100);
+
+function serveStatic(pathname, res) {
+  const file = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
+  if (!file.startsWith(PUBLIC_DIR + path.sep)) return false;
+  let stat;
+  try { stat = fs.statSync(file); } catch { return false; }
+  if (!stat.isFile()) return false;
+  res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });
+  fs.createReadStream(file).pipe(res);
+  return true;
+}
+
+const num = v => (Number.isFinite(v) ? v : 0);
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
 
-  if (req.method === 'GET' && url.pathname === '/') {
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return fs.createReadStream(path.join(__dirname, 'public', 'index.html')).pipe(res);
+  if (req.method === 'GET' && url.pathname === '/world') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ seed: world.seed, size: WORLD_SIZE, height: WORLD_HEIGHT, edits: world.edits }));
+  }
+
+  if (req.method === 'POST' && url.pathname.startsWith('/game/')) {
+    let body;
+    try { body = JSON.parse(await readBody(req)); } catch { res.writeHead(400); return res.end(); }
+    const name = cleanName(body.name);
+
+    if (url.pathname === '/game/pos') {
+      if (!players.has(name)) pushMessage({ type: 'system', text: `${name} entered the game`, ts: Date.now() });
+      players.set(name, { x: num(body.x), y: num(body.y), z: num(body.z), yaw: num(body.yaw), t: Date.now() });
+    } else if (url.pathname === '/game/leave') {
+      removePlayer(name);
+    } else if (url.pathname === '/game/block') {
+      const { x, y, z, id } = body;
+      const ok = [x, y, z, id].every(Number.isInteger) &&
+        x >= 0 && x < WORLD_SIZE && z >= 0 && z < WORLD_SIZE && y >= 1 && y < WORLD_HEIGHT &&
+        id >= 0 && id <= MAX_BLOCK_ID;
+      if (!ok) { res.writeHead(400); return res.end(); }
+      world.edits[`${x},${y},${z}`] = id;
+      saveWorld();
+      broadcast('block', { x, y, z, id });
+    } else {
+      res.writeHead(404); return res.end();
+    }
+    res.writeHead(204);
+    return res.end();
   }
 
   // Live event stream: history on connect, then messages + presence.
@@ -108,6 +187,8 @@ const server = http.createServer(async (req, res) => {
     }
     return res.end();
   }
+
+  if (req.method === 'GET' && serveStatic(url.pathname, res)) return;
 
   res.writeHead(404);
   res.end('Not found');

@@ -64,7 +64,7 @@
   <aside><h2>Online</h2><ul id="users"></ul></aside>
 </main>
 <form hidden id="composer">
-  <textarea id="text" rows="1" placeholder="Message (Enter to send, Shift+Enter for newline)" maxlength="2000"></textarea>
+  <textarea id="text" rows="1" placeholder="Message (Enter to send, Shift+Enter for newline, /game to play)" maxlength="2000"></textarea>
   <button>Send</button>
 </form>
 
@@ -102,6 +102,10 @@
   }
   document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'RAD Chat'; });
 
+  // Live events are re-dispatched here so the game (public/game.js) can listen too.
+  const bus = new EventTarget();
+  const emit = (type, detail) => bus.dispatchEvent(new CustomEvent(type, { detail }));
+
   let es = null;
   function connect() {
     if (es) es.close();
@@ -118,6 +122,7 @@
       const msg = JSON.parse(e.data);
       render(msg);
       notify(msg);
+      emit('message', msg);
       if (stick || msg.name === name) $('messages').scrollTop = $('messages').scrollHeight;
     });
     es.addEventListener('users', e => {
@@ -125,6 +130,17 @@
         const li = document.createElement('li'); li.textContent = u; return li;
       }));
     });
+    es.addEventListener('block', e => emit('block', JSON.parse(e.data)));
+    es.addEventListener('players', e => emit('players', JSON.parse(e.data)));
+  }
+
+  const sendChat = text => fetch('/send', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, text }),
+  });
+
+  async function openGame() {
+    const { startGame } = await import('/game.js');
+    startGame({ name, bus, sendChat });
   }
 
   $('join').addEventListener('submit', e => {
@@ -145,8 +161,8 @@
     const text = $('text').value.trim();
     if (!text) return;
     $('text').value = '';
-    await fetch('/send', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify({ name, text }) });
+    if (text === '/game') return openGame();
+    await sendChat(text);
   });
   $('text').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('composer').requestSubmit(); }
