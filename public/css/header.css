@@ -1,0 +1,13 @@
+/* Channel header */
+
+#top { height: 52px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--border); }
+#top .hash { font-size: 24px; color: var(--muted); line-height: 1; }
+#top h1 { margin: 0; font-size: 16px; font-weight: 900; }
+#top .topic { color: var(--muted); font-size: 13px; padding-left: 12px; margin-left: 2px; border-left: 1px solid var(--border);
+              white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#top .grow { flex: 1; }
+#status { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: var(--red-tint); color: var(--muted); white-space: nowrap; }
+#status.on { color: #16794a; }
+#status.off { color: var(--red); }
+#status::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: currentColor; }
+#menuBtn { display: none; }

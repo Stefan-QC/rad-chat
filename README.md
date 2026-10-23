@@ -11,6 +11,24 @@ node server.js          # or: PORT=4000 node server.js
 Colleagues on the same network open `http://<your-laptop-ip>:3000` in a browser.
 Message history (the last 500 messages) is saved to `history.json`.
 
+## Project structure
+
+```
+server.js            HTTP + SSE server
+public/
+  index.html         markup only
+  css/               linked from index.html in this order
+    tokens.css       colours, fonts, dark mode (Qualogy brand book)
+    base.css         reset and element defaults
+    components.css   icon button, avatar, primary button
+    join.css  layout.css  rail.css  sidebar.css  header.css
+    messages.css  composer.css  members.css  responsive.css
+  js/main.js         join flow, SSE connection, composer, UI wiring
+    feed.js          message feed rendering
+    utils.js         colours, formatting, safe rich text
+  game.js            RAD Craft
+```
+
 ## RAD Craft (`/game`)
 
 Type `/game` in the chat to open a shared, Minecraft-style block world. Everyone who
