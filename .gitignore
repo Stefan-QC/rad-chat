@@ -1,5 +1,9 @@
-history.json
 node_modules/
-world.json
+dist/
+.env
+.env.*
+!.env.example
 certs/
+history.json
+world.json
 scores.json

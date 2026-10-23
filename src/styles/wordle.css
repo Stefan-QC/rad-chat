@@ -1,11 +1,11 @@
-/* RAD Wordle. Sits in the app grid in place of the chat, so the rail and channel sidebar stay visible.
+/* RAD Wordle. Draait in het hoofdvenster, zodat de linker zijbalk zichtbaar blijft.
    Tile colours follow the original (green = right, yellow = wrong place, grey = absent);
    the Qualogy red is kept for the chrome (logo, header accent, buttons). */
 
 #wordle {
   --w-bg: #fff; --w-text: #1a1a1b; --w-line: #d3d6da; --w-filled: #878a8e; --w-muted: #787c7e;
   --w-correct: #6aaa64; --w-present: #c9b458; --w-absent: #787c7e; --w-key: #d3d6da; --w-key-text: #1a1a1b; --w-panel: #f6f7f8;
-  position: relative; min-width: 0; min-height: 0; background: var(--w-bg); color: var(--w-text); overflow-y: auto;
+  flex: 1; position: relative; min-width: 0; min-height: 0; background: var(--w-bg); color: var(--w-text); overflow-y: auto;
 }
 #wordle.dark {
   --w-bg: #121213; --w-text: #fff; --w-line: #3a3a3c; --w-filled: #565758; --w-muted: #818384;

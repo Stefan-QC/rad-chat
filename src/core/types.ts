@@ -1,0 +1,126 @@
+export type Role = 'member' | 'admin';
+
+export interface Profile {
+  id: string;
+  username: string;
+  display_name: string;
+  job_title: string | null;
+  bio: string | null;
+  avatar_color: string;
+  role: Role;
+  created_at: string;
+}
+
+export type ProfilePatch = Pick<Profile, 'display_name' | 'job_title' | 'bio' | 'avatar_color'>;
+
+export type ChannelKind = 'text' | 'voice';
+
+export interface Channel {
+  id: string;
+  name: string;
+  kind: ChannelKind;
+  team_id: string | null;
+  topic: string | null;
+  created_at: string;
+}
+
+export interface Message {
+  id: number;
+  channel_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+  edited_at: string | null;
+  deleted_at: string | null;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  description: string | null;
+  color: string;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface TeamMember {
+  team_id: string;
+  user_id: string;
+  role: 'owner' | 'member';
+  joined_at: string;
+}
+
+export interface TeamWithMembers extends Team {
+  members: TeamMember[];
+}
+
+export interface UserScore {
+  user_id: string;
+  username: string;
+  display_name: string;
+  avatar_color: string;
+  points: number;
+  wordle_points: number;
+  craft_points: number;
+}
+
+export interface TeamScore {
+  team_id: string;
+  name: string;
+  color: string;
+  members: number;
+  points: number;
+}
+
+export type LetterMark = 'correct' | 'present' | 'absent';
+
+export interface WordleGuess {
+  word: string;
+  marks: LetterMark[];
+}
+
+export type WordleStatus = 'playing' | 'won' | 'lost';
+
+export interface WordleState {
+  day: string;
+  status: WordleStatus;
+  points: number;
+  guesses: WordleGuess[];
+  answer: string | null;
+}
+
+export interface WordleStats {
+  played: number;
+  wins: number;
+  streak: number;
+  max: number;
+  dist: number[];
+}
+
+export interface AuditEntry {
+  id: number;
+  actor_id: string | null;
+  action: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export type ActivityKind = 'voice' | 'craft' | 'wordle';
+
+export interface ActivitySession {
+  id: number;
+  user_id: string;
+  kind: ActivityKind;
+  ref: string | null;
+  started_at: string;
+  ended_at: string | null;
+}
+
+export interface CraftWorld {
+  seed: number;
+  size: number;
+  height: number;
+  edits: Record<string, number>;
+}
