@@ -4,169 +4,108 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RAD Chat</title>
-<style>
-  :root {
-    --bg: #f5f6f8; --panel: #fff; --text: #1d2129; --muted: #6b7280;
-    --border: #e3e5e9; --accent: #2563eb; --mine: #dbeafe;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #111317; --panel: #1a1d23; --text: #e6e8eb; --muted: #8b929c;
-            --border: #2a2e36; --accent: #60a5fa; --mine: #1e3a5f; }
-  }
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  body { margin: 0; font: 15px/1.45 system-ui, sans-serif; background: var(--bg); color: var(--text);
-         height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
-  header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel);
-           display: flex; align-items: center; gap: 12px; }
-  header h1 { font-size: 16px; margin: 0; }
-  #status { font-size: 12px; color: var(--muted); }
-  #status.on::before { content: "● "; color: #16a34a; }
-  #status.off::before { content: "● "; color: #dc2626; }
-  main { flex: 1; display: flex; min-height: 0; }
-  #messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
-  aside { width: 180px; border-left: 1px solid var(--border); background: var(--panel); padding: 12px 16px;
-          overflow-y: auto; }
-  aside h2 { font-size: 12px; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; letter-spacing: .04em; }
-  aside ul { list-style: none; margin: 0; padding: 0; }
-  aside li { padding: 2px 0; }
-  @media (max-width: 600px) { aside { display: none; } }
-  .msg { max-width: 75%; padding: 6px 10px; border-radius: 10px; background: var(--panel);
-         border: 1px solid var(--border); align-self: flex-start; white-space: pre-wrap; word-wrap: break-word; }
-  .msg.mine { align-self: flex-end; background: var(--mine); border-color: transparent; }
-  .msg .meta { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
-  .msg .meta b { color: var(--text); margin-right: 6px; }
-  .sys { align-self: center; font-size: 12px; color: var(--muted); }
-  form { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--panel); }
-  textarea, input { flex: 1; font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
-             background: var(--bg); color: var(--text); resize: none; }
-  button { font: inherit; padding: 8px 16px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; }
-  #join { margin: auto; background: var(--panel); padding: 24px; border-radius: 12px; border: 1px solid var(--border);
-          display: flex; flex-direction: column; gap: 12px; width: min(320px, 90vw); }
-  #join h1 { margin: 0; font-size: 18px; }
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/join.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/rail.css">
+<link rel="stylesheet" href="css/sidebar.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/messages.css">
+<link rel="stylesheet" href="css/composer.css">
+<link rel="stylesheet" href="css/members.css">
+<link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-<form id="join">
-  <h1>RAD Chat</h1>
-  <input id="nameInput" placeholder="Your name" maxlength="32" autofocus required>
-  <button>Join</button>
-</form>
 
-<header hidden id="top">
-  <h1>RAD Chat</h1>
-  <span id="status" class="off">connecting…</span>
-  <span style="flex:1"></span>
-  <span id="me" style="font-size:13px;color:var(--muted)"></span>
-</header>
-<main hidden id="chat">
-  <div id="messages"></div>
-  <aside><h2>Online</h2><ul id="users"></ul></aside>
-</main>
-<form hidden id="composer">
-  <textarea id="text" rows="1" placeholder="Message (Enter to send, Shift+Enter for newline, /game to play)" maxlength="2000"></textarea>
-  <button>Send</button>
-</form>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Qualogy-style mark: red disc, white Q, thin arcs -->
+    <symbol id="logo" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="16" fill="#D71920"/>
+      <circle cx="30" cy="34" r="22" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.2"/>
+      <circle cx="36" cy="28" r="20" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1.2"/>
+      <circle cx="32" cy="32" r="14" fill="none" stroke="#fff" stroke-width="5"/>
+      <path d="M33 33 L44 44" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15 12 3.4 13.9z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path fill="currentColor" d="M16 11a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.300 0-7 1.200-7 3.500V19h14v-2.500C15 14.200 10.300 13 8 13zm8 0c-.300 0-.600 0-1 .100 1.200.800 2 1.900 2 3.400V19h6v-2.500c0-2.300-4.700-3.500-7-3.500z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 3 7v10l9 5 9-5V7zm0 2.3L18.800 8 12 11.700 5.200 8zM5 9.700l6 3.300v6.800l-6-3.300zm8 10.100v-6.800l6-3.300v6.800z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M4 11h12.200l-5.600-5.600L12 4l8 8-8 8-1.400-1.400 5.600-5.600H4z"/></symbol>
+  </defs>
+</svg>
 
-<script>
-  const $ = id => document.getElementById(id);
-  let name = localStorage.getItem('radchat-name') || '';
-  $('nameInput').value = name;
+<!-- ============ join ============ -->
+<div id="join">
+  <span class="circle"></span><span class="arc a"></span><span class="arc b"></span>
+  <span class="pill a"></span><span class="pill b"></span>
+  <form id="joinCard">
+    <svg class="logo"><use href="#logo"/></svg>
+    <h1>RAD Chat</h1>
+    <label for="nameInput">Your name</label>
+    <input id="nameInput" placeholder="e.g. Quincy" maxlength="32" autocomplete="off" autofocus required>
+    <button class="btn">Join the chat</button>
+    <small>Quality in Information Technology</small>
+  </form>
+</div>
 
-  const fmtTime = ts => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const atBottom = () => { const m = $('messages'); return m.scrollHeight - m.scrollTop - m.clientHeight < 60; };
+<!-- ============ app ============ -->
+<div id="app" hidden>
+  <nav id="rail">
+    <button class="rail-btn home" data-tip="RAD Chat" aria-label="RAD Chat"><svg><use href="#logo"/></svg></button>
+    <span class="rail-sep"></span>
+    <button class="rail-btn" id="railGame" data-tip="RAD Craft" aria-label="Open RAD Craft"><svg><use href="#i-cube"/></svg></button>
+  </nav>
 
-  function render(msg) {
-    const el = document.createElement('div');
-    if (msg.type === 'system') {
-      el.className = 'sys';
-      el.textContent = `${msg.text} · ${fmtTime(msg.ts)}`;
-    } else {
-      el.className = 'msg' + (msg.name === name ? ' mine' : '');
-      const meta = document.createElement('div');
-      meta.className = 'meta';
-      const who = document.createElement('b');
-      who.textContent = msg.name;
-      meta.append(who, fmtTime(msg.ts));
-      const body = document.createElement('div');
-      body.textContent = msg.text;
-      el.append(meta, body);
-    }
-    $('messages').append(el);
-  }
+  <aside id="sidebar">
+    <div class="side-head"><h2>RAD Chat</h2><span>Quality in IT</span></div>
+    <div class="side-body">
+      <div class="cat">Text channels</div>
+      <button class="chan active"><span class="hash">#</span>general</button>
+      <div class="cat">Activities</div>
+      <button class="chan" id="sideGame"><svg><use href="#i-cube"/></svg>RAD Craft<span class="tag">/game</span></button>
+    </div>
+    <div class="userbar">
+      <div class="av sm" id="meAv"><span class="dot"></span></div>
+      <div class="who"><b id="meName"></b><small>Online</small></div>
+      <button class="iconbtn" id="changeName" title="Change name" aria-label="Change name">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.300V21h3.700L17.800 9.900l-3.700-3.700zM20.700 7a1 1 0 0 0 0-1.400l-2.300-2.300a1 1 0 0 0-1.400 0l-1.800 1.800 3.700 3.700z"/></svg>
+      </button>
+    </div>
+  </aside>
 
-  function notify(msg) {
-    if (msg.type !== 'chat' || msg.name === name || !document.hidden) return;
-    document.title = '• RAD Chat';
-    if (Notification?.permission === 'granted') new Notification(msg.name, { body: msg.text });
-  }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'RAD Chat'; });
+  <section id="main">
+    <header id="top">
+      <button class="iconbtn" id="menuBtn" aria-label="Menu"><svg><use href="#i-menu"/></svg></button>
+      <span class="hash">#</span><h1>general</h1>
+      <span class="topic">Welcome to RAD Chat. Type /game to play RAD Craft.</span>
+      <span class="grow"></span>
+      <span id="status" class="off">connecting…</span>
+      <button class="iconbtn on" id="toggleMembers" title="Member list" aria-label="Member list"><svg><use href="#i-users"/></svg></button>
+    </header>
 
-  // Live events are re-dispatched here so the game (public/game.js) can listen too.
-  const bus = new EventTarget();
-  const emit = (type, detail) => bus.dispatchEvent(new CustomEvent(type, { detail }));
+    <div id="messages"></div>
 
-  let es = null;
-  function connect() {
-    if (es) es.close();
-    es = new EventSource('/events?name=' + encodeURIComponent(name));
-    es.onopen = () => { $('status').className = 'on'; $('status').textContent = 'connected'; };
-    es.onerror = () => { $('status').className = 'off'; $('status').textContent = 'reconnecting…'; };
-    es.addEventListener('history', e => {
-      $('messages').replaceChildren();
-      JSON.parse(e.data).forEach(render);
-      $('messages').scrollTop = $('messages').scrollHeight;
-    });
-    es.addEventListener('message', e => {
-      const stick = atBottom();
-      const msg = JSON.parse(e.data);
-      render(msg);
-      notify(msg);
-      emit('message', msg);
-      if (stick || msg.name === name) $('messages').scrollTop = $('messages').scrollHeight;
-    });
-    es.addEventListener('users', e => {
-      $('users').replaceChildren(...JSON.parse(e.data).map(u => {
-        const li = document.createElement('li'); li.textContent = u; return li;
-      }));
-    });
-    es.addEventListener('block', e => emit('block', JSON.parse(e.data)));
-    es.addEventListener('players', e => emit('players', JSON.parse(e.data)));
-  }
+    <form id="composer" autocomplete="off">
+      <div class="box">
+        <textarea id="text" rows="1" placeholder="Message #general" maxlength="2000"></textarea>
+        <button id="send" aria-label="Send" disabled><svg><use href="#i-send"/></svg></button>
+      </div>
+      <div class="hint"><kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for a new line · <kbd>/game</kbd> opens RAD Craft</div>
+    </form>
+  </section>
 
-  const sendChat = text => fetch('/send', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, text }),
-  });
+  <aside id="members">
+    <h2>Online — <span id="count">0</span></h2>
+    <ul id="users"></ul>
+  </aside>
+</div>
 
-  async function openGame() {
-    const { startGame } = await import('/game.js');
-    startGame({ name, bus, sendChat });
-  }
-
-  $('join').addEventListener('submit', e => {
-    e.preventDefault();
-    name = $('nameInput').value.trim();
-    if (!name) return;
-    localStorage.setItem('radchat-name', name);
-    $('join').hidden = true;
-    $('top').hidden = $('chat').hidden = $('composer').hidden = false;
-    $('me').textContent = 'as ' + name;
-    if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
-    connect();
-    $('text').focus();
-  });
-
-  $('composer').addEventListener('submit', async e => {
-    e.preventDefault();
-    const text = $('text').value.trim();
-    if (!text) return;
-    $('text').value = '';
-    if (text === '/game') return openGame();
-    await sendChat(text);
-  });
-  $('text').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('composer').requestSubmit(); }
-  });
-</script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
