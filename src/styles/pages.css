@@ -11,20 +11,16 @@
 .av.xs { width: 24px; height: 24px; font-size: 11px; }
 .av.md { width: 40px; height: 40px; }
 .av.lg { width: 72px; height: 72px; font-size: 30px; }
-.av.speaking { box-shadow: 0 0 0 2px var(--online); }
 .av .dot.off { background: #9aa0a6; }
 .av.xs .dot { display: none; }
 
 /* zijbalk */
 a.chan, a.rail-btn { text-decoration: none; }
-.chan.connected { color: var(--text); }
-.chan.connected svg { color: var(--red); }
 .voice-bar .vb-error { color: var(--red); }
 .userbar-me { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-align: left; color: inherit; border-radius: 8px; }
 .userbar-me:hover { background: #2e2e2e; }
 .userbar-me .who { min-width: 0; }
 .userbar .iconbtn svg { width: 18px; height: 18px; }
-.muted-ic { width: 14px; height: 14px; margin-left: auto; color: var(--red); }
 
 /* ledenlijst */
 #members .users { list-style: none; margin: 0; padding: 0; }
@@ -118,6 +114,7 @@ textarea.text-input { resize: vertical; }
 .table tbody tr:hover { background: var(--hover); }
 .table .num { text-align: right; font-variant-numeric: tabular-nums; }
 .table .strong { font-weight: 900; color: var(--red); }
+.table.clickable tbody tr { cursor: pointer; }
 .table tr.me { background: var(--red-tint); }
 .table .rank { width: 40px; font-weight: 700; color: var(--muted); }
 .table .rank.top { color: var(--red); font-weight: 900; }
@@ -125,7 +122,6 @@ textarea.text-input { resize: vertical; }
 .table .details { color: var(--muted); font-size: 12px; max-width: 360px; overflow-wrap: anywhere; }
 .nowrap { white-space: nowrap; }
 .who-cell { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; }
-.table:not(.audit) tbody tr[onclick], .table tbody tr { cursor: default; }
 
 /* Wordle in de app */
 .wd-left { display: flex; align-items: center; gap: 8px; justify-self: start; }

@@ -18,7 +18,7 @@ function PeopleBoard() {
   if (loading) return <p className="muted">Loading…</p>;
   if (error) return <div className="banner error">{error}</div>;
   return (
-    <table className="table">
+    <table className="table clickable">
       <thead><tr><th>#</th><th>Colleague</th><th className="num">Wordle</th><th className="num">Craft</th><th className="num">Total</th></tr></thead>
       <tbody>
         {data?.map((row, index) => (
@@ -45,7 +45,7 @@ function TeamBoard() {
   if (error) return <div className="banner error">{error}</div>;
   if (!data?.length) return <p className="muted">There are no teams yet.</p>;
   return (
-    <table className="table">
+    <table className="table clickable">
       <thead><tr><th>#</th><th>Team</th><th className="num">Members</th><th className="num">Points</th></tr></thead>
       <tbody>
         {data.map((row, index) => (

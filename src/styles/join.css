@@ -16,6 +16,4 @@
 #joinCard h1 { margin: 6px 0 0; font-size: 28px; font-weight: 900; letter-spacing: -.01em; }
 #joinCard p { margin: 0 0 6px; color: var(--muted); }
 #joinCard label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-#nameInput { font: inherit; padding: 12px 14px; border: 2px solid var(--border); border-radius: 12px; background: var(--input); color: var(--text); outline: none; }
-#nameInput:focus { border-color: var(--red); }
 #joinCard small { text-align: center; color: var(--muted); letter-spacing: .08em; font-size: 10px; text-transform: uppercase; }
