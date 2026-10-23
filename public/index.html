@@ -36,6 +36,10 @@
     <symbol id="i-users" viewBox="0 0 24 24"><path fill="currentColor" d="M16 11a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.300 0-7 1.200-7 3.500V19h14v-2.500C15 14.200 10.300 13 8 13zm8 0c-.300 0-.600 0-1 .100 1.200.800 2 1.900 2 3.400V19h6v-2.500c0-2.300-4.700-3.500-7-3.500z"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></symbol>
     <symbol id="i-cube" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 3 7v10l9 5 9-5V7zm0 2.3L18.800 8 12 11.700 5.200 8zM5 9.700l6 3.300v6.800l-6-3.300zm8 10.100v-6.800l6-3.300v6.800z"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9zm13.500 3A4.500 4.500 0 0 0 14 8v8a4.500 4.500 0 0 0 2.500-4zM14 3.200v2.100a7 7 0 0 1 0 13.400v2.100a9 9 0 0 0 0-17.600z"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.900V21h2v-3.100A7 7 0 0 0 19 11z"/></symbol>
+    <symbol id="i-mic-off" viewBox="0 0 24 24"><path fill="currentColor" d="M19 11h-2a5 5 0 0 1-.700 2.500l1.500 1.500A7 7 0 0 0 19 11zM15 11V5a3 3 0 0 0-5.700-1.300L15 9.400zM4.300 3 3 4.300l6 6V11a3 3 0 0 0 4.500 2.600l1.500 1.500a5 5 0 0 1-8-4.100H5a7 7 0 0 0 6 6.900V21h2v-3.100a7 7 0 0 0 2.600-.900l4.100 4.100L21 19.700z"/></symbol>
+    <symbol id="i-phone-off" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9c-1.600 0-3.200.300-4.600.700v3.100c0 .400-.200.700-.600.900-.900.400-1.700 1-2.400 1.600-.200.200-.500.300-.700.300s-.500-.100-.700-.300L.300 13.700a1 1 0 0 1-.300-.700c0-.300.100-.500.300-.700C3.400 9.400 7.500 8 12 8s8.600 1.400 11.700 4.300c.200.200.300.400.300.700s-.100.500-.300.700l-2.400 2.400c-.200.200-.400.300-.700.300s-.500-.100-.700-.300c-.700-.700-1.500-1.200-2.400-1.600-.400-.200-.600-.500-.600-.900V9.700C15.200 9.300 13.600 9 12 9z"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M4 11h12.200l-5.600-5.600L12 4l8 8-8 8-1.400-1.400 5.600-5.600H4z"/></symbol>
   </defs>
 </svg>
@@ -67,8 +71,22 @@
     <div class="side-body">
       <div class="cat">Text channels</div>
       <button class="chan active"><span class="hash">#</span>general</button>
+      <div class="cat">Voice channels</div>
+      <div class="voice" data-voice="Lounge">
+        <button class="chan"><svg><use href="#i-speaker"/></svg>Lounge</button>
+        <ul class="voice-users"></ul>
+      </div>
+      <div class="voice" data-voice="Stand-up">
+        <button class="chan"><svg><use href="#i-speaker"/></svg>Stand-up</button>
+        <ul class="voice-users"></ul>
+      </div>
       <div class="cat">Activities</div>
       <button class="chan" id="sideGame"><svg><use href="#i-cube"/></svg>RAD Craft<span class="tag">/game</span></button>
+    </div>
+    <div class="voice-bar" id="voiceBar" hidden>
+      <div class="vb-info"><b>Voice connected</b><small id="voiceName"></small></div>
+      <button class="iconbtn" id="voiceMute" title="Mute" aria-label="Mute microphone"><svg><use href="#i-mic"/></svg></button>
+      <button class="iconbtn" id="voiceLeave" title="Disconnect" aria-label="Disconnect from voice"><svg><use href="#i-phone-off"/></svg></button>
     </div>
     <div class="userbar">
       <div class="av sm" id="meAv"><span class="dot"></span></div>

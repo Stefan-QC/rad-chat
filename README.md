@@ -23,11 +23,28 @@ public/
     components.css   icon button, avatar, primary button
     join.css  layout.css  rail.css  sidebar.css  header.css
     messages.css  composer.css  members.css  responsive.css
+  js/voice.js        voice channels (WebRTC)
   js/main.js         join flow, SSE connection, composer, UI wiring
     feed.js          message feed rendering
     utils.js         colours, formatting, safe rich text
   game.js            RAD Craft
 ```
+
+## Voice channels
+
+Click **Lounge** or **Stand-up** under "Voice channels" to talk. Audio goes directly between
+browsers (WebRTC); the server only relays the connection setup. Use the bar above your name to
+mute or disconnect. A green ring around an avatar means that person is speaking.
+
+Browsers only allow microphone access on `https://` or `localhost`, so colleagues on the LAN need
+HTTPS. Create a self-signed certificate once (the server switches to HTTPS when `certs/` exists):
+
+```sh
+mkdir certs
+openssl req -x509 -newkey rsa:2048 -nodes -days 825 -keyout certs/key.pem -out certs/cert.pem -subj "/CN=RAD Chat"
+```
+
+Everyone then opens `https://<your-laptop-ip>:3000` and accepts the one-time certificate warning.
 
 ## RAD Craft (`/game`)
 

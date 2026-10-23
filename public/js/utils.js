@@ -17,7 +17,7 @@ export function fmtDay(ts) {
 export function avatar(n, small) {
   const a = document.createElement('div');
   a.className = 'av' + (small ? ' sm' : '');
-  a.style.background = colorFor(n);
+  a.style.backgroundColor = colorFor(n);
   a.textContent = initial(n);
   return a;
 }

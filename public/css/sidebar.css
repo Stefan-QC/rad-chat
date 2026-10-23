@@ -14,6 +14,22 @@
 .chan svg { width: 18px; height: 18px; flex: none; }
 .chan .tag { margin-left: auto; font-size: 10px; background: var(--red-soft); color: var(--red-dark); padding: 2px 7px; border-radius: 10px; letter-spacing: .04em; }
 
+.chan.connected { color: var(--text); }
+.chan.connected svg { color: var(--red); }
+.voice-users { list-style: none; margin: 0 0 2px; padding: 0 0 0 28px; }
+.voice-users li { display: flex; align-items: center; gap: 8px; padding: 3px 10px; font-size: 13px; color: var(--muted); }
+.voice-users .av { width: 24px; height: 24px; font-size: 11px; }
+.voice-users li.speaking .av { box-shadow: 0 0 0 2px var(--online); }
+.voice-users .muted-ic { width: 14px; height: 14px; margin-left: auto; color: var(--red); }
+
+.voice-bar { display: flex; align-items: center; gap: 4px; padding: 8px 12px; border-top: 1px solid var(--border); }
+.voice-bar[hidden] { display: none; }
+.voice-bar .vb-info { flex: 1; min-width: 0; line-height: 1.2; }
+.voice-bar b { display: block; font-size: 13px; color: var(--online); }
+.voice-bar small { color: var(--muted); font-size: 12px; }
+.voice-bar .iconbtn svg { width: 20px; height: 20px; }
+.voice-bar #voiceMute.on { color: var(--red); background: var(--red-soft); }
+
 .userbar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--rail); color: #fff; }
 .userbar .who { min-width: 0; flex: 1; line-height: 1.2; }
 .userbar .who b { display: block; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -1,12 +1,14 @@
 // RAD Chat — zero-dependency LAN chat server (Node 18+).
 // Run: node server.js   then open http://<your-lan-ip>:3000
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
 const PORT = Number(process.env.PORT) || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const CERT_DIR = path.join(__dirname, 'certs');
 const HISTORY_FILE = path.join(__dirname, 'history.json');
 const WORLD_FILE = path.join(__dirname, 'world.json');
 const WORLD_SIZE = 128;
@@ -49,6 +51,11 @@ const players = new Map();
 
 // clientId -> { res, name }
 const clients = new Map();
+
+// Voice channels: name -> channel for everyone connected to voice. Audio goes peer-to-peer
+// (WebRTC); the server only relays the signaling messages.
+const VOICE_CHANNELS = ['Lounge', 'Stand-up'];
+const voice = new Map();
 let nextId = 1;
 
 function send(res, event, data) {
@@ -61,6 +68,17 @@ function broadcast(event, data) {
 
 function onlineUsers() {
   return [...new Set([...clients.values()].map(c => c.name))].sort();
+}
+
+function voiceState() {
+  const state = Object.fromEntries(VOICE_CHANNELS.map(c => [c, []]));
+  for (const [name, ch] of voice) state[ch].push(name);
+  for (const list of Object.values(state)) list.sort();
+  return state;
+}
+
+function leaveVoice(name) {
+  if (voice.delete(name)) broadcast('voice', voiceState());
 }
 
 function pushMessage(msg) {
@@ -113,12 +131,31 @@ function serveStatic(pathname, res) {
 
 const num = v => (Number.isFinite(v) ? v : 0);
 
-const server = http.createServer(async (req, res) => {
+const handler = async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
 
   if (req.method === 'GET' && url.pathname === '/world') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ seed: world.seed, size: WORLD_SIZE, height: WORLD_HEIGHT, edits: world.edits }));
+  }
+
+  if (req.method === 'POST' && url.pathname.startsWith('/voice/')) {
+    let body;
+    try { body = JSON.parse(await readBody(req)); } catch { res.writeHead(400); return res.end(); }
+    const name = cleanName(body.name);
+    if (url.pathname === '/voice/join' && VOICE_CHANNELS.includes(body.channel)) {
+      voice.set(name, body.channel);
+      broadcast('voice', voiceState());
+    } else if (url.pathname === '/voice/leave') {
+      leaveVoice(name);
+    } else if (url.pathname === '/voice/signal') {
+      const to = cleanName(body.to);
+      for (const c of clients.values()) if (c.name === to) send(c.res, 'signal', { from: name, data: body.data });
+    } else {
+      res.writeHead(400); return res.end();
+    }
+    res.writeHead(204);
+    return res.end();
   }
 
   if (req.method === 'POST' && url.pathname.startsWith('/game/')) {
@@ -158,6 +195,7 @@ const server = http.createServer(async (req, res) => {
     });
     res.write('retry: 2000\n\n');
     send(res, 'history', history);
+    send(res, 'voice', voiceState());
 
     const wasOnline = onlineUsers().includes(name);
     clients.set(id, { res, name });
@@ -169,6 +207,7 @@ const server = http.createServer(async (req, res) => {
       clearInterval(ping);
       clients.delete(id);
       if (!onlineUsers().includes(name)) {
+        leaveVoice(name);
         pushMessage({ type: 'system', text: `${name} left`, ts: Date.now() });
       }
       broadcast('users', onlineUsers());
@@ -192,13 +231,23 @@ const server = http.createServer(async (req, res) => {
 
   res.writeHead(404);
   res.end('Not found');
-});
+};
+
+// Browsers only allow microphone access on https:// or localhost, so voice on the LAN
+// needs a certificate: put key.pem and cert.pem in certs/ (see README) and it switches to HTTPS.
+let tls = null;
+try {
+  tls = { key: fs.readFileSync(path.join(CERT_DIR, 'key.pem')), cert: fs.readFileSync(path.join(CERT_DIR, 'cert.pem')) };
+} catch { /* plain http */ }
+const scheme = tls ? 'https' : 'http';
+const server = tls ? https.createServer(tls, handler) : http.createServer(handler);
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`RAD Chat running on port ${PORT}`);
+  console.log(`RAD Chat running on port ${PORT} (${scheme})`);
+  if (!tls) console.log('  Voice needs https on the LAN (works on localhost only) — see README.md');
   for (const addrs of Object.values(os.networkInterfaces())) {
     for (const a of addrs || []) {
-      if (a.family === 'IPv4' && !a.internal) console.log(`  http://${a.address}:${PORT}`);
+      if (a.family === 'IPv4' && !a.internal) console.log(`  ${scheme}://${a.address}:${PORT}`);
     }
   }
   console.log('  (On WSL2, colleagues need your Windows LAN IP — see README.md)');

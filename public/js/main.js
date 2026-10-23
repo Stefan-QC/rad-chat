@@ -1,5 +1,6 @@
 // RAD Chat client: join flow, live connection (SSE), composer and UI wiring.
 import { avatar, colorFor, initial } from './utils.js';
+import { initVoice } from './voice.js';
 import { atBottom, render, resetFeed, toBottom } from './feed.js';
 
 const $ = id => document.getElementById(id);
@@ -30,6 +31,8 @@ function renderUsers(users) {
   }));
 }
 
+const voice = initVoice({ getName: () => name, $ });
+
 let es = null;
 function connect() {
   if (es) es.close();
@@ -50,6 +53,8 @@ function connect() {
     if (stick || msg.name === name) toBottom();
   });
   es.addEventListener('users', e => renderUsers(JSON.parse(e.data)));
+  es.addEventListener('voice', e => voice.onState(JSON.parse(e.data)));
+  es.addEventListener('signal', e => voice.onSignal(JSON.parse(e.data)));
   es.addEventListener('block', e => emit('block', JSON.parse(e.data)));
   es.addEventListener('players', e => emit('players', JSON.parse(e.data)));
 }
@@ -67,7 +72,7 @@ async function openGame() {
 function setMe() {
   $('meName').textContent = name;
   const av = $('meAv');
-  av.style.background = colorFor(name);
+  av.style.backgroundColor = colorFor(name);
   const dot = document.createElement('span'); dot.className = 'dot';
   av.replaceChildren(initial(name), dot);
 }
@@ -86,6 +91,7 @@ $('joinCard').addEventListener('submit', e => {
 });
 
 $('changeName').addEventListener('click', () => {
+  voice.leave();
   if (es) es.close();
   $('app').hidden = true;
   $('join').hidden = false;
