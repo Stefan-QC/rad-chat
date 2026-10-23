@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="css/messages.css">
 <link rel="stylesheet" href="css/composer.css">
 <link rel="stylesheet" href="css/members.css">
+<link rel="stylesheet" href="css/wordle.css">
 <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -40,6 +41,7 @@
     <symbol id="i-mic" viewBox="0 0 24 24"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.900V21h2v-3.100A7 7 0 0 0 19 11z"/></symbol>
     <symbol id="i-mic-off" viewBox="0 0 24 24"><path fill="currentColor" d="M19 11h-2a5 5 0 0 1-.700 2.500l1.500 1.500A7 7 0 0 0 19 11zM15 11V5a3 3 0 0 0-5.700-1.300L15 9.400zM4.300 3 3 4.300l6 6V11a3 3 0 0 0 4.500 2.600l1.500 1.500a5 5 0 0 1-8-4.100H5a7 7 0 0 0 6 6.900V21h2v-3.100a7 7 0 0 0 2.600-.900l4.100 4.100L21 19.700z"/></symbol>
     <symbol id="i-phone-off" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9c-1.600 0-3.200.300-4.600.700v3.100c0 .400-.200.700-.600.900-.900.400-1.700 1-2.400 1.600-.200.200-.500.300-.700.300s-.500-.100-.700-.300L.300 13.700a1 1 0 0 1-.300-.700c0-.300.100-.500.300-.700C3.400 9.400 7.500 8 12 8s8.600 1.400 11.700 4.300c.200.200.300.400.300.700s-.100.500-.300.700l-2.400 2.400c-.200.200-.400.300-.700.300s-.500-.100-.700-.300c-.700-.700-1.500-1.200-2.400-1.600-.400-.200-.600-.500-.600-.900V9.700C15.200 9.300 13.600 9 12 9z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M4 11h12.200l-5.600-5.600L12 4l8 8-8 8-1.400-1.400 5.600-5.600H4z"/></symbol>
   </defs>
 </svg>
@@ -82,6 +84,7 @@
       </div>
       <div class="cat">Activities</div>
       <button class="chan" id="sideGame"><svg><use href="#i-cube"/></svg>RAD Craft<span class="tag">/game</span></button>
+      <button class="chan" id="sideWordle"><svg><use href="#i-grid"/></svg>RAD Wordle<span class="tag">/wordle</span></button>
     </div>
     <div class="voice-bar" id="voiceBar" hidden>
       <div class="vb-info"><b>Voice connected</b><small id="voiceName"></small></div>
@@ -114,7 +117,7 @@
         <textarea id="text" rows="1" placeholder="Message #general" maxlength="2000"></textarea>
         <button id="send" aria-label="Send" disabled><svg><use href="#i-send"/></svg></button>
       </div>
-      <div class="hint"><kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for a new line · <kbd>/game</kbd> opens RAD Craft</div>
+      <div class="hint"><kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for a new line · <kbd>/game</kbd> RAD Craft · <kbd>/wordle</kbd> Wordle</div>
     </form>
   </section>
 

@@ -10,6 +10,7 @@ const PORT = Number(process.env.PORT) || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const CERT_DIR = path.join(__dirname, 'certs');
 const HISTORY_FILE = path.join(__dirname, 'history.json');
+const SCORES_FILE = path.join(__dirname, 'scores.json');
 const WORLD_FILE = path.join(__dirname, 'world.json');
 const WORLD_SIZE = 128;
 const WORLD_HEIGHT = 64;
@@ -34,6 +35,32 @@ function saveHistory() {
     fs.writeFile(HISTORY_FILE, JSON.stringify(history.slice(-HISTORY_LIMIT)), () => {});
   }, 500);
 }
+
+// Points: kept in memory, pushed to every client over SSE, and written to scores.json so a
+// restart doesn't reset them. name -> { points, wordleDay, blockDay, blocks }
+const WORDLE_POINTS = [0, 100, 80, 60, 45, 30, 20]; // by number of guesses used
+const BLOCK_POINTS_PER_DAY = 100;
+let scores = {};
+try { scores = JSON.parse(fs.readFileSync(SCORES_FILE, 'utf8')); } catch { /* nobody has points yet */ }
+
+let scoresTimer = null;
+function awardPoints(name, n) {
+  const s = scores[name] ||= { points: 0 };
+  s.points += n;
+  broadcast('scores', leaderboard());
+  clearTimeout(scoresTimer);
+  scoresTimer = setTimeout(() => fs.writeFile(SCORES_FILE, JSON.stringify(scores), () => {}), 1000);
+}
+
+function leaderboard() {
+  return Object.entries(scores)
+    .map(([name, s]) => ({ name, points: s.points }))
+    .filter(e => e.points > 0)
+    .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
+    .slice(0, 20);
+}
+
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
 
 // Shared game world: the terrain is generated client-side from `seed`;
 // the server only stores player edits as "x,y,z" -> blockId.
@@ -139,6 +166,19 @@ const handler = async (req, res) => {
     return res.end(JSON.stringify({ seed: world.seed, size: WORLD_SIZE, height: WORLD_HEIGHT, edits: world.edits }));
   }
 
+  if (req.method === 'POST' && url.pathname === '/score/wordle') {
+    let body;
+    try { body = JSON.parse(await readBody(req)); } catch { res.writeHead(400); return res.end(); }
+    const name = cleanName(body.name);
+    const s = scores[name] ||= { points: 0 };
+    const pts = WORDLE_POINTS[body.guesses] || 0;
+    // One result per player per day, and only for today's puzzle.
+    const ok = body.won === true && pts > 0 && body.day === today() && s.wordleDay !== body.day;
+    if (ok) { s.wordleDay = body.day; awardPoints(name, pts); }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ points: ok ? pts : 0 }));
+  }
+
   if (req.method === 'POST' && url.pathname.startsWith('/voice/')) {
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { res.writeHead(400); return res.end(); }
@@ -174,6 +214,9 @@ const handler = async (req, res) => {
         x >= 0 && x < WORLD_SIZE && z >= 0 && z < WORLD_SIZE && y >= 1 && y < WORLD_HEIGHT &&
         id >= 0 && id <= MAX_BLOCK_ID;
       if (!ok) { res.writeHead(400); return res.end(); }
+      const sc = scores[name] ||= { points: 0 };
+      if (sc.blockDay !== today()) { sc.blockDay = today(); sc.blocks = 0; }
+      if (sc.blocks < BLOCK_POINTS_PER_DAY) { sc.blocks++; awardPoints(name, 1); }
       world.edits[`${x},${y},${z}`] = id;
       saveWorld();
       broadcast('block', { x, y, z, id });
@@ -196,6 +239,7 @@ const handler = async (req, res) => {
     res.write('retry: 2000\n\n');
     send(res, 'history', history);
     send(res, 'voice', voiceState());
+    send(res, 'scores', leaderboard());
 
     const wasOnline = onlineUsers().includes(name);
     clients.set(id, { res, name });

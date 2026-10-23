@@ -4,3 +4,4 @@
 #app.no-members { grid-template-columns: 72px 248px minmax(0, 1fr); }
 #app.no-members #members { display: none; }
 #main { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--bg); }
+#app.in-wordle #main, #app.in-wordle #members { display: none; }

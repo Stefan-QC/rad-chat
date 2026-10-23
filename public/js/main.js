@@ -33,6 +33,20 @@ function renderUsers(users) {
 
 const voice = initVoice({ getName: () => name, $ });
 
+let lastBoard = [];
+function renderBoard(list = lastBoard) {
+  lastBoard = list;
+  if (!$('board')) return;
+  $('board').replaceChildren(...list.map(e => {
+    const li = document.createElement('li');
+    if (e.name === name) li.className = 'me';
+    const n = document.createElement('span'); n.textContent = e.name;
+    const p = document.createElement('b'); p.textContent = e.points;
+    li.append(n, p);
+    return li;
+  }));
+}
+
 let es = null;
 function connect() {
   if (es) es.close();
@@ -53,6 +67,7 @@ function connect() {
     if (stick || msg.name === name) toBottom();
   });
   es.addEventListener('users', e => renderUsers(JSON.parse(e.data)));
+  es.addEventListener('scores', e => renderBoard(JSON.parse(e.data)));
   es.addEventListener('voice', e => voice.onState(JSON.parse(e.data)));
   es.addEventListener('signal', e => voice.onSignal(JSON.parse(e.data)));
   es.addEventListener('block', e => emit('block', JSON.parse(e.data)));
@@ -67,6 +82,12 @@ async function openGame() {
   $('app').classList.remove('drawer');
   const { startGame } = await import('../game.js');
   startGame({ name, bus, sendChat });
+}
+
+async function openWordle() {
+  $('app').classList.remove('drawer');
+  const { startWordle } = await import('../wordle.js');
+  startWordle({ name, sendChat, onOpen: renderBoard });
 }
 
 function setMe() {
@@ -108,6 +129,7 @@ $('composer').addEventListener('submit', async e => {
   if (!t) return;
   text.value = ''; autosize(); $('send').disabled = true;
   if (t === '/game') return openGame();
+  if (t === '/wordle') return openWordle();
   await sendChat(t);
 });
 text.addEventListener('keydown', e => {
@@ -116,6 +138,7 @@ text.addEventListener('keydown', e => {
 
 $('railGame').addEventListener('click', openGame);
 $('sideGame').addEventListener('click', openGame);
+$('sideWordle').addEventListener('click', openWordle);
 $('toggleMembers').addEventListener('click', () => {
   const off = $('app').classList.toggle('no-members');
   $('toggleMembers').classList.toggle('on', !off);

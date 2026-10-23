@@ -1,0 +1,55 @@
+/* RAD Wordle */
+
+/* Sits in the app grid in place of the chat, so the rail and channel sidebar stay visible. */
+#wordle { min-width: 0; min-height: 0; background: var(--bg); color: var(--text); overflow-y: auto; }
+.wd-wrap { min-height: 100%; display: flex; flex-direction: column; }
+.wd-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) min(400px, 100%) minmax(0, 1fr); align-items: center; gap: 24px; padding: 16px 20px 24px; }
+.wd-card { grid-column: 2; width: 100%; display: flex; flex-direction: column; }
+.wd-side { grid-column: 3; justify-self: start; width: min(280px, 100%); padding: 14px 10px; border-radius: 14px; background: var(--side); border: 1px solid var(--border); }
+@media (max-width: 1100px) {
+  .wd-body { grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: start; }
+  .wd-card, .wd-side { grid-column: 1; justify-self: center; }
+  .wd-card { max-width: 400px; }
+}
+.wd-side h3 { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px 8px; }
+.wd-wrap > header { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--panel); }
+.wd-wrap h2 { margin: 0; font-size: 20px; font-weight: 900; letter-spacing: -.01em; flex: 1; }
+.wd-logo { width: 28px; height: 28px; }
+.wd-close { padding: 8px 14px; border-radius: 8px; background: var(--input); color: var(--text); font-weight: 700; font-size: 13px; }
+.wd-close:hover { background: var(--red-soft); }
+.wd-sub { margin: 14px 0; color: var(--muted); font-size: 13px; }
+
+.wd-board { display: grid; gap: 6px; width: min(300px, 100%); margin: 0 auto; }
+.wd-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.wd-row div { aspect-ratio: 1; display: grid; place-items: center; border: 2px solid var(--border); border-radius: 8px; background: var(--input);
+              font-size: 26px; font-weight: 900; text-transform: uppercase; }
+.wd-row .filled { border-color: var(--red-dark); animation: wd-pop .08s; }
+.wd-row .correct { background: var(--red); border-color: var(--red); color: #fff; }
+.wd-row .present { background: var(--rail); border-color: var(--rail); color: #fff; }
+.wd-row .absent { background: var(--muted); border-color: var(--muted); color: #fff; opacity: .75; }
+.wd-row.shake { animation: wd-shake .3s; }
+@keyframes wd-pop { 50% { transform: scale(1.08); } }
+@keyframes wd-shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+.wd-msg { min-height: 22px; margin: 10px 0; text-align: center; font-weight: 700; font-size: 14px; color: var(--red); }
+.wd-kb { display: grid; gap: 6px; }
+.wd-krow { display: flex; justify-content: center; gap: 4px; }
+.wd-krow button { flex: 1; max-width: 36px; height: 46px; border-radius: 6px; background: var(--input); color: var(--text); font-weight: 700; font-size: 14px; text-transform: uppercase; }
+.wd-krow button.wide { flex: 1.6; max-width: 56px; font-size: 12px; }
+.wd-krow button:hover { background: var(--red-soft); }
+.wd-krow button.correct { background: var(--red); color: #fff; }
+.wd-krow button.present { background: var(--rail); color: #fff; }
+.wd-krow button.absent { background: var(--muted); color: #fff; opacity: .5; }
+.wd-end { margin-top: 14px; text-align: center; }
+
+#board { list-style: none; margin: 0; padding: 0; counter-reset: rank; }
+#board li { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; font-weight: 700; font-size: 14px; }
+#board li::before { counter-increment: rank; content: counter(rank); width: 18px; text-align: center; color: var(--muted); font-size: 12px; }
+#board li:nth-child(-n+3)::before { color: var(--red); font-weight: 900; }
+#board li.me { background: var(--red-tint); }
+#board li span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#board li b { color: var(--red); font-variant-numeric: tabular-nums; }
+#board:empty::after { content: 'Nog geen punten'; color: var(--muted); font-size: 13px; padding: 0 8px; }
+
+.wd-side .lb-hint { margin: 10px 8px 0; font-size: 11px; color: var(--muted); }
+@media (max-width: 720px) { #wordle { padding-top: 0; } }
