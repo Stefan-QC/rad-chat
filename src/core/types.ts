@@ -124,3 +124,15 @@ export interface CraftWorld {
   height: number;
   edits: Record<string, number>;
 }
+
+export interface UserSettings {
+  user_id: string;
+  theme: 'system' | 'light' | 'dark';
+  notify_mentions: boolean;
+  notify_messages: boolean;
+  notify_sound: boolean;
+  notify_browser: boolean;
+  compact_mode: boolean;
+}
+
+export type UserSettingsPatch = Partial<Omit<UserSettings, 'user_id'>>;

@@ -1,5 +1,4 @@
 export interface WordleSettingsData {
-  dark: boolean;
   contrast: boolean;
   sound: boolean;
   reduceMotion: boolean;
@@ -11,7 +10,6 @@ const STORAGE_KEY = 'radchat-wordle-settings';
 export class WordleSettings {
   static defaults(): WordleSettingsData {
     return {
-      dark: window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false,
       contrast: false,
       sound: false,
       reduceMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,

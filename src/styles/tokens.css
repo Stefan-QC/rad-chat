@@ -1,19 +1,29 @@
-/* Design tokens: Qualogy brand book (Chivo, red #D71920, soft red tints). Dark mode follows the OS. */
+/* Ontwerptokens van het Qualogy-huisstijlboek; het thema wordt gekozen via data-theme op het html-element. */
 
-:root {
+:root,
+[data-theme="light"] {
+  color-scheme: light;
   --red: #D71920; --red-hover: #B9141A; --red-dark: #822727; --red-deep: #38080A;
   --red-tint: #FFF5F5; --red-soft: #FED7D7;
-  --rail: #1a1a1a; --side: #fff5f5; --bg: #fff; --panel: #fff;
+  --rail: #1a1a1a; --rail-btn: #2e2e2e; --rail-hover: #2e2e2e; --rail-sep: #333;
+  --side: #fff5f5; --bg: #fff; --panel: #fff;
   --text: #1b1b1b; --muted: #6e6466; --border: #f1dede; --hover: rgba(215,25,32,.06);
-  --input: #f6efef; --mention-bg: rgba(215,25,32,.12); --online: #23a55a;
+  --input: #f6efef; --mention-bg: rgba(215,25,32,.12); --mention-text: #822727;
+  --online: #23a55a; --offline: #9aa0a6;
+  --danger-bg: #fde8e8; --danger-text: #9b1c1c; --ok-bg: #e3f6ec; --ok-text: #16794a;
+  --overlay: rgba(56,8,10,.55); --focus: #D71920;
   --shadow: 0 8px 30px rgba(56,8,10,.12);
   --font: 'Chivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --rail: #0b0405; --side: #1b0c0e; --bg: #231214; --panel: #1b0c0e;
-    --text: #f3e9e9; --muted: #b09a9c; --border: #3a1d20; --hover: rgba(255,255,255,.05);
-    --input: #331a1d; --mention-bg: rgba(229,62,62,.25); --red-tint: #2b1316;
-    --shadow: 0 8px 30px rgba(0,0,0,.5);
-  }
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --rail: #0b0405; --rail-btn: #2a1d1f; --rail-hover: #3a2427; --rail-sep: #2c1a1d;
+  --side: #1b0c0e; --bg: #231214; --panel: #1b0c0e;
+  --text: #f3e9e9; --muted: #b09a9c; --border: #3a1d20; --hover: rgba(255,255,255,.05);
+  --input: #331a1d; --mention-bg: rgba(229,62,62,.25); --mention-text: #fed7d7; --red-tint: #2b1316;
+  --offline: #6b6264;
+  --danger-bg: #4a1517; --danger-text: #fed7d7; --ok-bg: #153523; --ok-text: #b7f0cf;
+  --overlay: rgba(0,0,0,.65); --focus: #F56565;
+  --shadow: 0 8px 30px rgba(0,0,0,.5);
 }

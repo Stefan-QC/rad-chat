@@ -5,6 +5,7 @@ import { AuthProvider } from './app/AuthContext';
 import { ServicesProvider } from './app/ServicesContext';
 import { AppConfig, ConfigError } from './config/AppConfig';
 import { IconSprite } from './components/Icon';
+import { ToastProvider } from './components/ui/Toast';
 import { Services } from './services/Services';
 import './styles/index.css';
 
@@ -18,9 +19,11 @@ try {
     <ServicesProvider services={services}>
       <BrowserRouter>
         <IconSprite />
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ToastProvider>
       </BrowserRouter>
     </ServicesProvider>,
   );

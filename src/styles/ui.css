@@ -1,0 +1,33 @@
+/* Herbruikbare bouwstenen: dialoog, meldingen, schakelaar en toetsenbordfocus */
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+button:focus:not(:focus-visible) { outline: none; }
+
+.modal-backdrop { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; background: var(--overlay); backdrop-filter: blur(2px); }
+.modal { width: 100%; max-height: calc(100dvh - 32px); display: flex; flex-direction: column; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); outline: none; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.modal-head h2 { margin: 0; font-size: 18px; font-weight: 900; }
+.modal-body { padding: 16px 20px 20px; overflow-y: auto; }
+
+.toast-stack { position: fixed; right: 16px; bottom: 16px; z-index: 300; display: flex; flex-direction: column; gap: 8px; max-width: min(380px, calc(100vw - 32px)); }
+.toast { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: 12px; background: var(--rail); color: #fff; font-size: 14px; font-weight: 700; box-shadow: var(--shadow); animation: toast-in .18s ease-out; }
+.toast.success { background: var(--ok-text); }
+.toast.error { background: var(--red); }
+.toast span { flex: 1; overflow-wrap: anywhere; }
+.toast button { color: inherit; opacity: .7; }
+.toast button:hover { opacity: 1; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+.switch-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; position: relative; }
+.switch-row.disabled { opacity: .55; cursor: default; }
+.switch-text { flex: 1; min-width: 0; }
+.switch-text b { display: block; }
+.switch-text small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.switch-row input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch-track { width: 44px; height: 24px; border-radius: 12px; background: var(--border); position: relative; flex: none; transition: background .2s; }
+.switch-track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s; }
+.switch-row input:checked + .switch-track { background: var(--red); }
+.switch-row input:checked + .switch-track::after { transform: translateX(20px); }
+.switch-row input:focus-visible + .switch-track { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { .toast, .switch-track, .switch-track::after { animation: none; transition: none; } }

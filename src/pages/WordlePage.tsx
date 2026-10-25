@@ -6,6 +6,7 @@ import { useWorkspace } from '../app/WorkspaceContext';
 import { Icon } from '../components/Icon';
 import type { WordleState } from '../core/types';
 import { useAsync } from '../hooks/useAsync';
+import { useTheme } from '../hooks/useTheme';
 import { Board } from '../features/wordle/Board';
 import { Keyboard } from '../features/wordle/Keyboard';
 import { SettingsModal, StatsModal } from '../features/wordle/Modals';
@@ -141,6 +142,7 @@ export function WordlePage() {
   const services = useServices();
   const navigate = useNavigate();
   const { toggleDrawer } = useWorkspace();
+  const { resolved } = useTheme();
   const [settings, setSettings] = useState<WordleSettingsData>(WordleSettings.load);
   const [mode, setMode] = useState<GameMode>('daily');
   const [round, setRound] = useState(0);
@@ -189,7 +191,7 @@ export function WordlePage() {
   };
 
   return (
-    <div id="wordle" className={`${settings.dark ? 'dark' : ''} ${settings.contrast ? 'hc' : ''} ${settings.reduceMotion ? 'reduce' : ''}`}>
+    <div id="wordle" className={`${resolved === 'dark' ? 'dark' : ''} ${settings.contrast ? 'hc' : ''} ${settings.reduceMotion ? 'reduce' : ''}`}>
       <div className="wd-wrap">
         <header>
           <div className="wd-left">

@@ -14,7 +14,7 @@ export function UserBar() {
         <Avatar name={me.display_name} color={me.avatar_color} size="sm" online />
         <div className="who"><b>{me.display_name}</b><small>{me.job_title || 'Online'}</small></div>
       </button>
-      <button className="iconbtn" title="Edit profile" aria-label="Edit profile" onClick={() => navigate('/profile')}><Icon name="edit" size={18} /></button>
+      <button className="iconbtn" title="Settings" aria-label="Settings" onClick={() => navigate('/settings')}><Icon name="gear" size={18} /></button>
       <button className="iconbtn" title="Sign out" aria-label="Sign out" onClick={() => void signOut()}><Icon name="logout" size={18} /></button>
     </div>
   );
