@@ -24,8 +24,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     let active = true;
     service.load(me.id).then(loaded => {
       if (!active) return;
-      setSettings(loaded);
-      theme.setPreference(loaded.theme);
+      if (loaded) {
+        setSettings(loaded);
+        theme.setPreference(loaded.theme);
+      } else {
+        // Nog niets opgeslagen: de lokale themakeuze blijft gelden.
+        setSettings({ ...SettingsService.defaults(me.id), theme: theme.getPreference() });
+      }
     }).catch(() => undefined);
     return () => {
       active = false;
@@ -38,10 +43,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const update = useCallback(async (patch: UserSettingsPatch) => {
     const previous = settings;
-    setSettings({ ...settings, ...patch });
+    const optimistic = { ...settings, ...patch };
+    setSettings(optimistic);
     if (patch.theme) theme.setPreference(patch.theme);
     try {
-      setSettings(await service.save(me.id, patch));
+      setSettings((await service.save(me.id, patch)) ?? optimistic);
     } catch (error) {
       setSettings(previous);
       if (patch.theme) theme.setPreference(previous.theme);

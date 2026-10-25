@@ -9,10 +9,9 @@ export class SettingsService {
     return { user_id: userId, theme: 'system', notify_mentions: true, notify_messages: true, notify_sound: false, notify_browser: false, compact_mode: false };
   }
 
-  /** Geeft de standaardwaarden terug zolang er nog niets is opgeslagen. */
-  async load(userId: string): Promise<UserSettings> {
-    const row = unwrap<UserSettings | null>(await this.db.from('user_settings').select('*').eq('user_id', userId).maybeSingle());
-    return row ?? SettingsService.defaults(userId);
+  /** Geeft null terug zolang er nog niets is opgeslagen. */
+  async load(userId: string): Promise<UserSettings | null> {
+    return unwrap<UserSettings | null>(await this.db.from('user_settings').select('*').eq('user_id', userId).maybeSingle());
   }
 
   async save(userId: string, patch: UserSettingsPatch): Promise<UserSettings> {
