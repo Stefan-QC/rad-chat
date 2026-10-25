@@ -77,3 +77,6 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     app.include_router(admin_settings.router)
     app.include_router(jobs.router)
     return app
+
+
+app = create_app()

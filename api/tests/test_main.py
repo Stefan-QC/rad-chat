@@ -37,6 +37,12 @@ async def test_main__lifespan_starts_and_stops_scheduler_when_enabled() -> None:
     assert not container.scheduler._scheduler.running
 
 
+def test_main__module_level_app_is_available_for_uvicorn() -> None:
+    from app.main import app
+
+    assert app.title == "RAD Chat API"
+
+
 def test_main__create_app_has_no_scheduler_by_default() -> None:
     assert make_container().scheduler is None
 
