@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../app/AuthContext';
 import { MessageExtrasProvider } from '../app/MessageExtrasContext';
+import { useNotifications } from '../app/NotificationsContext';
 import { PinsProvider, usePins } from '../app/PinsContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { ChannelMembersDialog } from '../components/chat/ChannelMembersDialog';
@@ -17,7 +19,8 @@ import { useMessageSender } from '../hooks/useMessageSender';
 import { useMessages } from '../hooks/useMessages';
 
 function ChannelView({ channelId }: { channelId: string }) {
-  const { channels, teams, presenter, channelMembers } = useWorkspace();
+  const { me } = useAuth();
+  const { channels, teams, presenter, channelMembers, profiles } = useWorkspace();
   const channel = channels.find(c => c.id === channelId)!;
   const { messages, hasMore, loadMore, append, error: loadError } = useMessages(channelId);
   const [params, setParams] = useSearchParams();
@@ -26,19 +29,33 @@ function ChannelView({ channelId }: { channelId: string }) {
   const title = presenter.title(channel);
   const memberCount = channelMembers.filter(m => m.channel_id === channelId).length;
   const team = teams.find(t => t.id === channel.team_id);
+  const mentionables = useMemo(() => {
+    const ids = new Set(channelMembers.filter(m => m.channel_id === channelId).map(m => m.user_id));
+    const teamIds = new Set(team?.members.map(m => m.user_id));
+    return profiles.filter(p => !p.deactivated_at && p.id !== me?.id && (channel.is_private ? ids.has(p.id) : team ? teamIds.has(p.id) : p.role !== 'guest'));
+  }, [profiles, channelMembers, channelId, channel.is_private, team, me?.id]);
   const threadId = Number(params.get('thread')) || null;
   const pinsOpen = params.get('panel') === 'pins';
   const { canPost, postBlockedReason } = useChannelPermissions(channel);
+  const { markChannelRead } = useNotifications();
+  const lastMessageId = messages.at(-1)?.id ?? null;
   const { pins } = usePins();
 
   const openThread = useCallback((messageId: number) => setParams({ thread: String(messageId) }), [setParams]);
   const closeThread = useCallback(() => setParams({}), [setParams]);
   const togglePins = () => setParams(pinsOpen ? {} : { panel: 'pins' });
 
+  // Zolang het kanaal zichtbaar is en je onderaan zit, tellen nieuwe berichten als gelezen.
   useEffect(() => {
-    document.title = `${title} · RAD Chat`;
-    return () => { document.title = 'RAD Chat'; };
-  }, [title]);
+    if (lastMessageId === null) return;
+    const mark = () => { if (!document.hidden) markChannelRead(channelId, lastMessageId); };
+    const timer = setTimeout(mark, 400);
+    document.addEventListener('visibilitychange', mark);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('visibilitychange', mark);
+    };
+  }, [channelId, lastMessageId, markChannelRead]);
 
   const send = async (text: string, files: File[]) => {
     const sent = await sendMessage(text, files);
@@ -74,7 +91,7 @@ function ChannelView({ channelId }: { channelId: string }) {
         <MessageList title={title} channel={channel} messages={messages} hasMore={hasMore} onLoadMore={() => void loadMore()} onError={setError} onOpenThread={openThread} />
         {(sendError || loadError) && <div className="banner error" role="alert">{sendError || loadError}</div>}
         {canPost
-          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} tools={<GifButton onPick={gif => void sendGif(gif)} />} />
+          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} mentionables={mentionables} tools={<GifButton onPick={gif => void sendGif(gif)} />} />
           : <div className="composer-blocked" role="note"><Icon name="lock" size={16} />{postBlockedReason}</div>}
       </div>
       {threadId !== null && <ThreadPanel key={threadId} channel={channel} rootId={threadId} title={title} onClose={closeThread} />}
