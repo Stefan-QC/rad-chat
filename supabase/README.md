@@ -5,18 +5,18 @@ go through `security definer` functions with `search_path = ''`.
 
 | File | Adds |
 | --- | --- |
-| 001_core.sql | profiles, teams, channels, messages, audit log, first-user-is-admin |
-| 002_games_points_realtime.sql | points, Wordle, RAD Craft, voice sessions, Realtime; domain restriction off |
-| 003_hardening.sql | extra grants and function lock-down |
-| 004_user_settings.sql | per-user settings (theme, notifications) |
-| 005_access_model.sql | roles, private channels, guests, moderators, `can_access_channel` |
-| 006_message_features.sql | threads, reactions, pins, mentions, pasted images (bucket `chat-images`) |
-| 007_notifications.sql | notifications and read state |
-| 008_search.sql | full-text search |
-| 009_workplace.sql | statuses, people directory, announcements |
-| 010_work_tools.sql | polls, tasks, knowledge base, meetings |
-| 011_social.sql | kudos, badges, quiz, coffee rounds (changes the `point_events` source check) |
-| 012_jobs.sql | retention settings and the `jobs_*` functions used by the Python API |
+| 001_core.sql | accounts/profiles, teams, channels, messages, audit log |
+| 002_games_points_realtime.sql | points and leaderboards, Wordle, RAD Craft world, Realtime; domain restriction off |
+| 003_hardening.sql | fixed search_path on two helpers, indexes on foreign keys |
+| 004_user_settings.sql | per-user settings and the function lock-down helper |
+| 005_access_model.sql | guests, deactivation, private channels, direct and group chats, roles per team/channel |
+| 006_message_features.sql | threads, reactions, pins, image and GIF attachments, checked `send_message()` |
+| 007_notifications.sql | notifications and per-channel read state |
+| 008_search.sql | full-text search limited by RLS |
+| 009_workplace.sql | status, work plans, on-call rosters, birthdays and anniversaries |
+| 010_work_tools.sql | polls, tasks, knowledge base, meeting notes |
+| 011_social.sql | kudos, daily quiz, badges, coffee matching, period leaderboards (changes the `point_events` source check) |
+| 012_jobs.sql | `jobs_*` functions, service role only |
 
 ## Status of the live project (`qenndahdvjaeiiwefwws`)
 
