@@ -29,17 +29,19 @@ begin
   perform t.throws(format('select public.add_channel_member(%L, %L)', priv, u3), 'forbidden', 'a channel owner cannot invite a guest');
 
   -- posting rules
-  perform t.throws(format('insert into public.messages (channel_id, user_id, body) values (%L, %L, %L)', ann, u1, 'x'), 'row-level security', 'members cannot post in an announcement channel');
-  insert into public.messages (channel_id, user_id, body) values (gen, u1, 'hallo'), (dm, u1, 'hoi u2'), (priv, u1, 'geheim');
-  perform t.throws(format('insert into public.messages (channel_id, user_id, body) values (%L, %L, %L)', gen, u2, 'gespoofd'), 'row-level security', 'cannot post as somebody else');
+  perform t.throws(format('select public.send_message(%L, %L)', ann, 'x'), 'forbidden', 'members cannot post in an announcement channel');
+  perform public.send_message(gen, 'hallo');
+  perform public.send_message(dm, 'hoi u2');
+  perform public.send_message(priv, 'geheim');
+  perform t.throws(format('insert into public.messages (channel_id, user_id, body) values (%L, %L, %L)', gen, u2, 'gespoofd'), 'permission denied', 'messages cannot be inserted directly, so nobody can post as somebody else');
   perform public.set_channel_member_role(priv, u2, 'readonly');
 
   -- visibility for members, read-only members and outsiders
   perform t.as_user(u2);
   perform t.ok(private.can_access_channel(dm) and private.can_access_channel(grp) and private.can_access_channel(priv), 'invited members see DM, group and private channel');
   perform t.ok((select count(*) from public.messages where channel_id in (dm, priv)) = 2, 'members can read the messages');
-  perform t.throws(format('insert into public.messages (channel_id, user_id, body) values (%L, %L, %L)', priv, u2, 'x'), 'row-level security', 'a read-only member cannot post');
-  insert into public.messages (channel_id, user_id, body) values (dm, u2, 'hoi u1');
+  perform t.throws(format('select public.send_message(%L, %L)', priv, 'x'), 'forbidden', 'a read-only member cannot post');
+  perform public.send_message(dm, 'hoi u1');
   perform t.throws(format('select public.remove_channel_member(%L, %L)', grp, u1), 'forbidden', 'a plain member cannot remove the owner');
 
   -- guests
@@ -55,7 +57,7 @@ begin
 
   -- admins
   perform t.as_user(u5);
-  insert into public.messages (channel_id, user_id, body) values (ann, u5, 'aankondiging');
+  perform public.send_message(ann, 'aankondiging');
   perform t.ok(true, 'an admin can post in an announcement channel');
   perform t.ok(not private.can_access_channel(dm) and not private.can_access_channel(priv), 'an admin cannot read private DMs or channels of others');
 
