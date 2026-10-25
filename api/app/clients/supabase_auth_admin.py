@@ -40,6 +40,16 @@ class SupabaseAuthAdmin(SupabaseClientBase):
         self._check(response)
         return response.json().get("users", [])
 
+    async def get_user(self, user_id: str) -> dict[str, Any]:
+        """Haalt één gebruiker op."""
+        response = await self._send(
+            "GET",
+            f"{self._settings.auth_url}/admin/users/{user_id}",
+            headers=self._service_headers(),
+        )
+        self._check_user_response(response)
+        return response.json()
+
     async def create_user(
         self, email: str, password: str, display_name: str | None
     ) -> dict[str, Any]:

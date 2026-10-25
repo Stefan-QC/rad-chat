@@ -56,6 +56,18 @@ async def test_supabase_auth_admin__list_users_returns_users(mock_http) -> None:
     assert route.calls.last.request.url.params["page"] == "2"
 
 
+async def test_supabase_auth_admin__get_user_returns_user(mock_http) -> None:
+    mock_http.get(f"{AUTH}/admin/users/u1").respond(200, json={"id": "u1"})
+    assert await make_admin().get_user("u1") == {"id": "u1"}
+
+
+async def test_supabase_auth_admin__get_user_maps_404(mock_http) -> None:
+    mock_http.get(f"{AUTH}/admin/users/u1").respond(404)
+    with pytest.raises(ApiError) as info:
+        await make_admin().get_user("u1")
+    assert info.value.status_code == 404
+
+
 async def test_supabase_auth_admin__create_user_sends_confirmed_user(mock_http) -> None:
     route = mock_http.post(f"{AUTH}/admin/users").respond(200, json={"id": "u1"})
     user = await make_admin().create_user("a@b.nl", "pw-long-enough", "Ann")
