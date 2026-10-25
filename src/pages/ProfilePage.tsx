@@ -5,6 +5,7 @@ import { useServices } from '../app/ServicesContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { Avatar } from '../components/Avatar';
 import { PageHeader } from '../components/PageHeader';
+import { Switch } from '../components/ui/Switch';
 import { messageOf } from '../core/AppError';
 import type { Profile } from '../core/types';
 import { useAsync } from '../hooks/useAsync';
@@ -57,6 +58,10 @@ function EditProfile({ profile }: { profile: Profile }) {
   const [jobTitle, setJobTitle] = useState(profile.job_title ?? '');
   const [bio, setBio] = useState(profile.bio ?? '');
   const [color, setColor] = useState(profile.avatar_color);
+  const [birthMonth, setBirthMonth] = useState(profile.birth_month ?? 0);
+  const [birthDay, setBirthDay] = useState(profile.birth_day ?? 0);
+  const [startDate, setStartDate] = useState(profile.start_date ?? '');
+  const [coffee, setCoffee] = useState(profile.coffee_opt_in);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
 
@@ -65,7 +70,7 @@ function EditProfile({ profile }: { profile: Profile }) {
     setSaving(true);
     setNotice(null);
     try {
-      await profiles.updateMine(profile.id, { display_name: displayName, job_title: jobTitle, bio, avatar_color: color });
+      await profiles.updateMine(profile.id, { display_name: displayName, job_title: jobTitle, bio, avatar_color: color, birth_month: birthMonth || null, birth_day: birthMonth ? birthDay || 1 : null, start_date: startDate || null, coffee_opt_in: coffee });
       await reloadMe();
       setNotice({ kind: 'ok', text: 'Profile saved.' });
     } catch (e) {
@@ -103,6 +108,23 @@ function EditProfile({ profile }: { profile: Profile }) {
             ))}
           </div>
         </div>
+        <div className="two-fields">
+          <label>Birthday (day and month, no year)
+            <span className="password-row">
+              <select className="text-input" value={birthMonth} onChange={e => setBirthMonth(Number(e.target.value))} aria-label="Birthday month">
+                <option value={0}>Month</option>
+                {Array.from({ length: 12 }, (_, i) => <option key={i} value={i + 1}>{new Date(2000, i, 1).toLocaleDateString([], { month: 'long' })}</option>)}
+              </select>
+              <select className="text-input" value={birthDay || 1} disabled={!birthMonth} onChange={e => setBirthDay(Number(e.target.value))} aria-label="Birthday day">
+                {Array.from({ length: 31 }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
+              </select>
+            </span>
+          </label>
+          <label>First day at the company
+            <input className="text-input" type="date" value={startDate} max={new Date().toISOString().slice(0, 10)} onChange={e => setStartDate(e.target.value)} />
+          </label>
+        </div>
+        <Switch label="Coffee matching" description="Get paired with a random colleague for a coffee chat every week." checked={coffee} onChange={setCoffee} />
         {notice && <div className={`banner ${notice.kind}`} role="status">{notice.text}</div>}
         <div className="actions"><button className="btn" disabled={saving || !displayName.trim()}>{saving ? 'Saving…' : 'Save changes'}</button></div>
       </form>
