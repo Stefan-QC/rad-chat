@@ -1,4 +1,5 @@
 // Draait de migraties en SQL-tests op een tijdelijke lokale Postgres (geen Supabase-project nodig).
+import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -18,6 +19,28 @@ const sorted = (dir, suffix) => readdirSync(dir).filter(name => name.endsWith(su
 
 let failed = 0;
 let passed = 0;
+
+/** Het hoofdproces van Postgres, zodat het ook op Windows zeker stopt en de tijdelijke map weg kan. */
+function postmasterPid() {
+  try {
+    return Number(readFileSync(join(dataDir, 'postmaster.pid'), 'utf8').split(/\r?\n/)[0]) || null;
+  } catch {
+    return null;
+  }
+}
+
+async function stopDatabase() {
+  const pid = postmasterPid();
+  // Op Windows blijven werkprocessen anders achter, dus eerst de hele processtructuur stoppen.
+  if (pid && process.platform === 'win32') {
+    try { execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'ignore' }); } catch { /* al gestopt */ }
+  }
+  await server.stop().catch(() => undefined);
+  if (pid && process.platform !== 'win32') {
+    try { process.kill(pid, 'SIGTERM'); } catch { /* al gestopt */ }
+  }
+  rmSync(dataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+}
 
 async function main() {
   await server.initialise();
@@ -58,8 +81,7 @@ try {
   failed++;
   console.error(error);
 } finally {
-  await server.stop().catch(() => undefined);
-  rmSync(dataDir, { recursive: true, force: true });
+  await stopDatabase();
 }
 console.log(`\n${passed} checks passed, ${failed} test file(s) failed`);
 process.exit(failed ? 1 : 0);
