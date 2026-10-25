@@ -16,7 +16,7 @@ from app.errors import (
     handle_unexpected_error,
     handle_validation_error,
 )
-from app.routers import admin_export, admin_settings, admin_users, gifs, health
+from app.routers import admin_export, admin_settings, admin_users, gifs, health, jobs
 from app.security.middleware import BodySizeLimitMiddleware, SecurityHeadersMiddleware
 
 
@@ -42,11 +42,15 @@ def add_security_middleware(app: FastAPI, settings: Settings) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Sluit bij het afsluiten de resources van de container."""
+    """Start de scheduler indien ingeschakeld en sluit bij het afsluiten alles netjes af."""
     container: Container = app.state.container
+    if container.scheduler is not None:
+        container.scheduler.start()
     try:
         yield
     finally:
+        if container.scheduler is not None:
+            container.scheduler.shutdown()
         await container.aclose()
 
 
@@ -71,4 +75,5 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     app.include_router(admin_users.router)
     app.include_router(admin_export.router)
     app.include_router(admin_settings.router)
+    app.include_router(jobs.router)
     return app

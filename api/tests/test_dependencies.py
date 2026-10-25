@@ -5,7 +5,7 @@ from starlette.requests import Request
 
 from app.errors import ApiError, handle_api_error
 from app.main import create_app
-from app.security.dependencies import current_user, extract_bearer, get_container, require_admin
+from app.security.dependencies import current_user, get_container, require_admin
 from app.security.models import CurrentUser
 from tests.helpers import ADMIN_ID, MEMBER_ID, make_container, mock_login
 
@@ -36,18 +36,6 @@ def test_dependencies__get_container_reads_app_state() -> None:
     app.state.container = "box"
     request = Request({"type": "http", "headers": [], "app": app})
     assert get_container(request) == "box"
-
-
-def test_dependencies__extract_bearer_returns_token() -> None:
-    assert extract_bearer(fake_request({"Authorization": "Bearer abc"})) == "abc"
-
-
-@pytest.mark.parametrize("header", ["", "Basic abc", "Bearer ", "abc"])
-def test_dependencies__extract_bearer_rejects_bad_header(header: str) -> None:
-    headers = {"Authorization": header} if header else {}
-    with pytest.raises(ApiError) as info:
-        extract_bearer(fake_request(headers))
-    assert info.value.status_code == 401
 
 
 async def test_dependencies__current_user_requires_token() -> None:

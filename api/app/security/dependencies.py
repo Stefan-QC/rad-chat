@@ -4,21 +4,13 @@ from fastapi import Depends, Request
 
 from app.container import Container
 from app.errors import ApiError
+from app.security.bearer import extract_bearer
 from app.security.models import CurrentUser
 
 
 def get_container(request: Request) -> Container:
     """Geeft de container van de applicatie terug."""
     return request.app.state.container
-
-
-def extract_bearer(request: Request) -> str:
-    """Haalt het bearer token uit de Authorization-header."""
-    header = request.headers.get("authorization", "")
-    scheme, _, token = header.partition(" ")
-    if scheme.lower() != "bearer" or not token.strip():
-        raise ApiError(401, "Missing bearer token")
-    return token.strip()
 
 
 async def current_user(

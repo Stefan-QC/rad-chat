@@ -23,6 +23,15 @@ def test_config__normalize_supabase_url_strips_trailing_slash() -> None:
     assert make_settings(supabase_url=" https://x.test/ ").supabase_url == "https://x.test"
 
 
+def test_config__validate_timezone_accepts_known_zone() -> None:
+    assert make_settings(timezone="UTC").timezone == "UTC"
+
+
+def test_config__validate_timezone_rejects_unknown_zone() -> None:
+    with pytest.raises(ValidationError):
+        make_settings(timezone="Mars/Olympus")
+
+
 def test_config__origins_splits_and_drops_wildcard() -> None:
     settings = make_settings(allowed_origins="http://a.test/, *, http://b.test ,")
     assert settings.origins == ["http://a.test", "http://b.test"]

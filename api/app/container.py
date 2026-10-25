@@ -12,6 +12,9 @@ from app.clients.supabase_rest import SupabaseRest
 from app.config import Settings
 from app.gifs.gif_factory import GifProviderFactory
 from app.gifs.gif_service import GifService
+from app.jobs.job_runner import JobRunner
+from app.jobs.job_scheduler import JobScheduler
+from app.security.job_auth import JobAuthenticator
 from app.security.rate_limiter import RateLimiter
 from app.security.token_verifier import SupabaseTokenVerifier
 
@@ -30,6 +33,11 @@ class Container:
         self.user_admin = UserAdminService(self.auth_admin, self.rest, self.audit)
         self.export_service = ExportService(self.rest, self.audit)
         self.retention_service = RetentionSettingsService(self.rest, self.audit)
+        self.job_runner = JobRunner(self.rest, self.audit)
+        self.job_auth = JobAuthenticator(settings, self.verifier, self.rate_limiter)
+        self.scheduler = (
+            JobScheduler(self.job_runner, settings.timezone) if settings.enable_scheduler else None
+        )
         self.gif_service = GifService(GifProviderFactory.create(settings, self.http))
 
     async def aclose(self) -> None:

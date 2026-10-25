@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -32,6 +33,16 @@ class Settings(BaseSettings):
     def normalize_supabase_url(cls, value: str) -> str:
         """Verwijdert witruimte en een afsluitende slash van de URL."""
         return value.strip().rstrip("/")
+
+    @field_validator("timezone")
+    @classmethod
+    def validate_timezone(cls, value: str) -> str:
+        """Controleert dat de tijdzone bestaat."""
+        try:
+            ZoneInfo(value)
+        except (ZoneInfoNotFoundError, ValueError):
+            raise ValueError("Unknown timezone") from None
+        return value
 
     @property
     def origins(self) -> list[str]:

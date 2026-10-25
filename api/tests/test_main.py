@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from app.main import configure_logging, create_app, lifespan
@@ -25,6 +26,19 @@ async def test_main__lifespan_closes_container() -> None:
     async with lifespan(app):
         assert not container.http.is_closed
     assert container.http.is_closed
+
+
+async def test_main__lifespan_starts_and_stops_scheduler_when_enabled() -> None:
+    container = make_container(enable_scheduler=True)
+    app = create_app(container.settings, container)
+    async with lifespan(app):
+        assert container.scheduler.job_ids() == ["daily", "weekly"]
+    await asyncio.sleep(0.05)
+    assert not container.scheduler._scheduler.running
+
+
+def test_main__create_app_has_no_scheduler_by_default() -> None:
+    assert make_container().scheduler is None
 
 
 async def test_main__add_security_middleware_adds_headers_and_cors() -> None:
