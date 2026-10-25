@@ -2,6 +2,7 @@ import type { AppConfig } from '../config/AppConfig';
 import { ThemeService } from '../core/ThemeService';
 import { createDb, type Db } from '../core/supabase';
 import { ActivityService } from './ActivityService';
+import { AdminService } from './AdminService';
 import { ApiClient } from './ApiClient';
 import { AttachmentService } from './AttachmentService';
 import { AuditService } from './AuditService';
@@ -28,6 +29,7 @@ export class Services {
   readonly db: Db;
   readonly api: ApiClient;
   readonly gifs: GifService;
+  readonly admin: AdminService;
   readonly theme: ThemeService;
   readonly settings: SettingsService;
   readonly auth: AuthService;
@@ -53,6 +55,7 @@ export class Services {
     this.db = createDb(config);
     this.api = new ApiClient(this.db);
     this.gifs = new GifService(this.api);
+    this.admin = new AdminService(this.api);
     this.theme = new ThemeService();
     this.settings = new SettingsService(this.db);
     this.auth = new AuthService(this.db);
