@@ -3,6 +3,8 @@
 import httpx
 
 from app.admin.audit_service import AuditService
+from app.admin.export_service import ExportService
+from app.admin.retention_service import RetentionSettingsService
 from app.admin.user_service import UserAdminService
 from app.clients.http import build_http_client
 from app.clients.supabase_auth_admin import SupabaseAuthAdmin
@@ -26,6 +28,8 @@ class Container:
         self.rate_limiter = RateLimiter(settings.rate_limit_per_minute)
         self.audit = AuditService(self.rest)
         self.user_admin = UserAdminService(self.auth_admin, self.rest, self.audit)
+        self.export_service = ExportService(self.rest, self.audit)
+        self.retention_service = RetentionSettingsService(self.rest, self.audit)
         self.gif_service = GifService(GifProviderFactory.create(settings, self.http))
 
     async def aclose(self) -> None:
