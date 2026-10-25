@@ -131,6 +131,7 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
           <Icon name="cube" />RAD Craft<span className="tag">/game</span>
         </NavLink>
         <div className="cat">Workspace</div>
+        <NavLink to="/people" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="calendar" />Who is where</NavLink>
         <NavLink to="/teams" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="users" />Teams</NavLink>
         <NavLink to="/leaderboard" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="trophy" />Leaderboard</NavLink>
         {me?.role === 'admin' && (
