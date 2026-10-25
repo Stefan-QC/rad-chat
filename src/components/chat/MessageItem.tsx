@@ -6,6 +6,8 @@ import { formatTime } from '../../core/format';
 import type { Message } from '../../core/types';
 import { Icon } from '../Icon';
 import { RichText } from '../RichText';
+import { EmojiPicker } from './EmojiPicker';
+import { ReactionBar } from './ReactionBar';
 
 interface MessageItemProps {
   message: Message;
@@ -17,8 +19,9 @@ interface MessageItemProps {
 /** Eén bericht, met bewerken en verwijderen voor de eigenaar (en verwijderen voor admins). */
 export function MessageItem({ message, myUsername, onError, onOpenThread }: MessageItemProps) {
   const { me } = useAuth();
-  const { messages } = useServices();
+  const { messages, reactions } = useServices();
   const [editing, setEditing] = useState(false);
+  const [pickerAt, setPickerAt] = useState<DOMRect | null>(null);
   const [draft, setDraft] = useState(message.body);
   const deleted = message.deleted_at !== null;
   const mine = message.user_id === me?.id;
@@ -61,17 +64,22 @@ export function MessageItem({ message, myUsername, onError, onOpenThread }: Mess
       <time>{formatTime(message.created_at)}</time>
       {deleted ? <em>message deleted</em> : <RichText text={message.body} me={myUsername} />}
       {message.edited_at && !deleted && <small className="edited"> (edited)</small>}
+      {!deleted && <ReactionBar messageId={message.id} />}
       {message.reply_count > 0 && onOpenThread && (
         <button className="reply-link" onClick={() => onOpenThread(message.id)}>
           <Icon name="chat" size={14} />{message.reply_count} {message.reply_count === 1 ? 'reply' : 'replies'}
         </button>
       )}
-      {!deleted && (mine || me?.role === 'admin' || onOpenThread) && (
+      {!deleted && (
         <span className="msg-actions">
+          <button title="Add reaction" aria-label="Add reaction" onClick={event => setPickerAt(event.currentTarget.getBoundingClientRect())}><Icon name="smile" size={16} /></button>
           {onOpenThread && !message.parent_id && <button title="Reply in thread" aria-label="Reply in thread" onClick={() => onOpenThread(message.id)}><Icon name="chat" size={16} /></button>}
           {mine && <button title="Edit" aria-label="Edit message" onClick={() => { setDraft(message.body); setEditing(true); }}><Icon name="edit" size={16} /></button>}
           {(mine || me?.role === 'admin') && <button title="Delete" aria-label="Delete message" onClick={() => window.confirm('Delete this message?') && void run(() => messages.remove(message.id))}><Icon name="trash" size={16} /></button>}
         </span>
+      )}
+      {pickerAt && (
+        <EmojiPicker anchor={pickerAt} onPick={emoji => void run(async () => { await reactions.toggle(message.id, emoji); })} onClose={() => setPickerAt(null)} />
       )}
     </div>
   );

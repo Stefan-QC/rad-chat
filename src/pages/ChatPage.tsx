@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { MessageExtrasProvider } from '../app/MessageExtrasContext';
 import { useServices } from '../app/ServicesContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { ChannelMembersDialog } from '../components/chat/ChannelMembersDialog';
@@ -71,5 +72,9 @@ export function ChatPage() {
   const channel = channels.find(c => c.id === channelId);
   if (channels.length === 0) return <div className="page-loading">Loading…</div>;
   if (!channel || channel.kind === 'voice') return <Navigate to="/" replace />;
-  return <ChannelView key={channel.id} channelId={channel.id} />;
+  return (
+    <MessageExtrasProvider>
+      <ChannelView key={channel.id} channelId={channel.id} />
+    </MessageExtrasProvider>
+  );
 }
