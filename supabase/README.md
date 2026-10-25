@@ -17,10 +17,11 @@ go through `security definer` functions with `search_path = ''`.
 | 010_work_tools.sql | polls, tasks, knowledge base, meeting notes |
 | 011_social.sql | kudos, daily quiz, badges, coffee matching, period leaderboards (changes the `point_events` source check) |
 | 012_jobs.sql | `jobs_*` functions, service role only |
+| 013_typing.sql | Realtime topic `typing:<channel id>` for the typing indicator |
 
 ## Status of the live project (`qenndahdvjaeiiwefwws`)
 
-001-004 are applied. **005-012 are not applied yet**: run them in order, otherwise the new frontend pages fail on missing tables.
+001-012 are applied. **013 must still be run** (typing indicator).
 
 ## Tests
 
