@@ -245,3 +245,32 @@ export interface Celebration {
   on_date: string;
   years: number | null;
 }
+
+export interface Poll {
+  id: number;
+  message_id: number;
+  channel_id: string;
+  question: string;
+  multiple: boolean;
+  closes_at: string | null;
+  created_by: string | null;
+}
+
+export interface PollOption {
+  id: number;
+  poll_id: number;
+  label: string;
+  position: number;
+}
+
+export interface PollVote {
+  poll_id: number;
+  option_id: number;
+  user_id: string;
+}
+
+export interface PollData {
+  poll: Poll;
+  options: PollOption[];
+  votes: PollVote[];
+}
