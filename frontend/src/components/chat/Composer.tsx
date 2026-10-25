@@ -15,10 +15,13 @@ interface ComposerProps {
   tools?: ReactNode;
   /** Collega's die met @ genoemd kunnen worden in dit kanaal. */
   mentionables?: Profile[];
+  /** Wordt aangeroepen terwijl iemand typt, en `onStopTyping` zodra het veld leeg is of het bericht weg is. */
+  onTyping?: () => void;
+  onStopTyping?: () => void;
 }
 
 /** Invoerveld onderaan: Enter verstuurt, Shift+Enter maakt een nieuwe regel en Ctrl+V plakt een schermafbeelding. */
-export function Composer({ channelName, conversation = false, placeholder, onSend, tools, mentionables = [] }: ComposerProps) {
+export function Composer({ channelName, conversation = false, placeholder, onSend, tools, mentionables = [], onTyping, onStopTyping }: ComposerProps) {
   const toast = useToast();
   const [text, setText] = useState('');
   const [files, setFiles] = useState<File[]>([]);
@@ -47,6 +50,7 @@ export function Composer({ channelName, conversation = false, placeholder, onSen
     const pending = files;
     setText('');
     setFiles([]);
+    onStopTyping?.();
     requestAnimationFrame(resize);
     try {
       await onSend(value, pending);
@@ -134,7 +138,7 @@ export function Composer({ channelName, conversation = false, placeholder, onSen
           value={text}
           maxLength={2000}
           placeholder={placeholder ?? `Message ${conversation ? '' : '#'}${channelName}`}
-          onChange={event => { setText(event.target.value); setCaret(event.target.selectionStart); setDismissed(false); setSuggestIndex(0); resize(); }}
+          onChange={event => { setText(event.target.value); if (event.target.value.trim()) onTyping?.(); else onStopTyping?.(); setCaret(event.target.selectionStart); setDismissed(false); setSuggestIndex(0); resize(); }}
           onSelect={event => setCaret(event.currentTarget.selectionStart)}
           onKeyDown={onKeyDown}
           onPaste={onPaste}

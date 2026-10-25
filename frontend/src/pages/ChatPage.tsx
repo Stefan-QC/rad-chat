@@ -10,6 +10,7 @@ import { Composer } from '../components/chat/Composer';
 import { ComposerTools } from '../components/chat/ComposerTools';
 import { MessageList } from '../components/chat/MessageList';
 import { PinnedPanel } from '../components/chat/PinnedPanel';
+import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
 import { Icon } from '../components/Icon';
 import { PageHeader } from '../components/PageHeader';
@@ -17,6 +18,7 @@ import type { GifItem } from '../services/GifService';
 import { useChannelPermissions } from '../hooks/useChannelPermissions';
 import { useMessageSender } from '../hooks/useMessageSender';
 import { useMessages } from '../hooks/useMessages';
+import { useTyping } from '../hooks/useTyping';
 
 function ChannelView({ channelId }: { channelId: string }) {
   const { me } = useAuth();
@@ -26,6 +28,7 @@ function ChannelView({ channelId }: { channelId: string }) {
   const [params, setParams] = useSearchParams();
   const { send: sendMessage, error: sendError, setError } = useMessageSender(channelId);
   const [showMembers, setShowMembers] = useState(false);
+  const { names: typingNames, notifyTyping, notifyStopped } = useTyping(channelId);
   const title = presenter.title(channel);
   const memberCount = channelMembers.filter(m => m.channel_id === channelId).length;
   const team = teams.find(t => t.id === channel.team_id);
@@ -90,8 +93,9 @@ function ChannelView({ channelId }: { channelId: string }) {
         {showMembers && <ChannelMembersDialog channel={channel} onClose={() => setShowMembers(false)} />}
         <MessageList title={title} channel={channel} messages={messages} hasMore={hasMore} onLoadMore={() => void loadMore()} onError={setError} onOpenThread={openThread} />
         {(sendError || loadError) && <div className="banner error" role="alert">{sendError || loadError}</div>}
+        <TypingIndicator names={typingNames} />
         {canPost
-          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} mentionables={mentionables} tools={<ComposerTools channelId={channelId} onGif={gif => void sendGif(gif)} />} />
+          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} mentionables={mentionables} onTyping={notifyTyping} onStopTyping={notifyStopped} tools={<ComposerTools channelId={channelId} onGif={gif => void sendGif(gif)} />} />
           : <div className="composer-blocked" role="note"><Icon name="lock" size={16} />{postBlockedReason}</div>}
       </div>
       {threadId !== null && <ThreadPanel key={threadId} channel={channel} rootId={threadId} title={title} onClose={closeThread} />}
