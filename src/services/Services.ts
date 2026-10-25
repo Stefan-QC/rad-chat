@@ -17,6 +17,7 @@ import { NotificationService } from './NotificationService';
 import { PinService } from './PinService';
 import { ProfileService } from './ProfileService';
 import { ReactionService } from './ReactionService';
+import { SearchService } from './SearchService';
 import { SettingsService } from './SettingsService';
 import { TeamService } from './TeamService';
 import { WordleService } from './WordleService';
@@ -37,6 +38,7 @@ export class Services {
   readonly attachments: AttachmentService;
   readonly pins: PinService;
   readonly notifications: NotificationService;
+  readonly search: SearchService;
   readonly teams: TeamService;
   readonly leaderboard: LeaderboardService;
   readonly activity: ActivityService;
@@ -61,6 +63,7 @@ export class Services {
     this.attachments = new AttachmentService(this.db);
     this.pins = new PinService(this.db);
     this.notifications = new NotificationService(this.db);
+    this.search = new SearchService(this.db);
     this.teams = new TeamService(this.db);
     this.leaderboard = new LeaderboardService(this.db);
     this.activity = new ActivityService(this.db);
