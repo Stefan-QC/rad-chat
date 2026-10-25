@@ -130,6 +130,9 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
         <NavLink to="/wordle" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="grid" />RAD Wordle<span className="tag">/wordle</span>
         </NavLink>
+        <NavLink to="/quiz" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
+          <Icon name="bulb" />Daily quiz
+        </NavLink>
         <NavLink to="/craft" className="chan">
           <Icon name="cube" />RAD Craft<span className="tag">/game</span>
         </NavLink>
@@ -139,6 +142,7 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
         <NavLink to="/meetings" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="notes" />Meetings</NavLink>
         <NavLink to="/people" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="calendar" />Who is where</NavLink>
         <NavLink to="/teams" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="users" />Teams</NavLink>
+        <NavLink to="/kudos" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="star" />Kudos</NavLink>
         <NavLink to="/leaderboard" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="trophy" />Leaderboard</NavLink>
         {me?.role === 'admin' && (
           <NavLink to="/admin" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="shield" />Admin</NavLink>
