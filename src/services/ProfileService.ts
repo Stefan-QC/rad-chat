@@ -14,11 +14,14 @@ export class ProfileService {
   }
 
   async updateMine(userId: string, patch: ProfilePatch): Promise<Profile> {
-    const clean: ProfilePatch = {
+    const clean: Record<string, unknown> = {
       display_name: patch.display_name.trim(),
       job_title: patch.job_title?.trim() || null,
       bio: patch.bio?.trim() || null,
       avatar_color: patch.avatar_color,
+      ...(patch.birth_month !== undefined ? { birth_month: patch.birth_month, birth_day: patch.birth_day ?? null } : {}),
+      ...(patch.start_date !== undefined ? { start_date: patch.start_date || null } : {}),
+      ...(patch.coffee_opt_in !== undefined ? { coffee_opt_in: patch.coffee_opt_in } : {}),
     };
     return unwrap(await this.db.from('profiles').update(clean).eq('id', userId).select().single());
   }

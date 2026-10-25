@@ -21,3 +21,7 @@ export function formatDuration(startIso: string, endIso: string | null): string 
   const minutes = Math.floor(seconds / 60);
   return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : minutes > 0 ? `${minutes}m ${seconds % 60}s` : `${seconds}s`;
 }
+
+/** Datum als YYYY-MM-DD in de lokale tijdzone, zoals de database die verwacht. */
+export const isoDay = (date: Date): string =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
