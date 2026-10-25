@@ -1,5 +1,11 @@
-node_modules
-dist
-.env.local
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/.pytest_cache
+.env
+.env.*
 certs
 supabase
+.git
+.claude

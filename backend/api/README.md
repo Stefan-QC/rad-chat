@@ -4,12 +4,11 @@ Python backend (FastAPI) for RAD Chat. It adds server-side features next to the 
 
 ## Setup
 
+You normally do not run this by hand: `npm run setup` creates the Python environment and `npm start` starts the API next to the Node host, with the settings from the `.env` file in the project root. To run it on its own:
+
 ```bash
-cd api
-python -m venv .venv
-.venv\Scripts\activate        # Windows (Linux/macOS: source .venv/bin/activate)
-pip install -r requirements-dev.txt
-cp .env.example .env          # fill in the values
+cd backend/api
+.venv/Scripts/activate        # Windows (Linux/macOS: source .venv/bin/activate)
 uvicorn app.main:app --port 8000
 ```
 
@@ -29,7 +28,6 @@ Python 3.11 or newer is required (developed on 3.14, the Docker image uses 3.12)
 | `TIMEZONE` | `Europe/Amsterdam` | Timezone of the schedule |
 | `RATE_LIMIT_PER_MINUTE` | `60` | Per-user request budget (token bucket) |
 | `MAX_BODY_BYTES` | `65536` | Maximum request body size |
-| `PORT` | `8000` | Port (used by your process manager; the Docker CMD uses 8000) |
 
 ## Endpoints
 
@@ -78,8 +76,7 @@ KLIPY parsing is best-effort. The structure of the `files` object is not documen
 ## Tests
 
 ```bash
-cd api
-pytest -q
+npm run test:api      # from the project root
 ```
 
 All HTTP is mocked with `respx`; there is no network access. `tests/test_function_coverage.py` fails and lists any function or method in `app/` that has no test named `test_<module>__<function>...`.
@@ -90,7 +87,4 @@ The Node host that serves the React app proxies `/api/*` to this service (for ex
 
 ## Docker
 
-```bash
-docker build -t rad-chat-api api
-docker run --env-file api/.env -p 8000:8000 rad-chat-api
-```
+The root `Dockerfile` builds one image with the frontend, the Node host and this API (see the main README).

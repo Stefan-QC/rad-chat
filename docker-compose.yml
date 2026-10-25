@@ -1,38 +1,8 @@
-# docker compose up --build   (reads SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY from .env)
+# docker compose up --build   (leest de instellingen uit .env)
 services:
-  web:
-    build:
-      context: .
-      args:
-        VITE_SUPABASE_URL: ${SUPABASE_URL}
-        VITE_SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
+  rad-chat:
+    build: .
+    env_file: .env
     ports:
       - "${PORT:-3000}:3000"
-    environment:
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
-      API_URL: http://api:8000
-    depends_on:
-      - api
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-
-  api:
-    build: ./api
-    environment:
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
-      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-      GIF_PROVIDER: ${GIF_PROVIDER:-giphy}
-      GIPHY_API_KEY: ${GIPHY_API_KEY:-}
-      KLIPY_API_KEY: ${KLIPY_API_KEY:-}
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
