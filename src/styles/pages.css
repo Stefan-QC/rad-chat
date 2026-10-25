@@ -11,14 +11,14 @@
 .av.xs { width: 24px; height: 24px; font-size: 11px; }
 .av.md { width: 40px; height: 40px; }
 .av.lg { width: 72px; height: 72px; font-size: 30px; }
-.av .dot.off { background: #9aa0a6; }
+.av .dot.off { background: var(--offline); }
 .av.xs .dot { display: none; }
 
 /* zijbalk */
 a.chan, a.rail-btn { text-decoration: none; }
 .voice-bar .vb-error { color: var(--red); }
 .userbar-me { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-align: left; color: inherit; border-radius: 8px; }
-.userbar-me:hover { background: #2e2e2e; }
+.userbar-me:hover { background: var(--rail-hover); }
 .userbar-me .who { min-width: 0; }
 .userbar .iconbtn svg { width: 18px; height: 18px; }
 
@@ -44,9 +44,8 @@ a.chan, a.rail-btn { text-decoration: none; }
 .load-more { align-self: center; margin: 4px 0 8px; padding: 6px 14px; border-radius: 16px; background: var(--input); font-weight: 700; font-size: 13px; }
 .load-more:hover { background: var(--red-soft); }
 .banner { padding: 10px 14px; border-radius: 10px; font-size: 14px; font-weight: 700; }
-.banner.error { background: #fde8e8; color: #9b1c1c; }
-.banner.ok { background: #e3f6ec; color: #16794a; }
-@media (prefers-color-scheme: dark) { .banner.error { background: #4a1517; color: #fed7d7; } .banner.ok { background: #153523; color: #b7f0cf; } }
+.banner.error { background: var(--danger-bg); color: var(--danger-text); }
+.banner.ok { background: var(--ok-bg); color: var(--ok-text); }
 #composer + .banner, .banner[role="alert"] { margin: 0 16px 8px; }
 
 /* inloggen */

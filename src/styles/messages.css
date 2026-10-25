@@ -22,8 +22,7 @@
 .line a { color: var(--red); text-decoration: none; }
 .line a:hover { text-decoration: underline; }
 .line code { background: var(--input); border-radius: 5px; padding: 1px 5px; font-size: .9em; }
-.mention { background: var(--mention-bg); color: var(--red-dark); font-weight: 700; padding: 0 3px; border-radius: 4px; }
-@media (prefers-color-scheme: dark) { .mention { color: #fed7d7; } }
+.mention { background: var(--mention-bg); color: var(--mention-text); font-weight: 700; padding: 0 3px; border-radius: 4px; }
 .mention.me { background: var(--red); color: #fff; }
 
 .sys { display: flex; align-items: center; gap: 10px; padding: 3px 16px; margin-top: 10px; color: var(--muted); font-size: 13px; }

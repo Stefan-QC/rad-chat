@@ -34,5 +34,5 @@
 .userbar .who b { display: block; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .userbar .who small { color: #b9b0b0; font-size: 12px; }
 .userbar .iconbtn { color: #b9b0b0; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; }
-.userbar .iconbtn:hover { background: #2e2e2e; color: #fff; }
+.userbar .iconbtn:hover { background: var(--rail-hover); color: #fff; }
 .userbar .av .dot { border-color: var(--rail); }

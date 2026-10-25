@@ -1,4 +1,5 @@
 import type { AppConfig } from '../config/AppConfig';
+import { ThemeService } from '../core/ThemeService';
 import { createDb, type Db } from '../core/supabase';
 import { ActivityService } from './ActivityService';
 import { AuditService } from './AuditService';
@@ -17,6 +18,7 @@ import { VoiceHub } from './voice/VoiceHub';
 /** Bouwt alle services één keer op en deelt ze met de hele app. */
 export class Services {
   readonly db: Db;
+  readonly theme: ThemeService;
   readonly auth: AuthService;
   readonly profiles: ProfileService;
   readonly channels: ChannelService;
@@ -33,6 +35,7 @@ export class Services {
 
   constructor(config: AppConfig) {
     this.db = createDb(config);
+    this.theme = new ThemeService();
     this.auth = new AuthService(this.db);
     this.profiles = new ProfileService(this.db);
     this.channels = new ChannelService(this.db);
