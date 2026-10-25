@@ -12,7 +12,7 @@ const only = process.argv.slice(2);
 const port = 54000 + Math.floor(Math.random() * 900);
 const dataDir = mkdtempSync(join(tmpdir(), 'radchat-pg-'));
 
-const server = new EmbeddedPostgres({ databaseDir: dataDir, user: 'postgres', password: 'postgres', port, persistent: false });
+const server = new EmbeddedPostgres({ databaseDir: dataDir, user: 'postgres', password: 'postgres', port, persistent: false, initdbFlags: ['--encoding=UTF8', '--locale=C'] });
 const read = (dir, name) => readFileSync(join(dir, name), 'utf8');
 const sorted = (dir, suffix) => readdirSync(dir).filter(name => name.endsWith(suffix)).sort();
 
