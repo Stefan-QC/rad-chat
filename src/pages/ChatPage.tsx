@@ -31,7 +31,8 @@ function ChannelView({ channelId }: { channelId: string }) {
   const send = async (text: string) => {
     try {
       setError(null);
-      append(await service.send(channelId, me!.id, text));
+      const sent = await service.send(channelId, text);
+      if (sent.parent_id === null) append(sent);
     } catch (e) {
       setError(messageOf(e));
     }

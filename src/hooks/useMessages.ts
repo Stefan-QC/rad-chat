@@ -20,8 +20,12 @@ export function useMessages(channelId: string) {
     setLoading(true);
     setError(null);
     const stop = service.subscribe(channelId, {
-      onInsert: message => setMessages(list => (list.some(m => m.id === message.id) ? list : [...list, message].sort(byId))),
-      onUpdate: message => setMessages(list => list.map(m => (m.id === message.id ? message : m))),
+      onInsert: message => {
+        if (message.parent_id === null) setMessages(list => (list.some(m => m.id === message.id) ? list : [...list, message].sort(byId)));
+      },
+      onUpdate: message => {
+        if (message.parent_id === null) setMessages(list => list.map(m => (m.id === message.id ? message : m)));
+      },
     });
     service
       .listPage(channelId)

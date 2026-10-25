@@ -41,7 +41,7 @@ export class CraftSession {
     const handle = await startGame({
       name: this.me.display_name,
       bus: this.bus,
-      sendChat: (text: string) => messages.send(this.chatChannelId, this.me.id, text),
+      sendChat: (text: string) => messages.send(this.chatChannelId, text),
       onExit: () => {
         const closedByUser = !this.stopped;
         this.stop();

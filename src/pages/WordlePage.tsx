@@ -121,7 +121,7 @@ function GameArea({ game, settings, sounds, modalOpen, onFinish, onNewGame, onDa
     if (!general) return;
     const emoji = settings.contrast ? SHARE_EMOJI.contrast : SHARE_EMOJI.normal;
     const grid = state.guesses.map(g => g.marks.map(m => emoji[m]).join('')).join('\n');
-    await messages.send(general.id, me.id, `RAD Wordle ${state.day} ${state.status === 'won' ? state.guesses.length : 'X'}/6\n${grid}`);
+    await messages.send(general.id, `RAD Wordle ${state.day} ${state.status === 'won' ? state.guesses.length : 'X'}/6\n${grid}`);
     setShared(true);
   };
 

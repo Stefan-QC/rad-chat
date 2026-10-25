@@ -46,6 +46,36 @@ export interface Message {
   created_at: string;
   edited_at: string | null;
   deleted_at: string | null;
+  parent_id: number | null;
+  kind: 'text' | 'poll' | 'system';
+  reply_count: number;
+  last_reply_at: string | null;
+  attachment_count: number;
+}
+
+export interface Reaction {
+  message_id: number;
+  user_id: string;
+  emoji: string;
+}
+
+export interface Attachment {
+  id: string;
+  message_id: number;
+  kind: 'image' | 'gif';
+  storage_path: string | null;
+  url: string | null;
+  mime: string | null;
+  width: number | null;
+  height: number | null;
+  size_bytes: number | null;
+}
+
+export interface PinnedMessage {
+  message_id: number;
+  channel_id: string;
+  pinned_by: string | null;
+  pinned_at: string;
 }
 
 export interface Team {
