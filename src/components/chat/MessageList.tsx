@@ -70,7 +70,7 @@ export function MessageList({ title, channel, messages, hasMore, onLoadMore, onE
     previousHeight.current = 0;
   }, [channel.id]);
 
-  useEffect(() => ensure(messages.map(m => m.id)), [messages, ensure]);
+  useEffect(() => ensure(messages), [messages, ensure]);
 
   const groups = groupMessages(messages);
 

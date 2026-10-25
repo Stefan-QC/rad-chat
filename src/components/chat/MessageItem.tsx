@@ -7,6 +7,7 @@ import type { Message } from '../../core/types';
 import { Icon } from '../Icon';
 import { RichText } from '../RichText';
 import { usePins } from '../../app/PinsContext';
+import { AttachmentList } from './AttachmentList';
 import { EmojiPicker } from './EmojiPicker';
 import { ReactionBar } from './ReactionBar';
 
@@ -67,6 +68,7 @@ export function MessageItem({ message, myUsername, onError, onOpenThread }: Mess
       {deleted ? <em>message deleted</em> : <RichText text={message.body} me={myUsername} />}
       {message.edited_at && !deleted && <small className="edited"> (edited)</small>}
       {isPinned(message.id) && !deleted && <small className="pinned-tag"><Icon name="pin" size={12} /> Pinned</small>}
+      {!deleted && message.attachment_count > 0 && <AttachmentList messageId={message.id} />}
       {!deleted && <ReactionBar messageId={message.id} />}
       {message.reply_count > 0 && onOpenThread && (
         <button className="reply-link" onClick={() => onOpenThread(message.id)}>
