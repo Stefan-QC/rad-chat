@@ -11,10 +11,11 @@ interface MessageItemProps {
   message: Message;
   myUsername: string;
   onError: (message: string) => void;
+  onOpenThread?: (messageId: number) => void;
 }
 
 /** Eén bericht, met bewerken en verwijderen voor de eigenaar (en verwijderen voor admins). */
-export function MessageItem({ message, myUsername, onError }: MessageItemProps) {
+export function MessageItem({ message, myUsername, onError, onOpenThread }: MessageItemProps) {
   const { me } = useAuth();
   const { messages } = useServices();
   const [editing, setEditing] = useState(false);
@@ -60,10 +61,16 @@ export function MessageItem({ message, myUsername, onError }: MessageItemProps) 
       <time>{formatTime(message.created_at)}</time>
       {deleted ? <em>message deleted</em> : <RichText text={message.body} me={myUsername} />}
       {message.edited_at && !deleted && <small className="edited"> (edited)</small>}
-      {!deleted && (mine || me?.role === 'admin') && (
+      {message.reply_count > 0 && onOpenThread && (
+        <button className="reply-link" onClick={() => onOpenThread(message.id)}>
+          <Icon name="chat" size={14} />{message.reply_count} {message.reply_count === 1 ? 'reply' : 'replies'}
+        </button>
+      )}
+      {!deleted && (mine || me?.role === 'admin' || onOpenThread) && (
         <span className="msg-actions">
+          {onOpenThread && !message.parent_id && <button title="Reply in thread" aria-label="Reply in thread" onClick={() => onOpenThread(message.id)}><Icon name="chat" size={16} /></button>}
           {mine && <button title="Edit" aria-label="Edit message" onClick={() => { setDraft(message.body); setEditing(true); }}><Icon name="edit" size={16} /></button>}
-          <button title="Delete" aria-label="Delete message" onClick={() => window.confirm('Delete this message?') && void run(() => messages.remove(message.id))}><Icon name="trash" size={16} /></button>
+          {(mine || me?.role === 'admin') && <button title="Delete" aria-label="Delete message" onClick={() => window.confirm('Delete this message?') && void run(() => messages.remove(message.id))}><Icon name="trash" size={16} /></button>}
         </span>
       )}
     </div>
