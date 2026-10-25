@@ -57,10 +57,13 @@ export function MessageList({ title, channel, messages, hasMore, onLoadMore, onE
   useLayoutEffect(() => {
     const el = box.current;
     if (!el) return;
-    if (previousHeight.current && !stick.current && el.scrollHeight > previousHeight.current && el.scrollTop === 0) {
-      el.scrollTop = el.scrollHeight - previousHeight.current;
+    const channelWasOpen = previousHeight.current > 0;
+    if (channelWasOpen && !stick.current && el.scrollHeight > previousHeight.current && el.scrollTop === 0) {
+      // Oudere berichten laden: de leespositie meteen vasthouden, zonder animatie.
+      el.scrollTo({ top: el.scrollHeight - previousHeight.current, behavior: 'auto' });
     } else if (stick.current) {
-      el.scrollTop = el.scrollHeight;
+      // Nieuw bericht: vloeiend naar onderen; bij het openen van een kanaal direct naar de laatste berichten.
+      el.scrollTo({ top: el.scrollHeight, behavior: channelWasOpen ? 'smooth' : 'auto' });
     }
     previousHeight.current = el.scrollHeight;
   }, [messages]);

@@ -17,8 +17,10 @@
 .grp .meta b { font-weight: 700; font-size: 15px; }
 .grp .meta time, .line time { font-size: 11px; color: var(--muted); }
 .line { position: relative; white-space: pre-wrap; overflow-wrap: anywhere; padding-right: 8px; }
+/* De tijd van vervolgregels staat in de lege avatar-kolom; bij de eerste regel staat hij al naast de naam. */
 .line time { position: absolute; left: -54px; width: 40px; text-align: right; top: 3px; visibility: hidden; }
-.grp:hover .line time { visibility: visible; }
+.meta + .line time { display: none; }
+.line:hover time { visibility: visible; }
 .line a { color: var(--red); text-decoration: none; }
 .line a:hover { text-decoration: underline; }
 .line code { background: var(--input); border-radius: 5px; padding: 1px 5px; font-size: .9em; }
