@@ -5,6 +5,7 @@ import { SettingsProvider } from '../../app/SettingsContext';
 import { WorkspaceProvider, useWorkspace } from '../../app/WorkspaceContext';
 import { MembersPanel } from './MembersPanel';
 import { QuickSwitcher } from './QuickSwitcher';
+import { ScreenViewer } from './ScreenViewer';
 import { Rail } from './Rail';
 import { Sidebar } from './Sidebar';
 
@@ -35,6 +36,7 @@ function ShellLayout() {
       </section>
       {showMembers && <MembersPanel />}
       {switcher && <QuickSwitcher onClose={() => setSwitcher(false)} />}
+      <ScreenViewer />
     </div>
   );
 }

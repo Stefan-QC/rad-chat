@@ -31,3 +31,14 @@ button:focus:not(:focus-visible) { outline: none; }
 .switch-row input:focus-visible + .switch-track { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) { .toast, .switch-track, .switch-track::after { animation: none; transition: none; } }
+
+/* gedeelde schermen */
+.screen-viewer { position: fixed; right: 16px; bottom: 16px; z-index: 150; width: min(420px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 8px; }
+.screen-viewer.big { inset: 12px; width: auto; background: rgba(0,0,0,.85); padding: 12px; border-radius: 16px; }
+.screen-tile { position: relative; border-radius: 12px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
+.screen-tile video { display: block; width: 100%; max-height: 60vh; object-fit: contain; background: #000; }
+.screen-viewer.big .screen-tile video { max-height: calc(100dvh - 140px); }
+.screen-tile header { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: linear-gradient(rgba(0,0,0,.7), transparent); color: #fff; font-size: 13px; font-weight: 700; }
+.screen-tile header span { flex: 1; }
+.screen-tile header button { color: #fff; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,.18); font-size: 12px; font-weight: 700; }
+.screen-tile header button:hover { background: rgba(255,255,255,.3); }

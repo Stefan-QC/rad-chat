@@ -16,6 +16,9 @@ export function VoiceBar() {
           <button className={`iconbtn${voiceSelf.muted ? ' on' : ''}`} id="voiceMute" title="Mute" aria-label="Mute microphone" aria-pressed={voiceSelf.muted} onClick={() => void voice.toggleMute()}>
             <Icon name={voiceSelf.muted ? 'mic-off' : 'mic'} />
           </button>
+          <button className={`iconbtn${voiceSelf.sharing ? ' on' : ''}`} title={voiceSelf.sharing ? 'Stop sharing your screen' : 'Share your screen'} aria-label={voiceSelf.sharing ? 'Stop sharing your screen' : 'Share your screen'} aria-pressed={voiceSelf.sharing} onClick={() => void (voiceSelf.sharing ? voice.stopScreenShare() : voice.startScreenShare())}>
+            <Icon name="screen" />
+          </button>
           <button className="iconbtn" title="Disconnect" aria-label="Disconnect from voice" onClick={() => void voice.leave()}>
             <Icon name="phone-off" />
           </button>
