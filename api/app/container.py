@@ -6,6 +6,8 @@ from app.clients.http import build_http_client
 from app.clients.supabase_auth_admin import SupabaseAuthAdmin
 from app.clients.supabase_rest import SupabaseRest
 from app.config import Settings
+from app.security.rate_limiter import RateLimiter
+from app.security.token_verifier import SupabaseTokenVerifier
 
 
 class Container:
@@ -16,6 +18,8 @@ class Container:
         self.http = http or build_http_client()
         self.rest = SupabaseRest(settings, self.http)
         self.auth_admin = SupabaseAuthAdmin(settings, self.http)
+        self.verifier = SupabaseTokenVerifier(settings, self.http, self.rest)
+        self.rate_limiter = RateLimiter(settings.rate_limit_per_minute)
 
     async def aclose(self) -> None:
         """Sluit de gedeelde HTTP-client."""

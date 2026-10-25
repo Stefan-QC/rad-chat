@@ -12,6 +12,27 @@ MEMBER_ID = "22222222-2222-2222-2222-222222222222"
 GUEST_ID = "33333333-3333-3333-3333-333333333333"
 
 
+def mock_login(router, user_id: str = ADMIN_ID, role: str = "admin", **profile: object) -> dict[str, str]:
+    """Mockt token- en profielverzoeken en geeft de Authorization-header terug."""
+    token = f"token-{user_id}"
+    row = {
+        "id": user_id,
+        "username": "tester",
+        "display_name": "Tester",
+        "role": role,
+        "expires_at": None,
+        "deactivated_at": None,
+    }
+    row.update(profile)
+    router.get(
+        f"{SUPABASE_URL}/auth/v1/user", headers={"Authorization": f"Bearer {token}"}
+    ).respond(200, json={"id": user_id})
+    router.get(f"{SUPABASE_URL}/rest/v1/profiles", params={"id": f"eq.{user_id}"}).respond(
+        200, json=[row]
+    )
+    return {"Authorization": f"Bearer {token}"}
+
+
 def make_settings(**overrides: object) -> Settings:
     """Maakt Settings zonder .env-bestand met testwaarden."""
     values: dict[str, object] = {

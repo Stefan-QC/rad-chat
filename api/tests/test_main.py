@@ -25,3 +25,10 @@ async def test_main__lifespan_closes_container() -> None:
     async with lifespan(app):
         assert not container.http.is_closed
     assert container.http.is_closed
+
+
+async def test_main__add_security_middleware_adds_headers_and_cors() -> None:
+    async with make_client() as client:
+        response = await client.get('/api/health', headers={'Origin': 'http://localhost:5173'})
+    assert response.headers['x-frame-options'] == 'DENY'
+    assert response.headers['access-control-allow-origin'] == 'http://localhost:5173'
