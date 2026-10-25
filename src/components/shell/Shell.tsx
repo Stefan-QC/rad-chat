@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
+import { SettingsProvider } from '../../app/SettingsContext';
 import { WorkspaceProvider, useWorkspace } from '../../app/WorkspaceContext';
 import { MembersPanel } from './MembersPanel';
 import { Rail } from './Rail';
@@ -23,8 +24,10 @@ function ShellLayout() {
 /** De ingelogde omgeving: balken links, de actieve pagina in het midden en optioneel de ledenlijst rechts. */
 export function Shell() {
   return (
-    <WorkspaceProvider>
-      <ShellLayout />
-    </WorkspaceProvider>
+    <SettingsProvider>
+      <WorkspaceProvider>
+        <ShellLayout />
+      </WorkspaceProvider>
+    </SettingsProvider>
   );
 }

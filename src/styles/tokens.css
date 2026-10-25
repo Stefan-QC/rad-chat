@@ -1,7 +1,7 @@
 /* Ontwerptokens van het Qualogy-huisstijlboek; het thema wordt gekozen via data-theme op het html-element. */
 
 :root,
-:root[data-theme="light"] {
+[data-theme="light"] {
   color-scheme: light;
   --red: #D71920; --red-hover: #B9141A; --red-dark: #822727; --red-deep: #38080A;
   --red-tint: #FFF5F5; --red-soft: #FED7D7;
@@ -16,7 +16,7 @@
   --font: 'Chivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
-:root[data-theme="dark"] {
+[data-theme="dark"] {
   color-scheme: dark;
   --rail: #0b0405; --rail-btn: #2a1d1f; --rail-hover: #3a2427; --rail-sep: #2c1a1d;
   --side: #1b0c0e; --bg: #231214; --panel: #1b0c0e;

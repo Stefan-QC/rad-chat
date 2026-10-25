@@ -8,6 +8,7 @@ import { CraftPage } from './pages/CraftPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { SettingsPage } from './pages/SettingsPage';
 import { TeamsPage } from './pages/TeamsPage';
 import { WordlePage } from './pages/WordlePage';
 
@@ -41,6 +42,8 @@ export function App() {
         <Route path="teams" element={<TeamsPage />} />
         <Route path="teams/:teamId" element={<TeamsPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
+        <Route path="settings" element={<SettingsPage />} />
+        <Route path="settings/:tab" element={<SettingsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="profile/:userId" element={<ProfilePage />} />
         <Route path="wordle" element={<WordlePage />} />

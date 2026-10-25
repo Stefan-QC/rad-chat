@@ -11,6 +11,7 @@ import { LeaderboardService } from './LeaderboardService';
 import { LobbyPresence } from './LobbyPresence';
 import { MessageService } from './MessageService';
 import { ProfileService } from './ProfileService';
+import { SettingsService } from './SettingsService';
 import { TeamService } from './TeamService';
 import { WordleService } from './WordleService';
 import { VoiceHub } from './voice/VoiceHub';
@@ -19,6 +20,7 @@ import { VoiceHub } from './voice/VoiceHub';
 export class Services {
   readonly db: Db;
   readonly theme: ThemeService;
+  readonly settings: SettingsService;
   readonly auth: AuthService;
   readonly profiles: ProfileService;
   readonly channels: ChannelService;
@@ -36,6 +38,7 @@ export class Services {
   constructor(config: AppConfig) {
     this.db = createDb(config);
     this.theme = new ThemeService();
+    this.settings = new SettingsService(this.db);
     this.auth = new AuthService(this.db);
     this.profiles = new ProfileService(this.db);
     this.channels = new ChannelService(this.db);
