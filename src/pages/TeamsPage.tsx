@@ -5,6 +5,7 @@ import { useServices } from '../app/ServicesContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { Avatar } from '../components/Avatar';
 import { PageHeader } from '../components/PageHeader';
+import { OnCallPanel } from '../components/teams/OnCallPanel';
 import { messageOf } from '../core/AppError';
 import type { TeamWithMembers } from '../core/types';
 import type { TeamDraft } from '../services/TeamService';
@@ -100,6 +101,7 @@ function TeamDetail({ team }: { team: TeamWithMembers }) {
         {canManage && <button className="btn danger" onClick={() => window.confirm(`Delete ${team.name} and its channels?`) && void run(() => service.remove(team.id), () => navigate('/teams'))}>Delete</button>}
       </div>
       {error && <div className="banner error" role="alert">{error}</div>}
+      {(mine || me?.role === 'admin') && <OnCallPanel team={team} />}
       <h3>Members — {team.members.length}</h3>
       <ul className="member-list">
         {team.members.map(member => {

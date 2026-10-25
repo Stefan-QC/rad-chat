@@ -10,10 +10,28 @@ export interface Profile {
   role: Role;
   expires_at: string | null;
   deactivated_at: string | null;
+  status: PresenceStatus;
+  status_text: string | null;
+  status_emoji: string | null;
+  status_until: string | null;
+  birth_month: number | null;
+  birth_day: number | null;
+  start_date: string | null;
+  coffee_opt_in: boolean;
   created_at: string;
 }
 
-export type ProfilePatch = Pick<Profile, 'display_name' | 'job_title' | 'bio' | 'avatar_color'>;
+export type ProfilePatch = Pick<Profile, 'display_name' | 'job_title' | 'bio' | 'avatar_color'> &
+  Partial<Pick<Profile, 'birth_month' | 'birth_day' | 'start_date' | 'coffee_opt_in'>>;
+
+export type PresenceStatus = 'available' | 'busy' | 'meeting' | 'away' | 'dnd';
+
+export interface StatusPatch {
+  status: PresenceStatus;
+  status_text: string | null;
+  status_emoji: string | null;
+  status_until: string | null;
+}
 
 export type ChannelKind = 'text' | 'voice' | 'dm' | 'group';
 export type ChannelRole = 'owner' | 'moderator' | 'member' | 'readonly';
@@ -201,4 +219,29 @@ export interface UnreadEntry {
   channel_id: string;
   unread: number;
   mentions: number;
+}
+
+export type WorkLocation = 'office' | 'home' | 'off' | 'travel';
+
+export interface WorkPlan {
+  user_id: string;
+  day: string;
+  location: WorkLocation;
+}
+
+export interface OnCallShift {
+  id: number;
+  team_id: string;
+  user_id: string;
+  starts_at: string;
+  ends_at: string;
+  note: string | null;
+  created_by: string | null;
+}
+
+export interface Celebration {
+  user_id: string;
+  kind: 'birthday' | 'anniversary';
+  on_date: string;
+  years: number | null;
 }

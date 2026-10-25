@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../app/AuthContext';
 import { useWorkspace } from '../../app/WorkspaceContext';
+import { StatusPresenter } from '../../core/presence';
 import { Avatar } from '../Avatar';
 
 /** Ledenlijst rechts, gesplitst in online en offline collega's. */
@@ -15,8 +16,8 @@ export function MembersPanel() {
     <ul className="users">
       {list.map(profile => (
         <li key={profile.id} className={isOnline ? '' : 'offline'} onClick={() => navigate(`/profile/${profile.id}`)}>
-          <Avatar name={profile.display_name} color={profile.avatar_color} size="sm" online={isOnline} />
-          <span>{profile.display_name}</span>
+          <Avatar name={profile.display_name} color={profile.avatar_color} size="sm" online={isOnline} status={StatusPresenter.effective(profile)} />
+          <span className="member-name">{profile.display_name}{isOnline && StatusPresenter.text(profile) && <small className="member-status">{StatusPresenter.text(profile)}</small>}</span>
           {profile.id === me?.id && <small>you</small>}
           {profile.role === 'admin' && <small className="badge">admin</small>}
         </li>

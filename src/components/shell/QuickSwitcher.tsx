@@ -22,6 +22,7 @@ interface Item {
 const PAGES = [
   { path: '/wordle', label: 'RAD Wordle' },
   { path: '/craft', label: 'RAD Craft' },
+  { path: '/people', label: 'Who is where' },
   { path: '/teams', label: 'Teams' },
   { path: '/leaderboard', label: 'Leaderboard' },
   { path: '/profile', label: 'Your profile' },

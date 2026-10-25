@@ -7,6 +7,7 @@ import { ChatPage } from './pages/ChatPage';
 import { CraftPage } from './pages/CraftPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LoginPage } from './pages/LoginPage';
+import { PeoplePage } from './pages/PeoplePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TeamsPage } from './pages/TeamsPage';
@@ -39,6 +40,7 @@ export function App() {
       <Route element={<RequireAuth />}>
         <Route index element={<HomeRedirect />} />
         <Route path="channels/:channelId" element={<ChatPage />} />
+        <Route path="people" element={<PeoplePage />} />
         <Route path="teams" element={<TeamsPage />} />
         <Route path="teams/:teamId" element={<TeamsPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
