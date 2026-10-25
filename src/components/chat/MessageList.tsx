@@ -1,5 +1,6 @@
-import { Fragment, useLayoutEffect, useRef } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef } from 'react';
 import { useAuth } from '../../app/AuthContext';
+import { useMessageExtras } from '../../app/MessageExtrasContext';
 import { useWorkspace } from '../../app/WorkspaceContext';
 import { dayKey, formatDay, formatTime } from '../../core/format';
 import type { Channel, Message } from '../../core/types';
@@ -47,6 +48,7 @@ function groupMessages(messages: Message[]): Group[] {
 export function MessageList({ title, channel, messages, hasMore, onLoadMore, onError, onOpenThread, showWelcome = true }: MessageListProps) {
   const { me } = useAuth();
   const { profileById } = useWorkspace();
+  const { ensure } = useMessageExtras();
   const box = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
   const previousHeight = useRef(0);
@@ -67,6 +69,8 @@ export function MessageList({ title, channel, messages, hasMore, onLoadMore, onE
     stick.current = true;
     previousHeight.current = 0;
   }, [channel.id]);
+
+  useEffect(() => ensure(messages.map(m => m.id)), [messages, ensure]);
 
   const groups = groupMessages(messages);
 
