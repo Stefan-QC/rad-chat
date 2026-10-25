@@ -1,22 +1,28 @@
+import { lazy, Suspense } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { useAuth } from './app/AuthContext';
 import { useWorkspace } from './app/WorkspaceContext';
 import { Shell } from './components/shell/Shell';
-import { AdminPage } from './pages/AdminPage';
 import { ChatPage } from './pages/ChatPage';
-import { CraftPage } from './pages/CraftPage';
-import { KnowledgePage } from './pages/KnowledgePage';
-import { KudosPage } from './pages/KudosPage';
-import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LoginPage } from './pages/LoginPage';
-import { MeetingsPage } from './pages/MeetingsPage';
-import { PeoplePage } from './pages/PeoplePage';
-import { ProfilePage } from './pages/ProfilePage';
-import { QuizPage } from './pages/QuizPage';
-import { SettingsPage } from './pages/SettingsPage';
-import { TasksPage } from './pages/TasksPage';
-import { TeamsPage } from './pages/TeamsPage';
-import { WordlePage } from './pages/WordlePage';
+
+// Zware pagina's (spel, beheer, kennisbank, ...) worden pas geladen als iemand ze opent.
+const lazyPage = <K extends string>(load: () => Promise<Record<K, React.ComponentType>>, name: K) =>
+  lazy(() => load().then(module => ({ default: module[name] })));
+
+const AdminPage = lazyPage(() => import('./pages/AdminPage'), 'AdminPage');
+const CraftPage = lazyPage(() => import('./pages/CraftPage'), 'CraftPage');
+const KnowledgePage = lazyPage(() => import('./pages/KnowledgePage'), 'KnowledgePage');
+const KudosPage = lazyPage(() => import('./pages/KudosPage'), 'KudosPage');
+const LeaderboardPage = lazyPage(() => import('./pages/LeaderboardPage'), 'LeaderboardPage');
+const MeetingsPage = lazyPage(() => import('./pages/MeetingsPage'), 'MeetingsPage');
+const PeoplePage = lazyPage(() => import('./pages/PeoplePage'), 'PeoplePage');
+const ProfilePage = lazyPage(() => import('./pages/ProfilePage'), 'ProfilePage');
+const QuizPage = lazyPage(() => import('./pages/QuizPage'), 'QuizPage');
+const SettingsPage = lazyPage(() => import('./pages/SettingsPage'), 'SettingsPage');
+const TasksPage = lazyPage(() => import('./pages/TasksPage'), 'TasksPage');
+const TeamsPage = lazyPage(() => import('./pages/TeamsPage'), 'TeamsPage');
+const WordlePage = lazyPage(() => import('./pages/WordlePage'), 'WordlePage');
 
 function Splash() {
   return <div className="splash">Loading…</div>;
@@ -40,6 +46,7 @@ function HomeRedirect() {
 
 export function App() {
   return (
+    <Suspense fallback={<Splash />}>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route element={<RequireAuth />}>
@@ -67,5 +74,6 @@ export function App() {
       </Route>
       <Route path="*" element={<Outlet />} />
     </Routes>
+    </Suspense>
   );
 }
