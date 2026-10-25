@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { MessageExtrasProvider } from '../app/MessageExtrasContext';
+import { PinsProvider, usePins } from '../app/PinsContext';
 import { useServices } from '../app/ServicesContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { ChannelMembersDialog } from '../components/chat/ChannelMembersDialog';
 import { Composer } from '../components/chat/Composer';
 import { MessageList } from '../components/chat/MessageList';
+import { PinnedPanel } from '../components/chat/PinnedPanel';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
 import { Icon } from '../components/Icon';
 import { PageHeader } from '../components/PageHeader';
 import { messageOf } from '../core/AppError';
+import { useChannelPermissions } from '../hooks/useChannelPermissions';
 import { useMessages } from '../hooks/useMessages';
 
 function ChannelView({ channelId }: { channelId: string }) {
@@ -24,9 +27,13 @@ function ChannelView({ channelId }: { channelId: string }) {
   const memberCount = channelMembers.filter(m => m.channel_id === channelId).length;
   const team = teams.find(t => t.id === channel.team_id);
   const threadId = Number(params.get('thread')) || null;
+  const pinsOpen = params.get('panel') === 'pins';
+  const { canPost, postBlockedReason } = useChannelPermissions(channel);
+  const { pins } = usePins();
 
   const openThread = useCallback((messageId: number) => setParams({ thread: String(messageId) }), [setParams]);
   const closeThread = useCallback(() => setParams({}), [setParams]);
+  const togglePins = () => setParams(pinsOpen ? {} : { panel: 'pins' });
 
   useEffect(() => {
     document.title = `${title} · RAD Chat`;
@@ -50,18 +57,28 @@ function ChannelView({ channelId }: { channelId: string }) {
           title={title}
           prefix={presenter.isConversation(channel) ? <Icon name="user" size={20} /> : channel.is_private ? <Icon name="lock" size={18} /> : <span className="hash">#</span>}
           topic={team ? `${team.name} · ${channel.topic ?? ''}` : presenter.subtitle(channel)}
-          actions={channel.kind !== 'dm' && (
-            <button className="iconbtn" aria-label="Channel members and settings" title="Members and settings" onClick={() => setShowMembers(true)}>
-              <Icon name="users" />{memberCount > 0 && <small className="count">{memberCount}</small>}
-            </button>
+          actions={(
+            <>
+              <button className={`iconbtn${pinsOpen ? ' on' : ''}`} aria-label="Pinned messages" aria-pressed={pinsOpen} title="Pinned messages" onClick={togglePins}>
+                <Icon name="pin" />{pins.length > 0 && <small className="count">{pins.length}</small>}
+              </button>
+              {channel.kind !== 'dm' && (
+                <button className="iconbtn" aria-label="Channel members and settings" title="Members and settings" onClick={() => setShowMembers(true)}>
+                  <Icon name="users" />{memberCount > 0 && <small className="count">{memberCount}</small>}
+                </button>
+              )}
+            </>
           )}
         />
         {showMembers && <ChannelMembersDialog channel={channel} onClose={() => setShowMembers(false)} />}
         <MessageList title={title} channel={channel} messages={messages} hasMore={hasMore} onLoadMore={() => void loadMore()} onError={setError} onOpenThread={openThread} />
         {(error || loadError) && <div className="banner error" role="alert">{error || loadError}</div>}
-        <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} />
+        {canPost
+          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} />
+          : <div className="composer-blocked" role="note"><Icon name="lock" size={16} />{postBlockedReason}</div>}
       </div>
       {threadId !== null && <ThreadPanel key={threadId} channel={channel} rootId={threadId} title={title} onClose={closeThread} />}
+      {threadId === null && pinsOpen && <PinnedPanel onClose={closeThread} />}
     </div>
   );
 }
@@ -74,7 +91,9 @@ export function ChatPage() {
   if (!channel || channel.kind === 'voice') return <Navigate to="/" replace />;
   return (
     <MessageExtrasProvider>
-      <ChannelView key={channel.id} channelId={channel.id} />
+      <PinsProvider key={channel.id} channel={channel}>
+        <ChannelView channelId={channel.id} />
+      </PinsProvider>
     </MessageExtrasProvider>
   );
 }

@@ -6,6 +6,7 @@ import { formatTime } from '../../core/format';
 import type { Message } from '../../core/types';
 import { Icon } from '../Icon';
 import { RichText } from '../RichText';
+import { usePins } from '../../app/PinsContext';
 import { EmojiPicker } from './EmojiPicker';
 import { ReactionBar } from './ReactionBar';
 
@@ -20,6 +21,7 @@ interface MessageItemProps {
 export function MessageItem({ message, myUsername, onError, onOpenThread }: MessageItemProps) {
   const { me } = useAuth();
   const { messages, reactions } = useServices();
+  const { isPinned, canPin, togglePin } = usePins();
   const [editing, setEditing] = useState(false);
   const [pickerAt, setPickerAt] = useState<DOMRect | null>(null);
   const [draft, setDraft] = useState(message.body);
@@ -64,6 +66,7 @@ export function MessageItem({ message, myUsername, onError, onOpenThread }: Mess
       <time>{formatTime(message.created_at)}</time>
       {deleted ? <em>message deleted</em> : <RichText text={message.body} me={myUsername} />}
       {message.edited_at && !deleted && <small className="edited"> (edited)</small>}
+      {isPinned(message.id) && !deleted && <small className="pinned-tag"><Icon name="pin" size={12} /> Pinned</small>}
       {!deleted && <ReactionBar messageId={message.id} />}
       {message.reply_count > 0 && onOpenThread && (
         <button className="reply-link" onClick={() => onOpenThread(message.id)}>
@@ -73,6 +76,7 @@ export function MessageItem({ message, myUsername, onError, onOpenThread }: Mess
       {!deleted && (
         <span className="msg-actions">
           <button title="Add reaction" aria-label="Add reaction" onClick={event => setPickerAt(event.currentTarget.getBoundingClientRect())}><Icon name="smile" size={16} /></button>
+          {canPin && <button title={isPinned(message.id) ? 'Unpin' : 'Pin to channel'} aria-label={isPinned(message.id) ? 'Unpin message' : 'Pin message'} onClick={() => void togglePin(message.id)}><Icon name="pin" size={16} /></button>}
           {onOpenThread && !message.parent_id && <button title="Reply in thread" aria-label="Reply in thread" onClick={() => onOpenThread(message.id)}><Icon name="chat" size={16} /></button>}
           {mine && <button title="Edit" aria-label="Edit message" onClick={() => { setDraft(message.body); setEditing(true); }}><Icon name="edit" size={16} /></button>}
           {(mine || me?.role === 'admin') && <button title="Delete" aria-label="Delete message" onClick={() => window.confirm('Delete this message?') && void run(() => messages.remove(message.id))}><Icon name="trash" size={16} /></button>}

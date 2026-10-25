@@ -37,6 +37,11 @@ export class MessageService {
     return unwrap(await this.db.from('messages').select('*').eq('parent_id', parentId).order('id'));
   }
 
+  async listByIds(ids: number[]): Promise<Message[]> {
+    if (ids.length === 0) return [];
+    return unwrap(await this.db.from('messages').select('*').in('id', ids));
+  }
+
   async getById(id: number): Promise<Message | null> {
     return unwrap(await this.db.from('messages').select('*').eq('id', id).maybeSingle());
   }
