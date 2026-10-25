@@ -26,6 +26,10 @@ export class ProfileService {
     return unwrap(await this.db.from('profiles').update(clean).eq('id', userId).select().single());
   }
 
+  async setCoffeeOptIn(userId: string, value: boolean): Promise<void> {
+    expectOk(await this.db.from('profiles').update({ coffee_opt_in: value }).eq('id', userId));
+  }
+
   async setRole(userId: string, role: Role): Promise<void> {
     expectOk(await this.db.rpc('set_user_role', { p_user: userId, p_role: role }));
   }
