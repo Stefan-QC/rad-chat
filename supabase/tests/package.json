@@ -1,0 +1,13 @@
+{
+  "name": "rad-chat-db-tests",
+  "private": true,
+  "type": "module",
+  "description": "SQL tests for the Supabase migrations, run on an embedded Postgres",
+  "scripts": {
+    "test": "node run.mjs"
+  },
+  "devDependencies": {
+    "embedded-postgres": "^18.4.0-beta.17",
+    "pg": "^8.13.0"
+  }
+}
