@@ -1,0 +1,21 @@
+{
+  "name": "rad-chat",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "RAD Chat: company chat (React frontend, Node host, Python API, Supabase)",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "start": "node backend/server/server.mjs",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "cert": "node scripts/generate-cert.mjs",
+    "test": "npm run test:frontend && npm run test:api",
+    "test:frontend": "npm --prefix frontend test",
+    "test:api": "node scripts/test-api.mjs",
+    "test:db": "npm --prefix supabase/tests install && npm --prefix supabase/tests test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

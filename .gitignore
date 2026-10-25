@@ -1,5 +1,12 @@
-history.json
 node_modules/
-world.json
+dist/
+.env
+.env.*
+!.env.example
 certs/
-scores.json
+.venv/
+__pycache__/
+.pytest_cache/
+supabase/tests/node_modules/
+.claude/
+*.pyc

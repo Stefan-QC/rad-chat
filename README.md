@@ -1,89 +1,54 @@
 # RAD Chat
 
-A small LAN chat. It has no dependencies and needs Node 18 or newer.
+De chat voor collega's: kanalen, DM's, GIF's, teams, spraak, taken, kennisbank, Wordle en meer.
 
-## Start
-
-```sh
-node server.js          # or: PORT=4000 node server.js
-```
-
-Colleagues on the same network open `http://<your-laptop-ip>:3000` in a browser.
-Message history (the last 500 messages) is saved to `history.json`.
-
-## Project structure
-
-```
-server.js            HTTP + SSE server
-public/
-  index.html         markup only
-  css/               linked from index.html in this order
-    tokens.css       colours, fonts, dark mode (Qualogy brand book)
-    base.css         reset and element defaults
-    components.css   icon button, avatar, primary button
-    join.css  layout.css  rail.css  sidebar.css  header.css
-    messages.css  composer.css  members.css  responsive.css
-  js/voice.js        voice channels (WebRTC)
-  js/main.js         join flow, SSE connection, composer, UI wiring
-    feed.js          message feed rendering
-    utils.js         colours, formatting, safe rich text
-  game.js            RAD Craft
-```
-
-## Voice channels
-
-Click **Lounge** or **Stand-up** under "Voice channels" to talk. Audio goes directly between
-browsers (WebRTC); the server only relays the connection setup. Use the bar above your name to
-mute or disconnect. A green ring around an avatar means that person is speaking.
-
-Browsers only allow microphone access on `https://` or `localhost`, so colleagues on the LAN need
-HTTPS. Create a self-signed certificate once (the server switches to HTTPS when `certs/` exists):
+## Starten
 
 ```sh
-mkdir certs
-openssl req -x509 -newkey rsa:2048 -nodes -days 825 -keyout certs/key.pem -out certs/cert.pem -subj "/CN=RAD Chat"
+npm run setup    # alleen de eerste keer
+npm start
 ```
 
-Everyone then opens `https://<your-laptop-ip>:3000` and accepts the one-time certificate warning.
+Dat is alles. Op Windows kun je ook dubbelklikken op `start.cmd`.
 
-## RAD Craft (`/game`)
+Na `npm start` zie je in het scherm een adres, bijvoorbeeld `https://192.168.1.20:3000`.
+Open dat adres, of geef het aan collega's in hetzelfde netwerk. Je krijgt één keer een certificaatwaarschuwing: accepteer die.
 
-Type `/game` in the chat to open a shared, Minecraft-style block world. Everyone who
-joins is in the same world: you can see each other, and blocks you build or break show
-up for everyone. Chat keeps working inside the game (press `T`).
+## De eerste keer: 3 dingen
 
-- **Controls:** `WASD` to move, `Space` to jump, `Shift` to sprint, `F` to fly. Left click
-  breaks a block, right click places one, and `1`–`0` or the scroll wheel picks the block.
-  `Esc` pauses.
-- **Saved world:** the terrain is generated from a seed. The seed and all player edits are
-  saved in `world.json`. Delete that file (with the server stopped) to start a fresh world.
-- **Offline:** three.js is bundled in `public/vendor/`, so the game works without internet.
+1. **Node.js** (18 of nieuwer) en **Python** (3.11 of nieuwer) installeren.
+2. **`.env` invullen**: `npm run setup` maakt het bestand aan. Zet er de Supabase-gegevens in
+   (Supabase → Project Settings → API Keys): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` en `SUPABASE_SERVICE_ROLE_KEY`.
+   GIF's nodig? Vul ook `GIPHY_API_KEY` in.
+3. **Database**: voer de bestanden in `supabase/migrations/` in volgorde uit (001 t/m 013) in de SQL-editor van Supabase.
+   Maak daarna accounts onder Authentication → Users (eerste account = admin) en zet "Allow new users to sign up" uit.
 
-## WSL2: let the LAN reach the server
+## Kunnen collega's er niet bij?
 
-WSL2 runs behind NAT by default, so the 172.x address the server prints only
-works from your own laptop. Pick one option:
+- Draai één keer `npm run setup -- --firewall` in een terminal als beheerder (Windows).
+- Zet je netwerk op "Privé". Op sommige bedrijfs-wifi's kunnen apparaten elkaar niet bereiken.
 
-**Option A: mirrored networking (recommended, Windows 11 22H2+).**
-Add this to `C:\Users\<you>\.wslconfig`, then run `wsl --shutdown` and start the server again:
+## Altijd aan laten staan
 
-```ini
-[wsl2]
-networkingMode=mirrored
-```
+Zolang jouw computer aan staat, werkt de chat. Wil je dat het altijd draait, zet het dan op een server:
 
-You still need the firewall rule (run once in an admin PowerShell):
+- **Render**: zet de code op GitHub, kies "New → Blueprint" en wijs naar `render.yaml`. Vul de drie geheimen in. Klaar.
+- **Andere server**: `docker build -t rad-chat .` en start de image met de waarden uit `.env`, poort 3000.
 
-```powershell
-New-NetFirewallRule -DisplayName "RAD Chat 3000" -Direction Inbound -Protocol TCP -LocalPort 3000 -Action Allow -Profile Private,Domain
-Set-NetFirewallHyperVVMSetting -Name '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -DefaultInboundAction Allow
-```
+Kies een abonnement dat niet in slaap valt, anders draaien de nachtelijke taken niet.
 
-**Option B: port forwarding.** In an admin PowerShell, run `expose-on-lan.ps1` from this folder.
-Run it again after each WSL restart, because the WSL IP changes.
+## Voor ontwikkelaars
 
-## Notes
+| Wat | Commando |
+| --- | --- |
+| Live herladen tijdens het programmeren | `npm run dev` (draai ook `npm start` voor de API) |
+| Opnieuw bouwen na een wijziging | `npm run build` |
+| Alle tests (frontend en API) | `npm test` |
+| Databasetests | `npm run test:db` |
 
-- There is no authentication. Anyone on the LAN who has the URL can join, so use it only on trusted networks.
-- If colleagues can't connect, check that Windows marks the network as **Private** or **Domain**, not Public.
-  Corporate Wi-Fi can also block traffic between clients (client isolation).
+Mappen:
+
+- `frontend/` de React-app
+- `backend/server/` de Node-host (bestanden, beveiliging, start de API)
+- `backend/api/` de Python-API (GIF's, beheer, geplande taken)
+- `supabase/` de database (migraties en tests)
