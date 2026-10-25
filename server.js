@@ -34,6 +34,32 @@ function configJs() {
   return `window.__RAD_CONFIG__ = ${JSON.stringify(cfg)};\n`;
 }
 
+// De Python-backend (GIF's, beheer, export) draait apart; de Node-host stuurt /api/* ongewijzigd door.
+const API_URL = new URL(process.env.API_URL || 'http://127.0.0.1:8000');
+const API_TIMEOUT_MS = 30_000;
+
+function proxyToApi(req, res) {
+  const transport = API_URL.protocol === 'https:' ? https : http;
+  const forwardedFor = [req.headers['x-forwarded-for'], req.socket.remoteAddress].filter(Boolean).join(', ');
+  const upstream = transport.request({
+    hostname: API_URL.hostname,
+    port: API_URL.port || (API_URL.protocol === 'https:' ? 443 : 80),
+    path: req.url,
+    method: req.method,
+    headers: { ...req.headers, host: API_URL.host, 'x-forwarded-for': forwardedFor },
+    timeout: API_TIMEOUT_MS,
+  }, upstreamRes => {
+    res.writeHead(upstreamRes.statusCode ?? 502, upstreamRes.headers);
+    upstreamRes.pipe(res);
+  });
+  upstream.on('timeout', () => upstream.destroy(new Error('timeout')));
+  upstream.on('error', () => {
+    if (!res.headersSent) res.writeHead(502, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ detail: 'The API is not available right now.' }));
+  });
+  req.pipe(upstream);
+}
+
 const SECURITY = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
@@ -52,6 +78,7 @@ function send(req, res, status, body, headers, ext) {
 }
 
 const handler = (req, res) => {
+  if (req.url === '/api' || req.url?.startsWith('/api/') || req.url?.startsWith('/api?')) return proxyToApi(req, res);
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }
   let pathname;
   try { pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); } catch { res.writeHead(400); return res.end(); }
