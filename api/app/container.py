@@ -6,6 +6,8 @@ from app.clients.http import build_http_client
 from app.clients.supabase_auth_admin import SupabaseAuthAdmin
 from app.clients.supabase_rest import SupabaseRest
 from app.config import Settings
+from app.gifs.gif_factory import GifProviderFactory
+from app.gifs.gif_service import GifService
 from app.security.rate_limiter import RateLimiter
 from app.security.token_verifier import SupabaseTokenVerifier
 
@@ -20,6 +22,7 @@ class Container:
         self.auth_admin = SupabaseAuthAdmin(settings, self.http)
         self.verifier = SupabaseTokenVerifier(settings, self.http, self.rest)
         self.rate_limiter = RateLimiter(settings.rate_limit_per_minute)
+        self.gif_service = GifService(GifProviderFactory.create(settings, self.http))
 
     async def aclose(self) -> None:
         """Sluit de gedeelde HTTP-client."""

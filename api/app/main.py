@@ -16,7 +16,7 @@ from app.errors import (
     handle_unexpected_error,
     handle_validation_error,
 )
-from app.routers import health
+from app.routers import gifs, health
 from app.security.middleware import BodySizeLimitMiddleware, SecurityHeadersMiddleware
 
 
@@ -67,4 +67,5 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     app.add_exception_handler(RequestValidationError, handle_validation_error)
     app.add_exception_handler(Exception, handle_unexpected_error)
     app.include_router(health.router)
+    app.include_router(gifs.router)
     return app
