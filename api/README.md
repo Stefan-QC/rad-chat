@@ -53,6 +53,8 @@ All endpoints live under `/api`. Authenticated routes expect `Authorization: Bea
 | `GET/PUT /api/admin/settings/retention` | admin | Message retention in days (0 keeps everything) |
 | `POST /api/jobs/{name}` | admin or `X-Job-Token` | Run `expire_guests`, `purge_messages`, `post_celebrations` or `run_coffee_round` |
 
+The `purge_messages` job also removes the pasted images of the deleted messages from the `chat-images` bucket (only paths of the form `channel/user/file`, in chunks of 100); the paths themselves are kept out of the audit log.
+
 Every admin mutation is written to `audit_logs`. Passwords and tokens are never logged or audited.
 
 ### Database expectations
