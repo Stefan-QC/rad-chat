@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
+import { NotificationsProvider } from '../../app/NotificationsContext';
 import { SettingsProvider } from '../../app/SettingsContext';
 import { WorkspaceProvider, useWorkspace } from '../../app/WorkspaceContext';
 import { MembersPanel } from './MembersPanel';
@@ -25,9 +26,11 @@ function ShellLayout() {
 export function Shell() {
   return (
     <SettingsProvider>
-      <WorkspaceProvider>
-        <ShellLayout />
-      </WorkspaceProvider>
+      <NotificationsProvider>
+        <WorkspaceProvider>
+          <ShellLayout />
+        </WorkspaceProvider>
+      </NotificationsProvider>
     </SettingsProvider>
   );
 }
