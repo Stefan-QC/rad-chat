@@ -36,10 +36,8 @@ class Container:
         self.export_service = ExportService(self.rest, self.audit)
         self.retention_service = RetentionSettingsService(self.rest, self.audit)
         self.job_runner = JobRunner(self.rest, self.audit, self.storage)
-        self.job_auth = JobAuthenticator(settings, self.verifier, self.rate_limiter)
-        self.scheduler = (
-            JobScheduler(self.job_runner, settings.timezone) if settings.enable_scheduler else None
-        )
+        self.job_auth = JobAuthenticator(self.verifier, self.rate_limiter)
+        self.scheduler = JobScheduler(self.job_runner, settings.timezone)
         self.gif_service = GifService(GifProviderFactory.create(settings, self.http))
 
     async def aclose(self) -> None:

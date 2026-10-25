@@ -30,9 +30,6 @@ services:
       GIF_PROVIDER: ${GIF_PROVIDER:-giphy}
       GIPHY_API_KEY: ${GIPHY_API_KEY:-}
       KLIPY_API_KEY: ${KLIPY_API_KEY:-}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
-      JOB_TOKEN: ${JOB_TOKEN:-}
-      ENABLE_SCHEDULER: ${ENABLE_SCHEDULER:-false}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]

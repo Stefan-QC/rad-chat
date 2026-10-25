@@ -28,8 +28,8 @@ async def test_main__lifespan_closes_container() -> None:
     assert container.http.is_closed
 
 
-async def test_main__lifespan_starts_and_stops_scheduler_when_enabled() -> None:
-    container = make_container(enable_scheduler=True)
+async def test_main__lifespan_starts_and_stops_scheduler() -> None:
+    container = make_container()
     app = create_app(container.settings, container)
     async with lifespan(app):
         assert container.scheduler.job_ids() == ["daily", "weekly"]
@@ -43,12 +43,8 @@ def test_main__module_level_app_is_available_for_uvicorn() -> None:
     assert app.title == "RAD Chat API"
 
 
-def test_main__create_app_has_no_scheduler_by_default() -> None:
-    assert make_container().scheduler is None
-
-
-async def test_main__add_security_middleware_adds_headers_and_cors() -> None:
+async def test_main__add_security_middleware_adds_headers_and_no_cors() -> None:
     async with make_client() as client:
-        response = await client.get('/api/health', headers={'Origin': 'http://localhost:5173'})
+        response = await client.get('/api/health', headers={'Origin': 'http://evil.test'})
     assert response.headers['x-frame-options'] == 'DENY'
-    assert response.headers['access-control-allow-origin'] == 'http://localhost:5173'
+    assert 'access-control-allow-origin' not in response.headers

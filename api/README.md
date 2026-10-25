@@ -26,9 +26,6 @@ Python 3.11 or newer is required (developed on 3.14, the Docker image uses 3.12)
 | `GIPHY_API_KEY` | | Giphy API key |
 | `KLIPY_API_KEY` | | KLIPY API key |
 | `GIF_RATING` | `pg-13` | Content rating passed to the provider |
-| `ALLOWED_ORIGINS` | | Comma separated CORS allowlist (wildcards are ignored) |
-| `JOB_TOKEN` | | Shared secret for `X-Job-Token`; empty disables token access |
-| `ENABLE_SCHEDULER` | `false` | Start the in-process scheduler |
 | `TIMEZONE` | `Europe/Amsterdam` | Timezone of the schedule |
 | `RATE_LIMIT_PER_MINUTE` | `60` | Per-user request budget (token bucket) |
 | `MAX_BODY_BYTES` | `65536` | Maximum request body size |
@@ -51,7 +48,7 @@ All endpoints live under `/api`. Authenticated routes expect `Authorization: Bea
 | `PUT /api/admin/users/{id}/role` | admin | Change role, you cannot demote yourself |
 | `GET /api/admin/export?channel_id=&since=&format=json\|csv` | admin | Streamed message export |
 | `GET/PUT /api/admin/settings/retention` | admin | Message retention in days (0 keeps everything) |
-| `POST /api/jobs/{name}` | admin or `X-Job-Token` | Run `expire_guests`, `purge_messages`, `post_celebrations` or `run_coffee_round` |
+| `POST /api/jobs/{name}` | admin | Run `expire_guests`, `purge_messages`, `post_celebrations` or `run_coffee_round` |
 
 The `purge_messages` job also removes the pasted images of the deleted messages from the `chat-images` bucket (only paths of the form `channel/user/file`, in chunks of 100); the paths themselves are kept out of the audit log.
 
@@ -63,7 +60,7 @@ The API assumes these exist in Supabase: tables `profiles`, `messages`, `channel
 
 ### Scheduler
 
-With `ENABLE_SCHEDULER=true` the app runs daily at 07:00 (`expire_guests`, `post_celebrations`, `purge_messages`) and Mondays at 09:00 (`run_coffee_round`) in `TIMEZONE`. Failures are logged without secrets and never stop the app. Run only one instance with the scheduler enabled, or trigger the jobs externally through `POST /api/jobs/{name}` with `X-Job-Token`.
+The app always runs the scheduler: daily at 07:00 (`expire_guests`, `post_celebrations`, `purge_messages`) and Mondays at 09:00 (`run_coffee_round`) in `TIMEZONE`. Failures are logged without secrets and never stop the app. Run a single API instance (the jobs are safe to repeat, but would run twice with two instances). Admins can also start a job by hand with `POST /api/jobs/{name}`.
 
 ### KLIPY
 
@@ -72,7 +69,7 @@ KLIPY parsing is best-effort. The structure of the `files` object is not documen
 ## Security notes
 
 - Tokens are verified against Supabase (`/auth/v1/user`) and cached for 30 seconds by hash; the profile (role, deactivated, expired) is checked on every request.
-- Per-user in-memory rate limit, request body limit, security headers and an env based CORS allowlist.
+- Per-user in-memory rate limit, request body limit, security headers. There is no CORS: the browser reaches the API through the Node proxy on the same origin.
 - Only `https` GIF URLs from allowlisted provider hosts are returned.
 - CSV export prefixes cells that start with `=`, `+`, `-`, `@` (and tab or carriage return) with an apostrophe.
 - Errors returned to clients are generic; upstream details and stack traces stay out of responses and logs.
