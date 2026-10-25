@@ -7,7 +7,7 @@ import { PinsProvider, usePins } from '../app/PinsContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { ChannelMembersDialog } from '../components/chat/ChannelMembersDialog';
 import { Composer } from '../components/chat/Composer';
-import { GifButton } from '../components/chat/GifButton';
+import { ComposerTools } from '../components/chat/ComposerTools';
 import { MessageList } from '../components/chat/MessageList';
 import { PinnedPanel } from '../components/chat/PinnedPanel';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
@@ -91,7 +91,7 @@ function ChannelView({ channelId }: { channelId: string }) {
         <MessageList title={title} channel={channel} messages={messages} hasMore={hasMore} onLoadMore={() => void loadMore()} onError={setError} onOpenThread={openThread} />
         {(sendError || loadError) && <div className="banner error" role="alert">{sendError || loadError}</div>}
         {canPost
-          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} mentionables={mentionables} tools={<GifButton onPick={gif => void sendGif(gif)} />} />
+          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} mentionables={mentionables} tools={<ComposerTools channelId={channelId} onGif={gif => void sendGif(gif)} />} />
           : <div className="composer-blocked" role="note"><Icon name="lock" size={16} />{postBlockedReason}</div>}
       </div>
       {threadId !== null && <ThreadPanel key={threadId} channel={channel} rootId={threadId} title={title} onClose={closeThread} />}
