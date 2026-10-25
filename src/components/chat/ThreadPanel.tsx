@@ -4,7 +4,7 @@ import { useThread } from '../../hooks/useThread';
 import { Icon } from '../Icon';
 import type { GifItem } from '../../services/GifService';
 import { Composer } from './Composer';
-import { GifButton } from './GifButton';
+import { ComposerTools } from './ComposerTools';
 import { MessageList } from './MessageList';
 
 interface ThreadPanelProps {
@@ -38,7 +38,7 @@ export function ThreadPanel({ channel, rootId, title, onClose }: ThreadPanelProp
       </header>
       <MessageList title={title} channel={channel} messages={thread} hasMore={false} onLoadMore={() => undefined} onError={setError} showWelcome={false} />
       {(error || loadError) && <div className="banner error" role="alert">{error || loadError}</div>}
-      <Composer channelName={title} placeholder="Reply in thread…" onSend={send} tools={<GifButton onPick={gif => void sendGif(gif)} />} />
+      <Composer channelName={title} placeholder="Reply in thread…" onSend={send} tools={<ComposerTools channelId={channel.id} allowPoll={false} onGif={gif => void sendGif(gif)} />} />
     </aside>
   );
 }

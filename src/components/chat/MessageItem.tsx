@@ -8,6 +8,7 @@ import { Icon } from '../Icon';
 import { RichText } from '../RichText';
 import { usePins } from '../../app/PinsContext';
 import { AttachmentList } from './AttachmentList';
+import { PollCard } from './PollCard';
 import { EmojiPicker } from './EmojiPicker';
 import { ReactionBar } from './ReactionBar';
 
@@ -65,7 +66,7 @@ export function MessageItem({ message, myUsername, onError, onOpenThread }: Mess
   return (
     <div className={`line${deleted ? ' deleted' : ''}`}>
       <time>{formatTime(message.created_at)}</time>
-      {deleted ? <em>message deleted</em> : <RichText text={message.body} me={myUsername} />}
+      {deleted ? <em>message deleted</em> : message.kind === 'poll' ? <PollCard messageId={message.id} /> : <RichText text={message.body} me={myUsername} />}
       {message.edited_at && !deleted && <small className="edited"> (edited)</small>}
       {isPinned(message.id) && !deleted && <small className="pinned-tag"><Icon name="pin" size={12} /> Pinned</small>}
       {!deleted && message.attachment_count > 0 && <AttachmentList messageId={message.id} />}

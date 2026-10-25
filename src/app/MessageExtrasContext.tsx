@@ -1,12 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { Attachment, Message, Reaction } from '../core/types';
+import type { Attachment, Message, PollData, Reaction } from '../core/types';
 import { useServices } from './ServicesContext';
 
-type MessageRef = Pick<Message, 'id' | 'attachment_count'>;
+type MessageRef = Pick<Message, 'id' | 'attachment_count' | 'kind'>;
 
 interface MessageExtrasValue {
   reactionsOf: (messageId: number) => Reaction[];
   attachmentsOf: (messageId: number) => Attachment[];
+  pollOf: (messageId: number) => PollData | undefined;
+  /** Laadt de zichtbare peilingen opnieuw, bijvoorbeeld na een stem. */
+  refreshPolls: () => void;
   /** Vraagt reacties en bijlagen op voor berichten die nog niet geladen zijn. */
   ensure: (messages: MessageRef[]) => void;
 }
@@ -17,11 +20,21 @@ const NO_ATTACHMENTS: Attachment[] = [];
 
 /** Bewaart de reacties en bijlagen van alle zichtbare berichten en houdt de reacties live bij. */
 export function MessageExtrasProvider({ children }: { children: ReactNode }) {
-  const { reactions: reactionService, attachments: attachmentService } = useServices();
+  const { reactions: reactionService, attachments: attachmentService, polls: pollService } = useServices();
   const [reactions, setReactions] = useState<Map<number, Reaction[]>>(new Map());
   const [attachments, setAttachments] = useState<Map<number, Attachment[]>>(new Map());
   const loadedReactions = useRef(new Set<number>());
   const loadedAttachments = useRef(new Set<number>());
+  const [polls, setPolls] = useState<Map<number, PollData>>(new Map());
+  const pollMessages = useRef(new Set<number>());
+
+  const refreshPolls = useCallback(() => {
+    const ids = [...pollMessages.current];
+    if (ids.length === 0) return;
+    pollService.listForMessages(ids).then(rows => setPolls(new Map(rows.map(row => [row.poll.message_id, row])))).catch(() => undefined);
+  }, [pollService]);
+
+  useEffect(() => pollService.watch(refreshPolls), [pollService, refreshPolls]);
 
   useEffect(() => reactionService.subscribe(event => {
     setReactions(current => {
@@ -46,6 +59,11 @@ export function MessageExtrasProvider({ children }: { children: ReactNode }) {
         });
       }).catch(() => missingReactions.forEach(id => loadedReactions.current.delete(id)));
     }
+    const newPolls = messages.filter(m => m.kind === 'poll' && !pollMessages.current.has(m.id)).map(m => m.id);
+    if (newPolls.length > 0) {
+      newPolls.forEach(id => pollMessages.current.add(id));
+      refreshPolls();
+    }
     const missingAttachments = messages.filter(m => m.attachment_count > 0 && !loadedAttachments.current.has(m.id)).map(m => m.id);
     if (missingAttachments.length > 0) {
       missingAttachments.forEach(id => loadedAttachments.current.add(id));
@@ -57,11 +75,12 @@ export function MessageExtrasProvider({ children }: { children: ReactNode }) {
         });
       }).catch(() => missingAttachments.forEach(id => loadedAttachments.current.delete(id)));
     }
-  }, [reactionService, attachmentService]);
+  }, [reactionService, attachmentService, refreshPolls]);
 
   const reactionsOf = useCallback((messageId: number) => reactions.get(messageId) ?? NO_REACTIONS, [reactions]);
   const attachmentsOf = useCallback((messageId: number) => attachments.get(messageId) ?? NO_ATTACHMENTS, [attachments]);
-  const value = useMemo(() => ({ reactionsOf, attachmentsOf, ensure }), [reactionsOf, attachmentsOf, ensure]);
+  const pollOf = useCallback((messageId: number) => polls.get(messageId), [polls]);
+  const value = useMemo(() => ({ reactionsOf, attachmentsOf, pollOf, refreshPolls, ensure }), [reactionsOf, attachmentsOf, pollOf, refreshPolls, ensure]);
   return <MessageExtrasContext.Provider value={value}>{children}</MessageExtrasContext.Provider>;
 }
 

@@ -17,6 +17,7 @@ import { MessageService } from './MessageService';
 import { NotificationService } from './NotificationService';
 import { PeopleService } from './PeopleService';
 import { PinService } from './PinService';
+import { PollService } from './PollService';
 import { ProfileService } from './ProfileService';
 import { ReactionService } from './ReactionService';
 import { SearchService } from './SearchService';
@@ -41,6 +42,7 @@ export class Services {
   readonly attachments: AttachmentService;
   readonly pins: PinService;
   readonly people: PeopleService;
+  readonly polls: PollService;
   readonly notifications: NotificationService;
   readonly search: SearchService;
   readonly teams: TeamService;
@@ -68,6 +70,7 @@ export class Services {
     this.attachments = new AttachmentService(this.db);
     this.pins = new PinService(this.db);
     this.people = new PeopleService(this.db);
+    this.polls = new PollService(this.db);
     this.notifications = new NotificationService(this.db);
     this.search = new SearchService(this.db);
     this.teams = new TeamService(this.db);
