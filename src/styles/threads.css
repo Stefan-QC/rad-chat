@@ -99,3 +99,22 @@
 .mention-list button { width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; text-align: left; }
 .mention-list button.on, .mention-list button:hover { background: var(--red-tint); }
 .mention-list small { color: var(--muted); }
+
+/* snelwisselaar */
+.side-search { margin: 10px 8px 0; padding: 7px 10px; display: flex; align-items: center; gap: 8px; border-radius: 8px; background: var(--input); color: var(--muted); font-weight: 700; font-size: 14px; text-align: left; }
+.side-search:hover { color: var(--text); }
+.side-search span { flex: 1; }
+.side-search kbd { font-size: 10px; }
+.switcher-backdrop { align-items: start; padding-top: 12vh; }
+.switcher { width: min(620px, 100%); max-height: 70vh; display: flex; flex-direction: column; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.switcher-input { font: inherit; font-size: 17px; padding: 16px 18px; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); outline: none; }
+.switcher ul { list-style: none; margin: 0; padding: 6px; overflow-y: auto; }
+.switcher .group { padding: 10px 12px 4px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.switcher li.empty { padding: 28px; text-align: center; color: var(--muted); }
+.switcher button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; text-align: left; }
+.switcher button.on { background: var(--red); color: #fff; }
+.switcher button.on small { color: rgba(255,255,255,.8); }
+.switcher button b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.switcher button small { margin-left: auto; color: var(--muted); white-space: nowrap; }
+.switcher .ico { width: 22px; display: grid; place-items: center; flex: none; }
+.switcher footer { padding: 8px 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
