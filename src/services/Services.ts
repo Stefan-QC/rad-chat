@@ -22,6 +22,7 @@ import { ProfileService } from './ProfileService';
 import { ReactionService } from './ReactionService';
 import { SearchService } from './SearchService';
 import { SettingsService } from './SettingsService';
+import { TaskService } from './TaskService';
 import { TeamService } from './TeamService';
 import { WordleService } from './WordleService';
 import { VoiceHub } from './voice/VoiceHub';
@@ -43,6 +44,7 @@ export class Services {
   readonly pins: PinService;
   readonly people: PeopleService;
   readonly polls: PollService;
+  readonly tasks: TaskService;
   readonly notifications: NotificationService;
   readonly search: SearchService;
   readonly teams: TeamService;
@@ -71,6 +73,7 @@ export class Services {
     this.pins = new PinService(this.db);
     this.people = new PeopleService(this.db);
     this.polls = new PollService(this.db);
+    this.tasks = new TaskService(this.db);
     this.notifications = new NotificationService(this.db);
     this.search = new SearchService(this.db);
     this.teams = new TeamService(this.db);

@@ -8,6 +8,7 @@ import type { Channel } from '../../core/types';
 import { Avatar } from '../Avatar';
 import { NewConversationDialog } from '../chat/NewConversationDialog';
 import { Icon } from '../Icon';
+import { useTasks } from '../../hooks/useTasks';
 import { NotificationBell } from './NotificationBell';
 import { UserBar } from './UserBar';
 import { VoiceBar } from './VoiceBar';
@@ -97,6 +98,8 @@ function ChannelGroup({ title, channels, onAdd }: { title: string; channels: Cha
 export function Sidebar({ onSearch }: { onSearch: () => void }) {
   const { me } = useAuth();
   const { channels, myTeams, closeDrawer } = useWorkspace();
+  const { tasks } = useTasks();
+  const openTasks = tasks.filter(t => t.status === 'open' && t.assignee_id === me?.id).length;
   const [dialog, setDialog] = useState<'message' | 'channel' | null>(null);
   const company = channels.filter(c => c.team_id === null && !c.is_private && (c.kind === 'text' || c.kind === 'voice'));
   const companyPrivate = channels.filter(c => c.team_id === null && c.is_private && c.kind === 'text');
@@ -131,6 +134,7 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
           <Icon name="cube" />RAD Craft<span className="tag">/game</span>
         </NavLink>
         <div className="cat">Workspace</div>
+        <NavLink to="/tasks" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="check" />Tasks{openTasks > 0 && <span className="unread-badge">{openTasks}</span>}</NavLink>
         <NavLink to="/people" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="calendar" />Who is where</NavLink>
         <NavLink to="/teams" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="users" />Teams</NavLink>
         <NavLink to="/leaderboard" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="trophy" />Leaderboard</NavLink>

@@ -265,3 +265,17 @@ kbd { font: inherit; font-weight: 700; font-size: 12px; padding: 1px 7px; border
 .oncall-form { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: end; }
 .member-list.roomy li { align-items: flex-start; }
 .oncall-now { background: var(--red-tint); border-radius: 10px; padding: 6px 8px; }
+
+/* taken */
+.empty-state { display: flex; flex-direction: column; gap: 4px; padding: 28px; text-align: center; color: var(--muted); border: 2px dashed var(--border); border-radius: 14px; }
+.empty-state b { color: var(--text); }
+.task-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.task { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
+.task input[type=checkbox] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--red); flex: none; }
+.task-body { flex: 1; min-width: 0; }
+.task-body p { margin: 2px 0 6px; color: var(--muted); overflow-wrap: anywhere; }
+.task.done .task-body b { text-decoration: line-through; color: var(--muted); }
+.task-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.chip-soft { padding: 2px 9px; border-radius: 10px; background: var(--input); color: var(--muted); font-size: 12px; font-weight: 700; }
+.chip-soft.overdue { background: var(--danger-bg); color: var(--danger-text); }
+.chip-soft.soon { background: var(--mention-bg); color: var(--mention-text); }

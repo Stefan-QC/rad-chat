@@ -10,6 +10,7 @@ import { LoginPage } from './pages/LoginPage';
 import { PeoplePage } from './pages/PeoplePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
+import { TasksPage } from './pages/TasksPage';
 import { TeamsPage } from './pages/TeamsPage';
 import { WordlePage } from './pages/WordlePage';
 
@@ -41,6 +42,7 @@ export function App() {
         <Route index element={<HomeRedirect />} />
         <Route path="channels/:channelId" element={<ChatPage />} />
         <Route path="people" element={<PeoplePage />} />
+        <Route path="tasks" element={<TasksPage />} />
         <Route path="teams" element={<TeamsPage />} />
         <Route path="teams/:teamId" element={<TeamsPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />

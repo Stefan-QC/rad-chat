@@ -274,3 +274,19 @@ export interface PollData {
   options: PollOption[];
   votes: PollVote[];
 }
+
+export interface Task {
+  id: number;
+  title: string;
+  description: string | null;
+  team_id: string | null;
+  channel_id: string | null;
+  message_id: number | null;
+  meeting_id: number | null;
+  assignee_id: string | null;
+  created_by: string | null;
+  due_date: string | null;
+  status: 'open' | 'done';
+  created_at: string;
+  completed_at: string | null;
+}
