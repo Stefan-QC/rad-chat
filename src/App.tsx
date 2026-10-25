@@ -5,8 +5,10 @@ import { Shell } from './components/shell/Shell';
 import { AdminPage } from './pages/AdminPage';
 import { ChatPage } from './pages/ChatPage';
 import { CraftPage } from './pages/CraftPage';
+import { KnowledgePage } from './pages/KnowledgePage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LoginPage } from './pages/LoginPage';
+import { MeetingsPage } from './pages/MeetingsPage';
 import { PeoplePage } from './pages/PeoplePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -42,6 +44,10 @@ export function App() {
         <Route index element={<HomeRedirect />} />
         <Route path="channels/:channelId" element={<ChatPage />} />
         <Route path="people" element={<PeoplePage />} />
+        <Route path="knowledge" element={<KnowledgePage />} />
+        <Route path="knowledge/:pageId" element={<KnowledgePage />} />
+        <Route path="meetings" element={<MeetingsPage />} />
+        <Route path="meetings/:meetingId" element={<MeetingsPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="teams" element={<TeamsPage />} />
         <Route path="teams/:teamId" element={<TeamsPage />} />

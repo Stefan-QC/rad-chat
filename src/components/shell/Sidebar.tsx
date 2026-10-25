@@ -135,6 +135,8 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
         </NavLink>
         <div className="cat">Workspace</div>
         <NavLink to="/tasks" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="check" />Tasks{openTasks > 0 && <span className="unread-badge">{openTasks}</span>}</NavLink>
+        <NavLink to="/knowledge" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="book" />Knowledge base</NavLink>
+        <NavLink to="/meetings" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="notes" />Meetings</NavLink>
         <NavLink to="/people" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="calendar" />Who is where</NavLink>
         <NavLink to="/teams" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="users" />Teams</NavLink>
         <NavLink to="/leaderboard" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="trophy" />Leaderboard</NavLink>

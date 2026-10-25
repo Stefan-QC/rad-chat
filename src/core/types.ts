@@ -290,3 +290,46 @@ export interface Task {
   created_at: string;
   completed_at: string | null;
 }
+
+export interface KbPage {
+  id: number;
+  team_id: string | null;
+  title: string;
+  body: string;
+  category: string | null;
+  pinned: boolean;
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface KbVersion {
+  id: number;
+  page_id: number;
+  version: number;
+  title: string;
+  body: string;
+  edited_by: string | null;
+  edited_at: string;
+}
+
+export interface MeetingNote {
+  id: number;
+  team_id: string | null;
+  title: string;
+  held_at: string;
+  attendees: string[];
+  notes: string;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface Decision {
+  id: number;
+  meeting_id: number;
+  team_id: string | null;
+  text: string;
+  decided_on: string;
+  created_by: string | null;
+}
