@@ -11,6 +11,7 @@ import { LeaderboardService } from './LeaderboardService';
 import { LobbyPresence } from './LobbyPresence';
 import { MessageService } from './MessageService';
 import { ProfileService } from './ProfileService';
+import { ReactionService } from './ReactionService';
 import { SettingsService } from './SettingsService';
 import { TeamService } from './TeamService';
 import { WordleService } from './WordleService';
@@ -25,6 +26,7 @@ export class Services {
   readonly profiles: ProfileService;
   readonly channels: ChannelService;
   readonly messages: MessageService;
+  readonly reactions: ReactionService;
   readonly teams: TeamService;
   readonly leaderboard: LeaderboardService;
   readonly activity: ActivityService;
@@ -43,6 +45,7 @@ export class Services {
     this.profiles = new ProfileService(this.db);
     this.channels = new ChannelService(this.db);
     this.messages = new MessageService(this.db);
+    this.reactions = new ReactionService(this.db);
     this.teams = new TeamService(this.db);
     this.leaderboard = new LeaderboardService(this.db);
     this.activity = new ActivityService(this.db);
