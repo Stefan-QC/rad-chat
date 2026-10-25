@@ -182,3 +182,23 @@ export interface UserSettings {
 }
 
 export type UserSettingsPatch = Partial<Omit<UserSettings, 'user_id'>>;
+
+export interface AppNotification {
+  id: number;
+  user_id: string;
+  kind: 'mention' | 'reply' | 'dm' | 'task' | 'kudos' | 'poll' | 'coffee' | 'system';
+  actor_id: string | null;
+  channel_id: string | null;
+  message_id: number | null;
+  title: string;
+  body: string | null;
+  link: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
+export interface UnreadEntry {
+  channel_id: string;
+  unread: number;
+  mentions: number;
+}

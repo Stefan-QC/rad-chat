@@ -13,6 +13,7 @@ import { GifService } from './GifService';
 import { LeaderboardService } from './LeaderboardService';
 import { LobbyPresence } from './LobbyPresence';
 import { MessageService } from './MessageService';
+import { NotificationService } from './NotificationService';
 import { PinService } from './PinService';
 import { ProfileService } from './ProfileService';
 import { ReactionService } from './ReactionService';
@@ -35,6 +36,7 @@ export class Services {
   readonly reactions: ReactionService;
   readonly attachments: AttachmentService;
   readonly pins: PinService;
+  readonly notifications: NotificationService;
   readonly teams: TeamService;
   readonly leaderboard: LeaderboardService;
   readonly activity: ActivityService;
@@ -58,6 +60,7 @@ export class Services {
     this.reactions = new ReactionService(this.db);
     this.attachments = new AttachmentService(this.db);
     this.pins = new PinService(this.db);
+    this.notifications = new NotificationService(this.db);
     this.teams = new TeamService(this.db);
     this.leaderboard = new LeaderboardService(this.db);
     this.activity = new ActivityService(this.db);
