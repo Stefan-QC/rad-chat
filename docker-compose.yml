@@ -11,9 +11,31 @@ services:
     environment:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
+      API_URL: http://api:8000
+    depends_on:
+      - api
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  api:
+    build: ./api
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      GIF_PROVIDER: ${GIF_PROVIDER:-giphy}
+      GIPHY_API_KEY: ${GIPHY_API_KEY:-}
+      KLIPY_API_KEY: ${KLIPY_API_KEY:-}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+      JOB_TOKEN: ${JOB_TOKEN:-}
+      ENABLE_SCHEDULER: ${ENABLE_SCHEDULER:-false}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 30s
       timeout: 5s
       retries: 3
