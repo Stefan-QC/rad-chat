@@ -11,8 +11,10 @@ import { ChannelService } from './ChannelService';
 import { CraftNetwork } from './CraftNetwork';
 import { CraftService } from './CraftService';
 import { GifService } from './GifService';
+import { KnowledgeService } from './KnowledgeService';
 import { LeaderboardService } from './LeaderboardService';
 import { LobbyPresence } from './LobbyPresence';
+import { MeetingService } from './MeetingService';
 import { MessageService } from './MessageService';
 import { NotificationService } from './NotificationService';
 import { PeopleService } from './PeopleService';
@@ -45,6 +47,8 @@ export class Services {
   readonly people: PeopleService;
   readonly polls: PollService;
   readonly tasks: TaskService;
+  readonly knowledge: KnowledgeService;
+  readonly meetings: MeetingService;
   readonly notifications: NotificationService;
   readonly search: SearchService;
   readonly teams: TeamService;
@@ -74,6 +78,8 @@ export class Services {
     this.people = new PeopleService(this.db);
     this.polls = new PollService(this.db);
     this.tasks = new TaskService(this.db);
+    this.knowledge = new KnowledgeService(this.db);
+    this.meetings = new MeetingService(this.db);
     this.notifications = new NotificationService(this.db);
     this.search = new SearchService(this.db);
     this.teams = new TeamService(this.db);
