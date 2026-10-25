@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { useServices } from '../../app/ServicesContext';
-import { messageOf } from '../../core/AppError';
 import type { Channel } from '../../core/types';
+import { useMessageSender } from '../../hooks/useMessageSender';
 import { useThread } from '../../hooks/useThread';
 import { Icon } from '../Icon';
 import { Composer } from './Composer';
@@ -16,17 +14,12 @@ interface ThreadPanelProps {
 
 /** Zijpaneel met het hoofdbericht, de antwoorden en een invoerveld om te reageren. */
 export function ThreadPanel({ channel, rootId, title, onClose }: ThreadPanelProps) {
-  const { messages: service } = useServices();
   const { root, replies, error: loadError, append } = useThread(channel.id, rootId);
-  const [error, setError] = useState<string | null>(null);
+  const { send: sendMessage, error, setError } = useMessageSender(channel.id, rootId);
 
-  const send = async (text: string) => {
-    try {
-      setError(null);
-      append(await service.send(channel.id, text, { parentId: rootId }));
-    } catch (e) {
-      setError(messageOf(e));
-    }
+  const send = async (text: string, files: File[]) => {
+    const sent = await sendMessage(text, files);
+    if (sent) append(sent);
   };
 
   const thread = root ? [root, ...replies] : replies;

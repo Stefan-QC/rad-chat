@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { MessageExtrasProvider } from '../app/MessageExtrasContext';
 import { PinsProvider, usePins } from '../app/PinsContext';
-import { useServices } from '../app/ServicesContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { ChannelMembersDialog } from '../components/chat/ChannelMembersDialog';
 import { Composer } from '../components/chat/Composer';
@@ -11,17 +10,16 @@ import { PinnedPanel } from '../components/chat/PinnedPanel';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
 import { Icon } from '../components/Icon';
 import { PageHeader } from '../components/PageHeader';
-import { messageOf } from '../core/AppError';
 import { useChannelPermissions } from '../hooks/useChannelPermissions';
+import { useMessageSender } from '../hooks/useMessageSender';
 import { useMessages } from '../hooks/useMessages';
 
 function ChannelView({ channelId }: { channelId: string }) {
-  const { messages: service } = useServices();
   const { channels, teams, presenter, channelMembers } = useWorkspace();
   const channel = channels.find(c => c.id === channelId)!;
   const { messages, hasMore, loadMore, append, error: loadError } = useMessages(channelId);
   const [params, setParams] = useSearchParams();
-  const [error, setError] = useState<string | null>(null);
+  const { send: sendMessage, error: sendError, setError } = useMessageSender(channelId);
   const [showMembers, setShowMembers] = useState(false);
   const title = presenter.title(channel);
   const memberCount = channelMembers.filter(m => m.channel_id === channelId).length;
@@ -40,14 +38,9 @@ function ChannelView({ channelId }: { channelId: string }) {
     return () => { document.title = 'RAD Chat'; };
   }, [title]);
 
-  const send = async (text: string) => {
-    try {
-      setError(null);
-      const sent = await service.send(channelId, text);
-      if (sent.parent_id === null) append(sent);
-    } catch (e) {
-      setError(messageOf(e));
-    }
+  const send = async (text: string, files: File[]) => {
+    const sent = await sendMessage(text, files);
+    if (sent && sent.parent_id === null) append(sent);
   };
 
   return (
@@ -72,7 +65,7 @@ function ChannelView({ channelId }: { channelId: string }) {
         />
         {showMembers && <ChannelMembersDialog channel={channel} onClose={() => setShowMembers(false)} />}
         <MessageList title={title} channel={channel} messages={messages} hasMore={hasMore} onLoadMore={() => void loadMore()} onError={setError} onOpenThread={openThread} />
-        {(error || loadError) && <div className="banner error" role="alert">{error || loadError}</div>}
+        {(sendError || loadError) && <div className="banner error" role="alert">{sendError || loadError}</div>}
         {canPost
           ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} />
           : <div className="composer-blocked" role="note"><Icon name="lock" size={16} />{postBlockedReason}</div>}

@@ -2,6 +2,7 @@ import type { AppConfig } from '../config/AppConfig';
 import { ThemeService } from '../core/ThemeService';
 import { createDb, type Db } from '../core/supabase';
 import { ActivityService } from './ActivityService';
+import { AttachmentService } from './AttachmentService';
 import { AuditService } from './AuditService';
 import { AuthService } from './AuthService';
 import { ChannelService } from './ChannelService';
@@ -28,6 +29,7 @@ export class Services {
   readonly channels: ChannelService;
   readonly messages: MessageService;
   readonly reactions: ReactionService;
+  readonly attachments: AttachmentService;
   readonly pins: PinService;
   readonly teams: TeamService;
   readonly leaderboard: LeaderboardService;
@@ -48,6 +50,7 @@ export class Services {
     this.channels = new ChannelService(this.db);
     this.messages = new MessageService(this.db);
     this.reactions = new ReactionService(this.db);
+    this.attachments = new AttachmentService(this.db);
     this.pins = new PinService(this.db);
     this.teams = new TeamService(this.db);
     this.leaderboard = new LeaderboardService(this.db);
