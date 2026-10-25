@@ -36,3 +36,6 @@
 .userbar .iconbtn { color: #b9b0b0; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; }
 .userbar .iconbtn:hover { background: var(--rail-hover); color: #fff; }
 .userbar .av .dot { border-color: var(--rail); }
+
+.voice-users .sharing-ic { width: 14px; height: 14px; margin-left: auto; color: var(--online); }
+.voice-users .sharing-ic + .muted-ic { margin-left: 4px; }

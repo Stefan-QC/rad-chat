@@ -70,6 +70,7 @@ function VoiceChannelRow({ channel }: { channel: Channel }) {
             <li key={person.userId} className={speaking.has(person.userId) ? 'speaking' : ''}>
               <Avatar name={profile.display_name} color={profile.avatar_color} size="xs" speaking={speaking.has(person.userId)} />
               <span>{profile.display_name}</span>
+              {person.sharing && <Icon name="screen" className="sharing-ic" />}
               {person.muted && <Icon name="mic-off" className="muted-ic" />}
             </li>
           );
