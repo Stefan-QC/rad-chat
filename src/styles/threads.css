@@ -67,3 +67,35 @@
 .gif-note { margin: 12px 4px; color: var(--muted); text-align: center; font-size: 14px; }
 .gif-more { display: block; margin: 8px auto; }
 .gif-foot { font-size: 11px; color: var(--muted); text-align: center; }
+
+/* meldingen en ongelezen */
+.side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bell { position: relative; }
+.bell .iconbtn { position: relative; }
+.bell-badge { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: #fff; font-size: 11px; font-weight: 900; display: grid; place-items: center; }
+.inbox { position: absolute; z-index: 60; top: 40px; left: 0; width: 340px; max-height: 70vh; display: flex; flex-direction: column; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+.inbox header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.inbox h3 { margin: 0; font-size: 15px; font-weight: 900; }
+.inbox ul { list-style: none; margin: 0; padding: 4px; overflow-y: auto; }
+.inbox li.empty { padding: 24px; text-align: center; color: var(--muted); }
+.inbox li button { width: 100%; display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px; border-radius: 10px; text-align: left; }
+.inbox li button:hover { background: var(--hover); }
+.inbox li button.unread { background: var(--red-tint); }
+.inbox li span { flex: 1; min-width: 0; }
+.inbox li b, .inbox li small { display: block; }
+.inbox li small { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inbox li small.body { color: var(--text); opacity: .8; }
+.dot-unread { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex: none; margin-top: 6px; }
+.chan.has-unread { color: var(--text); font-weight: 900; }
+.unread-badge { margin-left: auto; min-width: 20px; padding: 0 6px; height: 20px; border-radius: 10px; background: var(--red); color: #fff; font-size: 11px; font-weight: 900; display: grid; place-items: center; flex: none; }
+.unread-dot { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; background: var(--text); flex: none; }
+.chan.active .unread-badge { background: #fff; color: var(--red); }
+.chan.active .unread-dot { background: #fff; }
+@media (max-width: 720px) { .inbox { position: fixed; left: 12px; right: 12px; top: 60px; width: auto; } }
+
+/* @-suggesties */
+#composer { position: relative; }
+.mention-list { position: absolute; left: 16px; right: 16px; bottom: calc(100% - 14px); margin: 0; padding: 4px; list-style: none; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); z-index: 30; max-width: 420px; }
+.mention-list button { width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; text-align: left; }
+.mention-list button.on, .mention-list button:hover { background: var(--red-tint); }
+.mention-list small { color: var(--muted); }
