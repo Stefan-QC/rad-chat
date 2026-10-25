@@ -1,6 +1,6 @@
 import { expectOk, unwrap, type Db } from '../core/supabase';
 import { watchTables } from '../core/realtime';
-import type { Team, TeamMember, TeamWithMembers } from '../core/types';
+import type { Team, TeamMember, TeamRole, TeamWithMembers } from '../core/types';
 
 export interface TeamDraft {
   name: string;
@@ -34,6 +34,10 @@ export class TeamService {
 
   async leave(teamId: string): Promise<void> {
     expectOk(await this.db.rpc('leave_team', { p_team: teamId }));
+  }
+
+  async setMemberRole(teamId: string, userId: string, role: TeamRole): Promise<void> {
+    expectOk(await this.db.rpc('set_team_member_role', { p_team: teamId, p_user: userId, p_role: role }));
   }
 
   async removeMember(teamId: string, userId: string): Promise<void> {
