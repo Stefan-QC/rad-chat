@@ -1,21 +1,33 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../app/AuthContext';
+import { useNotifications } from '../../app/NotificationsContext';
 import { useServices } from '../../app/ServicesContext';
 import { useWorkspace } from '../../app/WorkspaceContext';
 import type { Channel } from '../../core/types';
 import { Avatar } from '../Avatar';
 import { NewConversationDialog } from '../chat/NewConversationDialog';
 import { Icon } from '../Icon';
+import { NotificationBell } from './NotificationBell';
 import { UserBar } from './UserBar';
 import { VoiceBar } from './VoiceBar';
 
+/** Toont het aantal ongelezen vermeldingen, of een stip als er alleen ongelezen berichten zijn. */
+function UnreadBadge({ channelId }: { channelId: string }) {
+  const entry = useNotifications().unreadOf(channelId);
+  if (!entry) return null;
+  if (entry.mentions > 0) return <span className="unread-badge" aria-label={`${entry.mentions} unread mentions`}>{entry.mentions > 99 ? '99+' : entry.mentions}</span>;
+  return entry.unread > 0 ? <span className="unread-dot" aria-label="Unread messages" /> : null;
+}
+
 function TextChannelLink({ channel }: { channel: Channel }) {
+  const unread = (useNotifications().unreadOf(channel.id)?.unread ?? 0) > 0;
   return (
-    <NavLink to={`/channels/${channel.id}`} className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
+    <NavLink to={`/channels/${channel.id}`} className={({ isActive }) => `chan${isActive ? ' active' : ''}${unread ? ' has-unread' : ''}`}>
       {channel.is_private ? <Icon name="lock" className="chan-lock" /> : <span className="hash">#</span>}
       <span className="chan-name">{channel.name}</span>
       {channel.post_policy === 'moderators' && <span className="tag">announce</span>}
+      <UnreadBadge channelId={channel.id} />
     </NavLink>
   );
 }
@@ -24,14 +36,16 @@ function ConversationLink({ channel }: { channel: Channel }) {
   const { presenter, onlineIds } = useWorkspace();
   const others = presenter.others(channel);
   const first = others[0];
+  const unread = (useNotifications().unreadOf(channel.id)?.unread ?? 0) > 0;
   return (
-    <NavLink to={`/channels/${channel.id}`} className={({ isActive }) => `chan convo${isActive ? ' active' : ''}`}>
+    <NavLink to={`/channels/${channel.id}`} className={({ isActive }) => `chan convo${isActive ? ' active' : ''}${unread ? ' has-unread' : ''}`}>
       {channel.kind === 'dm' && first ? (
         <Avatar name={first.display_name} color={first.avatar_color} size="xs" online={onlineIds.has(first.id)} />
       ) : (
         <span className="group-badge" aria-hidden="true">{others.length + 1}</span>
       )}
       <span className="chan-name">{presenter.title(channel)}</span>
+      <UnreadBadge channelId={channel.id} />
     </NavLink>
   );
 }
@@ -90,7 +104,10 @@ export function Sidebar() {
 
   return (
     <aside id="sidebar" onClick={closeDrawer}>
-      <div className="side-head"><h2>RAD Chat</h2><span>Quality in IT</span></div>
+      <div className="side-head">
+        <div><h2>RAD Chat</h2><span>Quality in IT</span></div>
+        <NotificationBell />
+      </div>
       <div className="side-body">
         <ChannelGroup title="Company" channels={company} onAdd={me?.role !== 'guest' ? () => setDialog('channel') : undefined} />
         {companyPrivate.length > 0 && <ChannelGroup title="Private channels" channels={companyPrivate} />}
