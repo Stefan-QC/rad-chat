@@ -94,7 +94,7 @@ function ChannelGroup({ title, channels, onAdd }: { title: string; channels: Cha
 }
 
 /** Zijbalk met kanalen per bedrijf en team, gesprekken, voice-deelnemers en snelkoppelingen. */
-export function Sidebar() {
+export function Sidebar({ onSearch }: { onSearch: () => void }) {
   const { me } = useAuth();
   const { channels, myTeams, closeDrawer } = useWorkspace();
   const [dialog, setDialog] = useState<'message' | 'channel' | null>(null);
@@ -108,6 +108,9 @@ export function Sidebar() {
         <div><h2>RAD Chat</h2><span>Quality in IT</span></div>
         <NotificationBell />
       </div>
+      <button className="side-search" onClick={onSearch} aria-label="Search and quick switcher">
+        <Icon name="search" size={16} /><span>Search</span><kbd>Ctrl K</kbd>
+      </button>
       <div className="side-body">
         <ChannelGroup title="Company" channels={company} onAdd={me?.role !== 'guest' ? () => setDialog('channel') : undefined} />
         {companyPrivate.length > 0 && <ChannelGroup title="Private channels" channels={companyPrivate} />}
