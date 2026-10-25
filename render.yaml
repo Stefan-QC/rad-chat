@@ -1,0 +1,20 @@
+# Render Blueprint: één webservice uit de Dockerfile. De geheimen vul je in het Render-dashboard in.
+services:
+  - type: web
+    name: rad-chat
+    runtime: docker
+    plan: starter # een gratis instance slaapt na inactiviteit, dan draaien de nachtelijke taken niet
+    healthCheckPath: /healthz
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GIF_PROVIDER
+        value: giphy
+      - key: GIPHY_API_KEY
+        sync: false
+      - key: TIMEZONE
+        value: Europe/Amsterdam

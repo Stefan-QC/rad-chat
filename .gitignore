@@ -4,8 +4,9 @@ dist/
 .env.*
 !.env.example
 certs/
-history.json
-world.json
-scores.json
+.venv/
+__pycache__/
+.pytest_cache/
 supabase/tests/node_modules/
 .claude/
+*.pyc
