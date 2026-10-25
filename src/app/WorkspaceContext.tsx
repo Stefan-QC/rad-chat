@@ -17,6 +17,7 @@ interface WorkspaceValue {
   voiceParticipants: Map<string, VoiceParticipant[]>;
   voiceSelf: VoiceSelf;
   speaking: Set<string>;
+  screens: Map<string, MediaStream>;
   drawerOpen: boolean;
   toggleDrawer: () => void;
   closeDrawer: () => void;
@@ -36,8 +37,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [onlineIds, setOnlineIds] = useState<Set<string>>(new Set());
   const [voiceParticipants, setVoiceParticipants] = useState<Map<string, VoiceParticipant[]>>(new Map());
-  const [voiceSelf, setVoiceSelf] = useState<VoiceSelf>({ channelId: null, muted: false, error: null });
+  const [voiceSelf, setVoiceSelf] = useState<VoiceSelf>({ channelId: null, muted: false, sharing: false, error: null });
   const [speaking, setSpeaking] = useState<Set<string>>(new Set());
+  const [screens, setScreens] = useState<Map<string, MediaStream>>(new Map());
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const refreshChannels = useCallback(async () => {
@@ -60,6 +62,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       voice.on('participants', setVoiceParticipants),
       voice.on('self', setVoiceSelf),
       voice.on('speaking', setSpeaking),
+      voice.on('screens', setScreens),
     ];
     lobby.join(me.id);
     return () => {
@@ -81,10 +84,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
-      channels, channelMembers, presenter, teams, myTeams, profiles, profileById, onlineIds, voiceParticipants, voiceSelf, speaking,
+      channels, channelMembers, presenter, teams, myTeams, profiles, profileById, onlineIds, voiceParticipants, voiceSelf, speaking, screens,
       drawerOpen, toggleDrawer, closeDrawer, refreshTeams, refreshChannels,
     }),
-    [channels, channelMembers, presenter, teams, myTeams, profiles, profileById, onlineIds, voiceParticipants, voiceSelf, speaking, drawerOpen, toggleDrawer, closeDrawer, refreshTeams, refreshChannels],
+    [channels, channelMembers, presenter, teams, myTeams, profiles, profileById, onlineIds, voiceParticipants, voiceSelf, speaking, screens, drawerOpen, toggleDrawer, closeDrawer, refreshTeams, refreshChannels],
   );
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
 }
