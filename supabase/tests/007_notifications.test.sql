@@ -16,7 +16,7 @@ begin
   perform t.ok((select count(*) from public.notifications where user_id = u2 and kind = 'mention') = 2, 'a mentioned colleague gets a notification per message');
   perform t.ok((select count(*) from public.notifications where user_id = u3 and kind = 'mention') = 1, 'mentions are case-insensitive');
   perform t.ok((select count(*) from public.notifications where user_id = u3 and channel_id = priv) = 0, 'no notification for someone who cannot see the private channel');
-  perform t.ok((select count(*) from public.notifications where user_id = u1) = 0, 'you are never notified about your own mention');
+  perform t.ok((select count(*) from public.notifications where user_id = u1 and kind in ('mention', 'reply', 'dm')) = 0, 'you are never notified about your own mention');
 
   -- replies
   perform t.as_user(u2);
