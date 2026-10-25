@@ -8,7 +8,6 @@ from tests.helpers import make_settings
 def test_config__defaults_are_safe() -> None:
     settings = Settings(_env_file=None)
     assert settings.gif_provider == "giphy"
-    assert settings.enable_scheduler is False
     assert settings.rate_limit_per_minute == 60
     assert settings.max_body_bytes == 65536
     assert settings.timezone == "Europe/Amsterdam"
@@ -30,20 +29,6 @@ def test_config__validate_timezone_accepts_known_zone() -> None:
 def test_config__validate_timezone_rejects_unknown_zone() -> None:
     with pytest.raises(ValidationError):
         make_settings(timezone="Mars/Olympus")
-
-
-def test_config__origins_splits_and_drops_wildcard() -> None:
-    settings = make_settings(allowed_origins="http://a.test/, *, http://b.test ,")
-    assert settings.origins == ["http://a.test", "http://b.test"]
-
-
-def test_config__origins_empty_when_unset() -> None:
-    assert make_settings(allowed_origins="").origins == []
-
-
-def test_config__job_token_enabled_depends_on_value() -> None:
-    assert make_settings(job_token="x").job_token_enabled is True
-    assert make_settings(job_token="").job_token_enabled is False
 
 
 def test_config__rest_url_is_built_from_supabase_url() -> None:

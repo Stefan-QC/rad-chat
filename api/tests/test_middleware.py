@@ -1,6 +1,5 @@
 import httpx
 from fastapi import FastAPI, Request
-from starlette.middleware.cors import CORSMiddleware
 
 from app.security.middleware import (
     BodyCounter,
@@ -128,13 +127,3 @@ async def test_middleware__send_response_tracker_marks_started() -> None:
     assert tracker.started is False
     await tracker.send({"type": "http.response.start", "status": 200, "headers": []})
     assert tracker.started is True and len(sent) == 1
-
-
-async def test_middleware__cors_allows_only_listed_origin() -> None:
-    container = make_container(allowed_origins="http://good.test")
-    async with make_client(container) as client:
-        good = await client.get("/api/health", headers={"Origin": "http://good.test"})
-        bad = await client.get("/api/health", headers={"Origin": "http://evil.test"})
-    assert good.headers["access-control-allow-origin"] == "http://good.test"
-    assert "access-control-allow-origin" not in bad.headers
-    assert CORSMiddleware is not None and make_settings() is not None

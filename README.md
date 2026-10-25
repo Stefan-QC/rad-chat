@@ -48,7 +48,7 @@ The API needs a server secret (the Supabase service-role key), so it runs next t
 cd api
 python -m venv .venv && .venv\Scripts\activate     # Linux/macOS: source .venv/bin/activate
 pip install -r requirements-dev.txt
-cp .env.example .env        # SUPABASE_*, GIPHY_API_KEY (or KLIPY_API_KEY), JOB_TOKEN, ENABLE_SCHEDULER, ALLOWED_ORIGINS
+cp .env.example .env        # SUPABASE_*, GIPHY_API_KEY (or KLIPY_API_KEY)
 uvicorn app.main:app --port 8000
 ```
 

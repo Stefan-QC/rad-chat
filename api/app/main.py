@@ -6,7 +6,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings, get_settings
 from app.container import Container
@@ -27,30 +26,20 @@ def configure_logging() -> None:
 
 
 def add_security_middleware(app: FastAPI, settings: Settings) -> None:
-    """Registreert body-limiet, beveiligingsheaders en de CORS-allowlist."""
+    """Registreert body-limiet en beveiligingsheaders; zonder CORS-headers blokkeert de browser andere origins."""
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_body_bytes)
     app.add_middleware(SecurityHeadersMiddleware)
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.origins,
-        allow_credentials=False,
-        allow_methods=["GET", "POST", "PUT", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "X-Job-Token"],
-        max_age=600,
-    )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Start de scheduler indien ingeschakeld en sluit bij het afsluiten alles netjes af."""
+    """Start de scheduler en sluit bij het afsluiten alles netjes af."""
     container: Container = app.state.container
-    if container.scheduler is not None:
-        container.scheduler.start()
+    container.scheduler.start()
     try:
         yield
     finally:
-        if container.scheduler is not None:
-            container.scheduler.shutdown()
+        container.scheduler.shutdown()
         await container.aclose()
 
 

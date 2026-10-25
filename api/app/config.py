@@ -20,9 +20,6 @@ class Settings(BaseSettings):
     giphy_api_key: str = ""
     klipy_api_key: str = ""
     gif_rating: str = "pg-13"
-    allowed_origins: str = ""
-    job_token: str = ""
-    enable_scheduler: bool = False
     timezone: str = "Europe/Amsterdam"
     rate_limit_per_minute: int = Field(default=60, ge=1, le=100000)
     max_body_bytes: int = Field(default=65536, ge=1024, le=10_000_000)
@@ -43,17 +40,6 @@ class Settings(BaseSettings):
         except (ZoneInfoNotFoundError, ValueError):
             raise ValueError("Unknown timezone") from None
         return value
-
-    @property
-    def origins(self) -> list[str]:
-        """Geeft de toegestane CORS-origins zonder wildcards terug."""
-        items = [item.strip().rstrip("/") for item in self.allowed_origins.split(",")]
-        return [item for item in items if item and item != "*"]
-
-    @property
-    def job_token_enabled(self) -> bool:
-        """Geeft aan of de job-token authenticatie is ingeschakeld."""
-        return bool(self.job_token)
 
     @property
     def rest_url(self) -> str:

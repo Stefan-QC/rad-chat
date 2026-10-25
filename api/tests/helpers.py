@@ -41,8 +41,6 @@ def make_settings(**overrides: object) -> Settings:
         "supabase_service_role_key": "service-key",
         "giphy_api_key": "giphy-key",
         "klipy_api_key": "klipy-key",
-        "allowed_origins": "http://localhost:5173",
-        "job_token": "job-secret",
     }
     values.update(overrides)
     return Settings(_env_file=None, **values)
