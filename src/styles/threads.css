@@ -29,3 +29,13 @@
 .emoji-grid { display: grid; grid-template-columns: repeat(8, 1fr); }
 .emoji-pop button { font-size: 20px; line-height: 1; padding: 5px; border-radius: 8px; }
 .emoji-pop button:hover { background: var(--hover); }
+
+/* vastgepinde berichten en geblokkeerde invoer */
+.side-scroll { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.side-empty.roomy { padding: 16px; line-height: 1.5; }
+.pin-card { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; background: var(--panel); }
+.pin-card header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 13px; }
+.pin-card time { color: var(--muted); font-size: 11px; margin-left: auto; }
+.pin-card p { margin: 0 0 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.pinned-tag { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; color: var(--red); font-size: 11px; font-weight: 700; }
+.composer-blocked { margin: 0 16px 20px; padding: 12px 14px; border-radius: 12px; background: var(--input); color: var(--muted); display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }

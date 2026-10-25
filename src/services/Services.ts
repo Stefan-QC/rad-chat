@@ -10,6 +10,7 @@ import { CraftService } from './CraftService';
 import { LeaderboardService } from './LeaderboardService';
 import { LobbyPresence } from './LobbyPresence';
 import { MessageService } from './MessageService';
+import { PinService } from './PinService';
 import { ProfileService } from './ProfileService';
 import { ReactionService } from './ReactionService';
 import { SettingsService } from './SettingsService';
@@ -27,6 +28,7 @@ export class Services {
   readonly channels: ChannelService;
   readonly messages: MessageService;
   readonly reactions: ReactionService;
+  readonly pins: PinService;
   readonly teams: TeamService;
   readonly leaderboard: LeaderboardService;
   readonly activity: ActivityService;
@@ -46,6 +48,7 @@ export class Services {
     this.channels = new ChannelService(this.db);
     this.messages = new MessageService(this.db);
     this.reactions = new ReactionService(this.db);
+    this.pins = new PinService(this.db);
     this.teams = new TeamService(this.db);
     this.leaderboard = new LeaderboardService(this.db);
     this.activity = new ActivityService(this.db);
