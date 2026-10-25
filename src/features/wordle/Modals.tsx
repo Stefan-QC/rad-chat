@@ -58,7 +58,6 @@ export function StatsModal({ onClose, version, highlight }: StatsModalProps) {
 }
 
 const OPTIONS: { key: keyof WordleSettingsData; title: string; description: string }[] = [
-  { key: 'dark', title: 'Dark mode', description: 'Donker kleurenschema' },
   { key: 'contrast', title: 'Hoog contrast', description: 'Oranje en blauw in plaats van groen en geel' },
   { key: 'sound', title: 'Geluidseffecten', description: 'Korte geluidjes tijdens het spelen' },
   { key: 'reduceMotion', title: 'Animaties verminderen', description: 'Geen flip-, spring- of schudanimaties' },
