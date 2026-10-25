@@ -23,6 +23,8 @@ const PAGES = [
   { path: '/wordle', label: 'RAD Wordle' },
   { path: '/craft', label: 'RAD Craft' },
   { path: '/tasks', label: 'Tasks' },
+  { path: '/knowledge', label: 'Knowledge base' },
+  { path: '/meetings', label: 'Meetings and decisions' },
   { path: '/people', label: 'Who is where' },
   { path: '/teams', label: 'Teams' },
   { path: '/leaderboard', label: 'Leaderboard' },
