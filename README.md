@@ -1,8 +1,13 @@
 # RAD Chat
 
-Company chat for colleagues: channels, teams, voice, a daily Dutch Wordle, a shared block world and a leaderboard.
-The frontend is React (Vite + TypeScript). All data lives in Supabase (Postgres, Auth, Realtime).
-A tiny Node server hosts the built app, so it runs on a laptop, a VM, Docker or any static host.
+Company chat for colleagues: channels, threads, reactions, polls, pasted screenshots, GIFs, teams, voice with screen sharing,
+notifications, search, people directory, tasks, knowledge base, meetings, kudos, a daily Dutch Wordle, a shared block world
+and a leaderboard. There is a settings page (gear icon) and a light/dark theme for the whole site.
+
+- Frontend: React (Vite + TypeScript).
+- Data: Supabase (Postgres with row level security, Auth, Realtime, Storage). Writes go through `security definer` functions.
+- Node server (`server.js`): hosts the built app, sets security headers (incl. a Content-Security-Policy) and proxies `/api/*` to the Python API.
+- Python API (`api/`, FastAPI): GIF search, admin user management, message export, retention and scheduled jobs. See [api/README.md](api/README.md).
 
 ## Quick start
 
@@ -24,8 +29,8 @@ Colleagues open `http://<your-ip>:3000`. The URL and key are read at runtime fro
 
 ## Set up Supabase (once)
 
-1. Open the SQL editor of your project and run, in order:
-   `supabase/migrations/001_core.sql` and `supabase/migrations/002_games_points_realtime.sql`.
+1. Open the SQL editor of your project and run every file in `supabase/migrations/` in order (001 up to 012).
+   See [supabase/README.md](supabase/README.md) for what each one adds.
 2. Create accounts under **Authentication → Users → Add user**. Tick **Auto Confirm User**.
    The first account becomes an admin; admins can promote others on the Admin page.
 3. Under **Authentication → Providers → Email**, switch off **Allow new users to sign up** so only accounts
@@ -34,6 +39,31 @@ Colleagues open `http://<your-ip>:3000`. The URL and key are read at runtime fro
 Everything the app does is stored in the database and protected with row level security:
 profiles, teams, channels, messages (edit/delete), points, Wordle games, the RAD Craft world,
 voice/game sessions and an audit log that only admins can read.
+
+## Python API
+
+The API needs a server secret (the Supabase service-role key), so it runs next to the Node server, never in the browser.
+
+```sh
+cd api
+python -m venv .venv && .venv\Scriptsctivate     # Linux/macOS: source .venv/bin/activate
+pip install -r requirements-dev.txt
+cp .env.example .env        # SUPABASE_*, GIPHY_API_KEY (or KLIPY_API_KEY), JOB_TOKEN, ENABLE_SCHEDULER, ALLOWED_ORIGINS
+uvicorn app.main:app --port 8000
+```
+
+`npm start` forwards `/api/*` to `API_URL` (default `http://127.0.0.1:8000`). Without the API the chat still works, but GIFs,
+the admin user tools and the scheduled jobs are unavailable. `docker compose up --build` starts both.
+
+## Tests
+
+| Command | What it checks |
+| --- | --- |
+| `npm test` | frontend unit tests (vitest): markdown, presenters, Wordle, helpers |
+| `npm run test:db` | SQL tests on a local embedded Postgres: RLS, RPCs, triggers (no Supabase project needed) |
+| `cd api && pytest` | API tests, one per function, plus a guard that fails when a function has no test |
+
+CI (`.github/workflows/ci.yml`) runs the frontend tests, the build and the API tests.
 
 ## Voice and https
 
@@ -85,8 +115,10 @@ Corporate Wi-Fi can also block traffic between devices (client isolation).
 ## Project structure
 
 ```
-server.js                      Node host: static files, SPA fallback, /config.js, /healthz, optional https
+server.js                      Node host: static files, SPA fallback, /config.js, /healthz, security headers, /api proxy, optional https
 supabase/migrations/           database schema, RLS policies and functions
+supabase/tests/                SQL tests (npm run test:db)
+api/                           Python FastAPI backend with tests
 scripts/                       generate-cert.mjs, expose-on-lan.ps1
 src/
   config/AppConfig.ts          reads the Supabase settings
@@ -103,4 +135,4 @@ src/
 
 ## Scripts
 
-`npm run dev` · `npm run build` (typecheck + bundle) · `npm start` · `npm run typecheck` · `npm run cert`
+`npm run dev` · `npm run build` (typecheck + bundle) · `npm start` · `npm run typecheck` · `npm run cert` · `npm test` · `npm run test:db`
