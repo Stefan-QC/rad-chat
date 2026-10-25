@@ -187,3 +187,27 @@ kbd { font: inherit; font-weight: 700; font-size: 12px; padding: 1px 7px; border
 .picker-list .check { color: var(--red); font-style: normal; font-weight: 900; width: 16px; }
 .picker-list .empty { padding: 14px; color: var(--muted); text-align: center; }
 .chip.removable { cursor: pointer; background: var(--red-tint); border-color: var(--red-soft); color: var(--text); }
+
+/* beheerconsole */
+.table-scroll { overflow-x: auto; border-radius: 14px; }
+.table-scroll .table { min-width: 760px; }
+.block { display: block; }
+.row-actions { white-space: nowrap; text-align: right; }
+.row-actions .btn + .btn { margin-left: 6px; }
+.status-pill { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; background: var(--input); color: var(--muted); }
+.status-pill.on { background: var(--ok-bg); color: var(--ok-text); }
+.status-pill.off { background: var(--danger-bg); color: var(--danger-text); }
+.badge.role-admin { background: var(--red); color: #fff; }
+.badge.role-guest { background: var(--input); color: var(--text); border: 1px solid var(--border); }
+.password-row { display: flex; gap: 8px; }
+.password-row .text-input { flex: 1; font-family: ui-monospace, monospace; }
+.credentials { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; padding: 12px 14px; border-radius: 12px; background: var(--input); margin: 12px 0; }
+.credentials span { color: var(--muted); font-weight: 700; }
+.credentials code { overflow-wrap: anywhere; }
+.data-tab { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: start; }
+.data-tab .card:last-child { grid-column: 1 / -1; }
+.job-list { list-style: none; margin: 0; padding: 0; }
+.job-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.job-list li span { flex: 1; }
+.job-list b, .job-list small { display: block; }
+.job-list small { color: var(--muted); }
