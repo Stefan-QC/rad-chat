@@ -5,11 +5,13 @@ import { PinsProvider, usePins } from '../app/PinsContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { ChannelMembersDialog } from '../components/chat/ChannelMembersDialog';
 import { Composer } from '../components/chat/Composer';
+import { GifButton } from '../components/chat/GifButton';
 import { MessageList } from '../components/chat/MessageList';
 import { PinnedPanel } from '../components/chat/PinnedPanel';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
 import { Icon } from '../components/Icon';
 import { PageHeader } from '../components/PageHeader';
+import type { GifItem } from '../services/GifService';
 import { useChannelPermissions } from '../hooks/useChannelPermissions';
 import { useMessageSender } from '../hooks/useMessageSender';
 import { useMessages } from '../hooks/useMessages';
@@ -43,6 +45,11 @@ function ChannelView({ channelId }: { channelId: string }) {
     if (sent && sent.parent_id === null) append(sent);
   };
 
+  const sendGif = async (gif: GifItem) => {
+    const sent = await sendMessage('', [], [{ kind: 'gif', url: gif.url, width: gif.width ?? undefined, height: gif.height ?? undefined }]);
+    if (sent && sent.parent_id === null) append(sent);
+  };
+
   return (
     <div className="chat-layout">
       <div className="chat-main">
@@ -67,7 +74,7 @@ function ChannelView({ channelId }: { channelId: string }) {
         <MessageList title={title} channel={channel} messages={messages} hasMore={hasMore} onLoadMore={() => void loadMore()} onError={setError} onOpenThread={openThread} />
         {(sendError || loadError) && <div className="banner error" role="alert">{sendError || loadError}</div>}
         {canPost
-          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} />
+          ? <Composer channelName={title} conversation={presenter.isConversation(channel)} onSend={send} tools={<GifButton onPick={gif => void sendGif(gif)} />} />
           : <div className="composer-blocked" role="note"><Icon name="lock" size={16} />{postBlockedReason}</div>}
       </div>
       {threadId !== null && <ThreadPanel key={threadId} channel={channel} rootId={threadId} title={title} onClose={closeThread} />}

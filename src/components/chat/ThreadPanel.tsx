@@ -2,7 +2,9 @@ import type { Channel } from '../../core/types';
 import { useMessageSender } from '../../hooks/useMessageSender';
 import { useThread } from '../../hooks/useThread';
 import { Icon } from '../Icon';
+import type { GifItem } from '../../services/GifService';
 import { Composer } from './Composer';
+import { GifButton } from './GifButton';
 import { MessageList } from './MessageList';
 
 interface ThreadPanelProps {
@@ -22,6 +24,11 @@ export function ThreadPanel({ channel, rootId, title, onClose }: ThreadPanelProp
     if (sent) append(sent);
   };
 
+  const sendGif = async (gif: GifItem) => {
+    const sent = await sendMessage('', [], [{ kind: 'gif', url: gif.url, width: gif.width ?? undefined, height: gif.height ?? undefined }]);
+    if (sent) append(sent);
+  };
+
   const thread = root ? [root, ...replies] : replies;
   return (
     <aside className="chat-side" aria-label="Thread">
@@ -31,7 +38,7 @@ export function ThreadPanel({ channel, rootId, title, onClose }: ThreadPanelProp
       </header>
       <MessageList title={title} channel={channel} messages={thread} hasMore={false} onLoadMore={() => undefined} onError={setError} showWelcome={false} />
       {(error || loadError) && <div className="banner error" role="alert">{error || loadError}</div>}
-      <Composer channelName={title} placeholder="Reply in thread…" onSend={send} />
+      <Composer channelName={title} placeholder="Reply in thread…" onSend={send} tools={<GifButton onPick={gif => void sendGif(gif)} />} />
     </aside>
   );
 }
