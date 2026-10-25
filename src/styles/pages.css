@@ -319,3 +319,37 @@ kbd { font: inherit; font-weight: 700; font-size: 12px; padding: 1px 7px; border
 .inline-form { display: flex; gap: 8px; margin: 8px 0 16px; }
 .inline-form .text-input { flex: 1; }
 .card h3 { margin-top: 22px; }
+
+/* kudos, quiz, badges, koffie en periodes */
+.kudos-form h2, .feed-title { margin: 0 0 6px; }
+.kudos-feed { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.kudos-feed li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; }
+.kudos-feed p { margin: 0; }
+.kudos-feed blockquote { margin: 6px 0; padding: 0 0 0 12px; border-left: 4px solid var(--red-soft); }
+.kudos-star { font-size: 26px; }
+.quiz h2 { margin: 4px 0 16px; font-size: 24px; }
+.quiz-category { margin: 0; color: var(--red); font-weight: 900; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.quiz ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.quiz-option { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px solid var(--border); border-radius: 12px; background: var(--input); text-align: left; font-weight: 700; }
+.quiz-option:not(:disabled):hover { border-color: var(--red); }
+.quiz-option:disabled { cursor: default; }
+.quiz-option.right { border-color: var(--online); background: var(--ok-bg); color: var(--ok-text); }
+.quiz-option.wrong { border-color: var(--red); background: var(--danger-bg); color: var(--danger-text); }
+.quiz-option i { margin-left: auto; font-style: normal; font-weight: 900; }
+.quiz-letter { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--panel); border: 1px solid var(--border); font-size: 13px; flex: none; }
+.quiz-result { margin: 16px 0 0; font-weight: 700; }
+.quiz-result.ok { color: var(--ok-text); }
+.quiz-result.miss { color: var(--muted); }
+.quiz-result small { display: block; font-weight: 400; color: var(--muted); }
+.badge-shelf h3 { margin-top: 22px; }
+.badge-shelf ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.badge-shelf li { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); }
+.badge-shelf li small { color: var(--muted); font-size: 12px; }
+.badge-shelf li.locked { opacity: .45; filter: grayscale(1); }
+.badge-icon { font-size: 26px; }
+.people-side { display: flex; flex-direction: column; gap: 16px; }
+.coffee h2 { margin: 0 0 4px; }
+.coffee-match { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.coffee-match span { flex: 1; }
+.board-controls { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.team-leader { margin-bottom: 10px; }

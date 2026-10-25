@@ -4,6 +4,7 @@ import { useAuth } from '../app/AuthContext';
 import { useServices } from '../app/ServicesContext';
 import { useWorkspace } from '../app/WorkspaceContext';
 import { Avatar } from '../components/Avatar';
+import { BadgeShelf } from '../components/BadgeShelf';
 import { PageHeader } from '../components/PageHeader';
 import { Switch } from '../components/ui/Switch';
 import { messageOf } from '../core/AppError';
@@ -44,6 +45,7 @@ function ReadOnlyProfile({ profile }: { profile: Profile }) {
       </div>
       {profile.bio && <p>{profile.bio}</p>}
       <ProfileStats userId={profile.id} />
+      <BadgeShelf userId={profile.id} own={false} />
       {memberOf.length > 0 && (
         <p className="chips">{memberOf.map(team => <span key={team.id} className="chip" style={{ borderColor: team.color }}>{team.name}</span>)}</p>
       )}
@@ -129,7 +131,7 @@ function EditProfile({ profile }: { profile: Profile }) {
         <div className="actions"><button className="btn" disabled={saving || !displayName.trim()}>{saving ? 'Saving…' : 'Save changes'}</button></div>
       </form>
       <PasswordForm />
-      <div className="card"><h3>Statistics</h3><ProfileStats userId={profile.id} /></div>
+      <div className="card"><h3>Statistics</h3><ProfileStats userId={profile.id} /><BadgeShelf userId={profile.id} own /></div>
       <div className="card"><button className="btn secondary" onClick={() => void signOut()}>Sign out</button></div>
     </>
   );

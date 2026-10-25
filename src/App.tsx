@@ -6,11 +6,13 @@ import { AdminPage } from './pages/AdminPage';
 import { ChatPage } from './pages/ChatPage';
 import { CraftPage } from './pages/CraftPage';
 import { KnowledgePage } from './pages/KnowledgePage';
+import { KudosPage } from './pages/KudosPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { MeetingsPage } from './pages/MeetingsPage';
 import { PeoplePage } from './pages/PeoplePage';
 import { ProfilePage } from './pages/ProfilePage';
+import { QuizPage } from './pages/QuizPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TasksPage } from './pages/TasksPage';
 import { TeamsPage } from './pages/TeamsPage';
@@ -48,6 +50,8 @@ export function App() {
         <Route path="knowledge/:pageId" element={<KnowledgePage />} />
         <Route path="meetings" element={<MeetingsPage />} />
         <Route path="meetings/:meetingId" element={<MeetingsPage />} />
+        <Route path="kudos" element={<KudosPage />} />
+        <Route path="quiz" element={<QuizPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="teams" element={<TeamsPage />} />
         <Route path="teams/:teamId" element={<TeamsPage />} />

@@ -1,4 +1,5 @@
 import { CelebrationsCard } from '../components/people/CelebrationsCard';
+import { CoffeeCard } from '../components/people/CoffeeCard';
 import { WeekPlanner } from '../components/people/WeekPlanner';
 import { PageHeader } from '../components/PageHeader';
 
@@ -9,7 +10,10 @@ export function PeoplePage() {
       <PageHeader title="People" />
       <div className="page wide people-page">
         <WeekPlanner />
-        <CelebrationsCard />
+        <div className="people-side">
+          <CelebrationsCard />
+          <CoffeeCard />
+        </div>
       </div>
     </>
   );

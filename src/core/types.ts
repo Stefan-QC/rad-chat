@@ -333,3 +333,54 @@ export interface Decision {
   decided_on: string;
   created_by: string | null;
 }
+
+export interface Kudo {
+  id: number;
+  from_user: string;
+  to_user: string;
+  message: string;
+  points: number;
+  created_at: string;
+}
+
+export interface QuizState {
+  day: string;
+  available: boolean;
+  question?: string;
+  options?: string[];
+  category?: string | null;
+  answered?: boolean;
+  chosen?: number | null;
+  correct?: boolean | null;
+  points?: number;
+  correct_index?: number | null;
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  sort: number;
+}
+
+export interface UserBadge {
+  user_id: string;
+  badge_id: string;
+  earned_at: string;
+}
+
+export interface CoffeePair {
+  round_id: number;
+  user_a: string;
+  user_b: string;
+  channel_id: string | null;
+}
+
+export interface PeriodUserScore {
+  user_id: string;
+  username: string;
+  display_name: string;
+  avatar_color: string;
+  points: number;
+}

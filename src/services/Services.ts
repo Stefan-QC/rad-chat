@@ -24,6 +24,7 @@ import { ProfileService } from './ProfileService';
 import { ReactionService } from './ReactionService';
 import { SearchService } from './SearchService';
 import { SettingsService } from './SettingsService';
+import { SocialService } from './SocialService';
 import { TaskService } from './TaskService';
 import { TeamService } from './TeamService';
 import { WordleService } from './WordleService';
@@ -47,6 +48,7 @@ export class Services {
   readonly people: PeopleService;
   readonly polls: PollService;
   readonly tasks: TaskService;
+  readonly social: SocialService;
   readonly knowledge: KnowledgeService;
   readonly meetings: MeetingService;
   readonly notifications: NotificationService;
@@ -78,6 +80,7 @@ export class Services {
     this.people = new PeopleService(this.db);
     this.polls = new PollService(this.db);
     this.tasks = new TaskService(this.db);
+    this.social = new SocialService(this.db);
     this.knowledge = new KnowledgeService(this.db);
     this.meetings = new MeetingService(this.db);
     this.notifications = new NotificationService(this.db);
