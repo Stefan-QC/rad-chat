@@ -157,3 +157,33 @@ kbd { font: inherit; font-weight: 700; font-size: 12px; padding: 1px 7px; border
 [data-density="compact"] .grp { margin-top: 6px; }
 [data-density="compact"] .grp .meta b { font-size: 14px; }
 [data-density="compact"] .line { font-size: 14px; }
+
+/* gesprekken, privékanalen en dialogen */
+.cat { display: flex; align-items: center; justify-content: space-between; }
+.cat-add { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); }
+.cat-add:hover { background: var(--hover); color: var(--red); }
+.chan .chan-lock { width: 16px; height: 16px; margin: 0 1px; opacity: .8; }
+.chan-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.chan.convo { padding: 5px 10px; }
+.group-badge { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--red-soft); color: var(--red-dark); font-size: 11px; font-weight: 900; flex: none; }
+.side-empty { margin: 0; padding: 4px 12px; color: var(--muted); font-size: 13px; }
+#top .count { margin-left: 4px; font-weight: 700; font-size: 12px; }
+#top .iconbtn { width: auto; padding: 0 8px; display: flex; gap: 2px; }
+.dialog-form { margin: 16px 0 0; }
+.dialog-section { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.dialog-heading { margin: 20px 0 8px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.modal .tabs { margin-bottom: 4px; }
+.modal .actions { margin-top: 18px; }
+.danger-zone { border-top: 1px solid var(--border); padding-top: 14px; }
+.member-list.roomy { gap: 10px; }
+.people-picker { display: flex; flex-direction: column; gap: 8px; }
+.picker-list { list-style: none; margin: 0; padding: 0; max-height: 240px; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; }
+.picker-list button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 12px; text-align: left; }
+.picker-list button:hover { background: var(--hover); }
+.picker-list button.on { background: var(--red-tint); }
+.picker-list button span { flex: 1; min-width: 0; }
+.picker-list button b, .picker-list button small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.picker-list button small { color: var(--muted); font-weight: 400; }
+.picker-list .check { color: var(--red); font-style: normal; font-weight: 900; width: 16px; }
+.picker-list .empty { padding: 14px; color: var(--muted); text-align: center; }
+.chip.removable { cursor: pointer; background: var(--red-tint); border-color: var(--red-soft); color: var(--text); }

@@ -3,11 +3,12 @@ import { Icon } from '../Icon';
 
 interface ComposerProps {
   channelName: string;
+  conversation?: boolean;
   onSend: (text: string) => Promise<void>;
 }
 
 /** Invoerveld onderaan: Enter verstuurt, Shift+Enter maakt een nieuwe regel. */
-export function Composer({ channelName, onSend }: ComposerProps) {
+export function Composer({ channelName, conversation = false, onSend }: ComposerProps) {
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const area = useRef<HTMLTextAreaElement>(null);
@@ -50,7 +51,7 @@ export function Composer({ channelName, onSend }: ComposerProps) {
           rows={1}
           value={text}
           maxLength={2000}
-          placeholder={`Message #${channelName}`}
+          placeholder={`Message ${conversation ? '' : '#'}${channelName}`}
           onChange={event => { setText(event.target.value); resize(); }}
           onKeyDown={onKeyDown}
           autoFocus

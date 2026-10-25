@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../app/AuthContext';
 import { useServices } from '../../app/ServicesContext';
 import { useWorkspace } from '../../app/WorkspaceContext';
 import type { Channel } from '../../core/types';
 import { Avatar } from '../Avatar';
+import { NewConversationDialog } from '../chat/NewConversationDialog';
 import { Icon } from '../Icon';
 import { UserBar } from './UserBar';
 import { VoiceBar } from './VoiceBar';
@@ -11,8 +13,25 @@ import { VoiceBar } from './VoiceBar';
 function TextChannelLink({ channel }: { channel: Channel }) {
   return (
     <NavLink to={`/channels/${channel.id}`} className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
-      <span className="hash">#</span>
-      {channel.name}
+      {channel.is_private ? <Icon name="lock" className="chan-lock" /> : <span className="hash">#</span>}
+      <span className="chan-name">{channel.name}</span>
+      {channel.post_policy === 'moderators' && <span className="tag">announce</span>}
+    </NavLink>
+  );
+}
+
+function ConversationLink({ channel }: { channel: Channel }) {
+  const { presenter, onlineIds } = useWorkspace();
+  const others = presenter.others(channel);
+  const first = others[0];
+  return (
+    <NavLink to={`/channels/${channel.id}`} className={({ isActive }) => `chan convo${isActive ? ' active' : ''}`}>
+      {channel.kind === 'dm' && first ? (
+        <Avatar name={first.display_name} color={first.avatar_color} size="xs" online={onlineIds.has(first.id)} />
+      ) : (
+        <span className="group-badge" aria-hidden="true">{others.length + 1}</span>
+      )}
+      <span className="chan-name">{presenter.title(channel)}</span>
     </NavLink>
   );
 }
@@ -45,31 +64,45 @@ function VoiceChannelRow({ channel }: { channel: Channel }) {
   );
 }
 
-function ChannelGroup({ title, channels }: { title: string; channels: Channel[] }) {
+function ChannelGroup({ title, channels, onAdd }: { title: string; channels: Channel[]; onAdd?: () => void }) {
   const text = channels.filter(c => c.kind === 'text');
   const voice = channels.filter(c => c.kind === 'voice');
   return (
     <>
-      <div className="cat">{title}</div>
+      <div className="cat">
+        <span>{title}</span>
+        {onAdd && <button className="cat-add" aria-label={`Add to ${title}`} title="New private channel" onClick={onAdd}><Icon name="plus" size={14} /></button>}
+      </div>
       {text.map(c => <TextChannelLink key={c.id} channel={c} />)}
       {voice.map(c => <VoiceChannelRow key={c.id} channel={c} />)}
     </>
   );
 }
 
-/** Zijbalk met kanalen per bedrijf en team, voice-deelnemers en snelkoppelingen. */
+/** Zijbalk met kanalen per bedrijf en team, gesprekken, voice-deelnemers en snelkoppelingen. */
 export function Sidebar() {
   const { me } = useAuth();
   const { channels, myTeams, closeDrawer } = useWorkspace();
-  const company = channels.filter(c => c.team_id === null);
+  const [dialog, setDialog] = useState<'message' | 'channel' | null>(null);
+  const company = channels.filter(c => c.team_id === null && !c.is_private && (c.kind === 'text' || c.kind === 'voice'));
+  const companyPrivate = channels.filter(c => c.team_id === null && c.is_private && c.kind === 'text');
+  const conversations = channels.filter(c => c.kind === 'dm' || c.kind === 'group').sort((a, b) => b.created_at.localeCompare(a.created_at));
+
   return (
     <aside id="sidebar" onClick={closeDrawer}>
       <div className="side-head"><h2>RAD Chat</h2><span>Quality in IT</span></div>
       <div className="side-body">
-        <ChannelGroup title="Company" channels={company} />
+        <ChannelGroup title="Company" channels={company} onAdd={me?.role !== 'guest' ? () => setDialog('channel') : undefined} />
+        {companyPrivate.length > 0 && <ChannelGroup title="Private channels" channels={companyPrivate} />}
         {myTeams.map(team => (
-          <ChannelGroup key={team.id} title={team.name} channels={channels.filter(c => c.team_id === team.id)} />
+          <ChannelGroup key={team.id} title={team.name} channels={channels.filter(c => c.team_id === team.id && (c.kind === 'text' || c.kind === 'voice'))} />
         ))}
+        <div className="cat">
+          <span>Direct messages</span>
+          {me?.role !== 'guest' && <button className="cat-add" aria-label="New message" title="New message" onClick={() => setDialog('message')}><Icon name="plus" size={14} /></button>}
+        </div>
+        {conversations.map(c => <ConversationLink key={c.id} channel={c} />)}
+        {conversations.length === 0 && <p className="side-empty">No conversations yet.</p>}
         <div className="cat">Activities</div>
         <NavLink to="/wordle" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="grid" />RAD Wordle<span className="tag">/wordle</span>
@@ -86,6 +119,7 @@ export function Sidebar() {
       </div>
       <VoiceBar />
       <UserBar />
+      {dialog && <NewConversationDialog initialTab={dialog} onClose={() => setDialog(null)} />}
     </aside>
   );
 }

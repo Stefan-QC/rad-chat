@@ -7,6 +7,7 @@ import { Avatar } from '../Avatar';
 import { MessageItem } from './MessageItem';
 
 interface MessageListProps {
+  title: string;
   channel: Channel;
   messages: Message[];
   hasMore: boolean;
@@ -41,7 +42,7 @@ function groupMessages(messages: Message[]): Group[] {
   return groups;
 }
 
-export function MessageList({ channel, messages, hasMore, onLoadMore, onError }: MessageListProps) {
+export function MessageList({ title, channel, messages, hasMore, onLoadMore, onError }: MessageListProps) {
   const { me } = useAuth();
   const { profileById } = useWorkspace();
   const box = useRef<HTMLDivElement>(null);
@@ -80,9 +81,9 @@ export function MessageList({ channel, messages, hasMore, onLoadMore, onError }:
         <button className="load-more" onClick={onLoadMore}>Load older messages</button>
       ) : (
         <div className="welcome">
-          <div className="big">#</div>
-          <h3>Welcome to #{channel.name}</h3>
-          <p>{channel.topic || 'This is the start of the channel. Say hi!'}</p>
+          <div className="big">{channel.kind === 'dm' || channel.kind === 'group' ? '@' : '#'}</div>
+          <h3>{channel.kind === 'dm' ? `Your conversation with ${title}` : `Welcome to ${channel.kind === 'group' ? '' : '#'}${title}`}</h3>
+          <p>{channel.topic || (channel.kind === 'dm' ? 'This is the start of your direct messages.' : 'This is the start of the channel. Say hi!')}</p>
         </div>
       )}
       {groups.map(group => {

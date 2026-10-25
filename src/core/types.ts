@@ -1,4 +1,4 @@
-export type Role = 'member' | 'admin';
+export type Role = 'member' | 'admin' | 'guest';
 
 export interface Profile {
   id: string;
@@ -8,12 +8,16 @@ export interface Profile {
   bio: string | null;
   avatar_color: string;
   role: Role;
+  expires_at: string | null;
+  deactivated_at: string | null;
   created_at: string;
 }
 
 export type ProfilePatch = Pick<Profile, 'display_name' | 'job_title' | 'bio' | 'avatar_color'>;
 
-export type ChannelKind = 'text' | 'voice';
+export type ChannelKind = 'text' | 'voice' | 'dm' | 'group';
+export type ChannelRole = 'owner' | 'moderator' | 'member' | 'readonly';
+export type PostPolicy = 'everyone' | 'moderators';
 
 export interface Channel {
   id: string;
@@ -21,7 +25,17 @@ export interface Channel {
   kind: ChannelKind;
   team_id: string | null;
   topic: string | null;
+  is_private: boolean;
+  post_policy: PostPolicy;
+  created_by: string | null;
   created_at: string;
+}
+
+export interface ChannelMember {
+  channel_id: string;
+  user_id: string;
+  role: ChannelRole;
+  joined_at: string;
 }
 
 export interface Message {
@@ -46,9 +60,11 @@ export interface Team {
 export interface TeamMember {
   team_id: string;
   user_id: string;
-  role: 'owner' | 'member';
+  role: 'owner' | 'moderator' | 'member';
   joined_at: string;
 }
+
+export type TeamRole = TeamMember['role'];
 
 export interface TeamWithMembers extends Team {
   members: TeamMember[];

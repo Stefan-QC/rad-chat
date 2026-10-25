@@ -7,3 +7,4 @@ certs/
 history.json
 world.json
 scores.json
+supabase/tests/node_modules/

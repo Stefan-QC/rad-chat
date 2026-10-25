@@ -24,7 +24,8 @@
     "start": "node server.js",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "cert": "node scripts/generate-cert.mjs"
+    "cert": "node scripts/generate-cert.mjs",
+    "test:db": "npm --prefix supabase/tests install && npm --prefix supabase/tests test"
   },
   "engines": {
     "node": ">=18"
