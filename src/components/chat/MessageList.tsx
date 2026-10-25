@@ -13,6 +13,8 @@ interface MessageListProps {
   hasMore: boolean;
   onLoadMore: () => void;
   onError: (message: string) => void;
+  onOpenThread?: (messageId: number) => void;
+  showWelcome?: boolean;
 }
 
 interface Group {
@@ -42,7 +44,7 @@ function groupMessages(messages: Message[]): Group[] {
   return groups;
 }
 
-export function MessageList({ title, channel, messages, hasMore, onLoadMore, onError }: MessageListProps) {
+export function MessageList({ title, channel, messages, hasMore, onLoadMore, onError, onOpenThread, showWelcome = true }: MessageListProps) {
   const { me } = useAuth();
   const { profileById } = useWorkspace();
   const box = useRef<HTMLDivElement>(null);
@@ -79,7 +81,7 @@ export function MessageList({ title, channel, messages, hasMore, onLoadMore, onE
     >
       {hasMore ? (
         <button className="load-more" onClick={onLoadMore}>Load older messages</button>
-      ) : (
+      ) : showWelcome && (
         <div className="welcome">
           <div className="big">{channel.kind === 'dm' || channel.kind === 'group' ? '@' : '#'}</div>
           <h3>{channel.kind === 'dm' ? `Your conversation with ${title}` : `Welcome to ${channel.kind === 'group' ? '' : '#'}${title}`}</h3>
@@ -99,7 +101,7 @@ export function MessageList({ title, channel, messages, hasMore, onLoadMore, onE
                   <time>{formatTime(group.startedAt)}</time>
                 </div>
                 {group.items.map(message => (
-                  <MessageItem key={message.id} message={message} myUsername={me?.username ?? ''} onError={onError} />
+                  <MessageItem key={message.id} message={message} myUsername={me?.username ?? ''} onError={onError} onOpenThread={onOpenThread} />
                 ))}
               </div>
             </div>
