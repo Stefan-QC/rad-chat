@@ -8,6 +8,8 @@ import { Icon } from '../Icon';
 import { RichText } from '../RichText';
 import { usePins } from '../../app/PinsContext';
 import { AttachmentList } from './AttachmentList';
+import { TaskDialog } from '../tasks/TaskDialog';
+import { useWorkspace } from '../../app/WorkspaceContext';
 import { PollCard } from './PollCard';
 import { EmojiPicker } from './EmojiPicker';
 import { ReactionBar } from './ReactionBar';
@@ -26,6 +28,8 @@ export function MessageItem({ message, myUsername, onError, onOpenThread }: Mess
   const { isPinned, canPin, togglePin } = usePins();
   const [editing, setEditing] = useState(false);
   const [pickerAt, setPickerAt] = useState<DOMRect | null>(null);
+  const [taskOpen, setTaskOpen] = useState(false);
+  const { channels, myTeams } = useWorkspace();
   const [draft, setDraft] = useState(message.body);
   const deleted = message.deleted_at !== null;
   const mine = message.user_id === me?.id;
@@ -79,11 +83,19 @@ export function MessageItem({ message, myUsername, onError, onOpenThread }: Mess
       {!deleted && (
         <span className="msg-actions">
           <button title="Add reaction" aria-label="Add reaction" onClick={event => setPickerAt(event.currentTarget.getBoundingClientRect())}><Icon name="smile" size={16} /></button>
+          {message.kind === 'text' && <button title="Make a task" aria-label="Make a task from this message" onClick={() => setTaskOpen(true)}><Icon name="check" size={16} /></button>}
           {canPin && <button title={isPinned(message.id) ? 'Unpin' : 'Pin to channel'} aria-label={isPinned(message.id) ? 'Unpin message' : 'Pin message'} onClick={() => void togglePin(message.id)}><Icon name="pin" size={16} /></button>}
           {onOpenThread && !message.parent_id && <button title="Reply in thread" aria-label="Reply in thread" onClick={() => onOpenThread(message.id)}><Icon name="chat" size={16} /></button>}
           {mine && <button title="Edit" aria-label="Edit message" onClick={() => { setDraft(message.body); setEditing(true); }}><Icon name="edit" size={16} /></button>}
           {(mine || me?.role === 'admin') && <button title="Delete" aria-label="Delete message" onClick={() => window.confirm('Delete this message?') && void run(() => messages.remove(message.id))}><Icon name="trash" size={16} /></button>}
         </span>
+      )}
+      {taskOpen && (
+        <TaskDialog
+          seed={{ title: message.body.slice(0, 120), messageId: message.id, teamId: myTeams.find(t => t.id === channels.find(c => c.id === message.channel_id)?.team_id)?.id ?? null }}
+          onClose={() => setTaskOpen(false)}
+          onDone={() => undefined}
+        />
       )}
       {pickerAt && (
         <EmojiPicker anchor={pickerAt} onPick={emoji => void run(async () => { await reactions.toggle(message.id, emoji); })} onClose={() => setPickerAt(null)} />
