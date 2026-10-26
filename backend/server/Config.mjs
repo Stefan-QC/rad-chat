@@ -18,7 +18,7 @@ export class Config {
 
   get port() { return Number(this.env.PORT) || 3000; }
   get distDir() { return path.join(this.root, 'frontend', 'dist'); }
-  get apiDir() { return path.join(this.root, 'backend', 'api'); }
+  get backendDir() { return path.join(this.root, 'backend'); }
   get certDir() { return path.join(this.root, 'certs'); }
   get supabaseUrl() { return this.env.SUPABASE_URL || this.env.VITE_SUPABASE_URL || ''; }
   get supabaseKey() { return this.env.SUPABASE_PUBLISHABLE_KEY || this.env.VITE_SUPABASE_PUBLISHABLE_KEY || ''; }

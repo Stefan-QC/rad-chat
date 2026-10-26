@@ -15,5 +15,5 @@ class GifProviderFactory:
     def create(settings: Settings, http: httpx.AsyncClient) -> GifProvider:
         """Geeft een Klipy- of Giphy-aanbieder terug."""
         if settings.gif_provider == "klipy":
-            return KlipyProvider(http, settings.klipy_api_key, settings.gif_rating)
+            return KlipyProvider(http, settings.klipy_api_key)
         return GiphyProvider(http, settings.giphy_api_key, settings.gif_rating)

@@ -43,4 +43,4 @@ class GifService:
             for item in page.results
             if self._provider.is_allowed_url(item.url) and self._provider.is_allowed_url(item.preview_url)
         ]
-        return GifPage(results=allowed, next=page.next)
+        return GifPage(results=allowed, next=page.next, provider=self._provider.name)

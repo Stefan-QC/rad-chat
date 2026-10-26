@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tests.helpers import ADMIN_ID, MEMBER_ID, SUPABASE_URL, make_client, make_container, mock_login
+from tests.helpers import ADMIN_ID, MEMBER_ID, SUPABASE_URL, make_client, mock_login
 
 RPC = f"{SUPABASE_URL}/rest/v1/rpc"
 AUDIT = f"{SUPABASE_URL}/rest/v1/audit_logs"

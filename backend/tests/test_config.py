@@ -7,7 +7,7 @@ from tests.helpers import make_settings
 
 def test_config__defaults_are_safe() -> None:
     settings = Settings(_env_file=None)
-    assert settings.gif_provider == "giphy"
+    assert settings.gif_provider == "klipy"
     assert settings.rate_limit_per_minute == 60
     assert settings.max_body_bytes == 65536
     assert settings.timezone == "Europe/Amsterdam"

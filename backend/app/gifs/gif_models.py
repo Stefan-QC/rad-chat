@@ -15,7 +15,8 @@ class GifItem(BaseModel):
 
 
 class GifPage(BaseModel):
-    """Eén pagina met resultaten en een cursor voor de volgende pagina."""
+    """Eén pagina met resultaten, een cursor voor de volgende pagina en de naam van de aanbieder."""
 
     results: list[GifItem]
     next: str | None = None
+    provider: str = ""

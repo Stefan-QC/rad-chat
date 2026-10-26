@@ -1,4 +1,5 @@
 # Eén image met alles: de gebouwde React-app, de Node-host en de Python-API (die de host zelf start).
+# Bouwen vanuit de hoofdmap: docker build -f infra/Dockerfile -t rad-chat .
 FROM node:22-bookworm-slim AS frontend
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
@@ -12,10 +13,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000
-COPY backend/api/requirements.txt backend/api/requirements.txt
-RUN python3 -m venv backend/api/.venv \
-    && backend/api/.venv/bin/pip install --no-cache-dir -r backend/api/requirements.txt
-COPY backend/api/app backend/api/app
+COPY backend/requirements.txt backend/requirements.txt
+RUN python3 -m venv backend/.venv \
+    && backend/.venv/bin/pip install --no-cache-dir -r backend/requirements.txt
+COPY backend/app backend/app
 COPY backend/server backend/server
 COPY --from=frontend /app/frontend/dist frontend/dist
 USER node

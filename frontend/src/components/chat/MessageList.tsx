@@ -27,6 +27,8 @@ interface Group {
 }
 
 const GROUP_WINDOW_MS = 5 * 60_000;
+/** Zolang loopt de vloeiende scroll naar een nieuw bericht; daarin laten we de groeiende inhoud met rust. */
+const SMOOTH_SCROLL_MS = 500;
 
 /** Voegt opeenvolgende berichten van dezelfde persoon samen tot één groep. */
 function groupMessages(messages: Message[]): Group[] {
@@ -50,28 +52,51 @@ export function MessageList({ title, channel, messages, hasMore, onLoadMore, onE
   const { profileById } = useWorkspace();
   const { ensure } = useMessageExtras();
   const box = useRef<HTMLDivElement>(null);
+  const feed = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
+  const settled = useRef(false);
   const previousHeight = useRef(0);
+  const smoothUntil = useRef(0);
 
-  // Blijf onderaan plakken bij nieuwe berichten, behalve als iemand omhoog scrolde.
+  // Een ander kanaal begint weer onderaan; dit moet vóór het plaatsen van de berichten gebeuren.
+  useLayoutEffect(() => {
+    stick.current = true;
+    settled.current = false;
+    previousHeight.current = 0;
+  }, [channel.id]);
+
+  // De eerste berichten staan meteen onderaan; daarna schuiven nieuwe berichten vloeiend in beeld.
   useLayoutEffect(() => {
     const el = box.current;
     if (!el) return;
-    const channelWasOpen = previousHeight.current > 0;
-    if (channelWasOpen && !stick.current && el.scrollHeight > previousHeight.current && el.scrollTop === 0) {
-      // Oudere berichten laden: de leespositie meteen vasthouden, zonder animatie.
-      el.scrollTo({ top: el.scrollHeight - previousHeight.current, behavior: 'auto' });
-    } else if (stick.current) {
-      // Nieuw bericht: vloeiend naar onderen; bij het openen van een kanaal direct naar de laatste berichten.
-      el.scrollTo({ top: el.scrollHeight, behavior: channelWasOpen ? 'smooth' : 'auto' });
+    if (messages.length > 0) {
+      if (!settled.current) {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'instant' });
+        settled.current = true;
+      } else if (!stick.current && el.scrollHeight > previousHeight.current && el.scrollTop === 0) {
+        // Oudere berichten laden: de leespositie meteen vasthouden, zonder animatie.
+        el.scrollTo({ top: el.scrollHeight - previousHeight.current, behavior: 'instant' });
+      } else if (stick.current) {
+        smoothUntil.current = Date.now() + SMOOTH_SCROLL_MS;
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      }
     }
     previousHeight.current = el.scrollHeight;
   }, [messages]);
 
-  useLayoutEffect(() => {
-    stick.current = true;
-    previousHeight.current = 0;
-  }, [channel.id]);
+  // Afbeeldingen, polls en reacties krijgen pas later hun hoogte: blijf onderaan zolang je niet zelf omhoog scrolde.
+  useEffect(() => {
+    const el = box.current;
+    const content = feed.current;
+    if (!el || !content) return;
+    const observer = new ResizeObserver(() => {
+      if (stick.current && settled.current && Date.now() > smoothUntil.current) {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'instant' });
+      }
+    });
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => ensure(messages), [messages, ensure]);
 
@@ -86,35 +111,37 @@ export function MessageList({ title, channel, messages, hasMore, onLoadMore, onE
         stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
       }}
     >
-      {hasMore ? (
-        <button className="load-more" onClick={onLoadMore}>Load older messages</button>
-      ) : showWelcome && (
-        <div className="welcome">
-          <div className="big">{channel.kind === 'dm' || channel.kind === 'group' ? '@' : '#'}</div>
-          <h3>{channel.kind === 'dm' ? `Your conversation with ${title}` : `Welcome to ${channel.kind === 'group' ? '' : '#'}${title}`}</h3>
-          <p>{channel.topic || (channel.kind === 'dm' ? 'This is the start of your direct messages.' : 'This is the start of the channel. Say hi!')}</p>
-        </div>
-      )}
-      {groups.map(group => {
-        const author = profileById(group.userId);
-        return (
-          <Fragment key={group.key}>
-            {group.newDay && <div className="day">{formatDay(group.startedAt)}</div>}
-            <div className="grp">
-              <Avatar name={author?.display_name ?? '?'} color={author?.avatar_color ?? '#4a4a4a'} />
-              <div className="body">
-                <div className="meta">
-                  <b style={group.userId === me?.id ? { color: 'var(--red)' } : undefined}>{author?.display_name ?? 'Unknown user'}</b>
-                  <time>{formatTime(group.startedAt)}</time>
+      <div className="feed" ref={feed}>
+        {hasMore ? (
+          <button className="load-more" onClick={onLoadMore}>Load older messages</button>
+        ) : showWelcome && (
+          <div className="welcome">
+            <div className="big">{channel.kind === 'dm' || channel.kind === 'group' ? '@' : '#'}</div>
+            <h3>{channel.kind === 'dm' ? `Your conversation with ${title}` : `Welcome to ${channel.kind === 'group' ? '' : '#'}${title}`}</h3>
+            <p>{channel.topic || (channel.kind === 'dm' ? 'This is the start of your direct messages.' : 'This is the start of the channel. Say hi!')}</p>
+          </div>
+        )}
+        {groups.map(group => {
+          const author = profileById(group.userId);
+          return (
+            <Fragment key={group.key}>
+              {group.newDay && <div className="day">{formatDay(group.startedAt)}</div>}
+              <div className="grp">
+                <Avatar name={author?.display_name ?? '?'} color={author?.avatar_color ?? '#4a4a4a'} />
+                <div className="body">
+                  <div className="meta">
+                    <b style={group.userId === me?.id ? { color: 'var(--red)' } : undefined}>{author?.display_name ?? 'Unknown user'}</b>
+                    <time>{formatTime(group.startedAt)}</time>
+                  </div>
+                  {group.items.map(message => (
+                    <MessageItem key={message.id} message={message} myUsername={me?.username ?? ''} onError={onError} onOpenThread={onOpenThread} />
+                  ))}
                 </div>
-                {group.items.map(message => (
-                  <MessageItem key={message.id} message={message} myUsername={me?.username ?? ''} onError={onError} onOpenThread={onOpenThread} />
-                ))}
               </div>
-            </div>
-          </Fragment>
-        );
-      })}
+            </Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 }

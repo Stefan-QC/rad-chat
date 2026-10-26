@@ -17,7 +17,7 @@ export class ApiProcess {
 
   /** Het Python van de virtuele omgeving die `npm run setup` aanmaakt. */
   pythonPath() {
-    const venv = path.join(this.config.apiDir, '.venv');
+    const venv = path.join(this.config.backendDir, '.venv');
     const candidates = [path.join(venv, 'Scripts', 'python.exe'), path.join(venv, 'bin', 'python')];
     return candidates.find(file => fs.existsSync(file)) ?? null;
   }
@@ -29,7 +29,7 @@ export class ApiProcess {
       return false;
     }
     this.child = spawn(python, ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', String(this.config.apiPort)], {
-      cwd: this.config.apiDir,
+      cwd: this.config.backendDir,
       env: this.config.apiEnvironment(),
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,

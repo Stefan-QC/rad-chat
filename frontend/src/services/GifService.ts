@@ -12,6 +12,8 @@ export interface GifItem {
 export interface GifPage {
   results: GifItem[];
   next: string | null;
+  /** Naam van de aanbieder (klipy of giphy), voor de bronvermelding. */
+  provider: string;
 }
 
 /** Zoekt GIF's via de eigen backend, zodat de API-sleutel van de aanbieder nooit in de browser komt. */

@@ -83,3 +83,7 @@ def test_gif_service__filter_drops_non_https_and_foreign_hosts() -> None:
     page = GifService(FakeProvider())._filter(FakeProvider().page())
     assert [item.id for item in page.results] == ["1"]
     assert page.next == "2"
+
+
+def test_gif_service__filter_adds_the_provider_name_for_attribution() -> None:
+    assert GifService(FakeProvider())._filter(FakeProvider().page()).provider == "fake"

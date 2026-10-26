@@ -3,6 +3,8 @@ services:
   - type: web
     name: rad-chat
     runtime: docker
+    dockerfilePath: ./infra/Dockerfile
+    dockerContext: .
     plan: starter # een gratis instance slaapt na inactiviteit, dan draaien de nachtelijke taken niet
     healthCheckPath: /healthz
     envVars:

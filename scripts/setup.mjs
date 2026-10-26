@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WINDOWS = process.platform === 'win32';
-const API_DIR = join(ROOT, 'backend', 'api');
-const VENV_PYTHON = join(API_DIR, '.venv', WINDOWS ? 'Scripts' : 'bin', WINDOWS ? 'python.exe' : 'python');
+const BACKEND_DIR = join(ROOT, 'backend');
+const VENV_PYTHON = join(BACKEND_DIR, '.venv', WINDOWS ? 'Scripts' : 'bin', WINDOWS ? 'python.exe' : 'python');
 
 /** Eén stap van de installatie, met een duidelijke melding als het misgaat. */
 class Step {
@@ -67,9 +67,9 @@ const steps = [
   new Step('Creating the Python environment for the API', () => {
     if (!existsSync(VENV_PYTHON)) {
       const [command, prefix] = findPython();
-      run(command, [...prefix, '-m', 'venv', join(API_DIR, '.venv')]);
+      run(command, [...prefix, '-m', 'venv', join(BACKEND_DIR, '.venv')]);
     }
-    run(VENV_PYTHON, ['-m', 'pip', 'install', '--quiet', '--disable-pip-version-check', '-r', join(API_DIR, 'requirements-dev.txt')]);
+    run(VENV_PYTHON, ['-m', 'pip', 'install', '--quiet', '--disable-pip-version-check', '-r', join(BACKEND_DIR, 'requirements-dev.txt')]);
   }),
   new Step('Building the app', () => npm(['--prefix', 'frontend', 'run', 'build'])),
   new Step('Creating the https certificate (needed for voice on other computers)', () => {

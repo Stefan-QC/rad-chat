@@ -11,12 +11,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Alle configuratie van de API, gevuld vanuit omgevingsvariabelen."""
 
-    model_config = SettingsConfigDict(env_file=(".env", "../../.env"), extra="ignore", case_sensitive=False)
+    model_config = SettingsConfigDict(env_file=(".env", "../.env"), extra="ignore", case_sensitive=False)
 
     supabase_url: str = ""
     supabase_publishable_key: str = ""
     supabase_service_role_key: str = ""
-    gif_provider: Literal["giphy", "klipy"] = "giphy"
+    gif_provider: Literal["giphy", "klipy"] = "klipy"
     giphy_api_key: str = ""
     klipy_api_key: str = ""
     gif_rating: str = "pg-13"

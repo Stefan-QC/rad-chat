@@ -1,15 +1,17 @@
-# RAD Chat API
+# RAD Chat backend
 
-Python backend (FastAPI) for RAD Chat. It adds server-side features next to the React frontend and Supabase: GIF search, admin user management, message export, retention settings and scheduled maintenance jobs.
+Python API (FastAPI) in `app/`, tests in `tests/`, and the Node host in `server/` that serves the frontend, forwards `/api` and starts this API.
+
+The Python API It adds server-side features next to the React frontend and Supabase: GIF search, admin user management, message export, retention settings and scheduled maintenance jobs.
 
 ## Setup
 
 You normally do not run this by hand: `npm run setup` creates the Python environment and `npm start` starts the API next to the Node host, with the settings from the `.env` file in the project root. To run it on its own:
 
 ```bash
-cd backend/api
+cd backend
 .venv/Scripts/activate        # Windows (Linux/macOS: source .venv/bin/activate)
-uvicorn app.main:app --port 8000
+python run_api.py                # or: uvicorn app.main:app --port 8000
 ```
 
 Python 3.11 or newer is required (developed on 3.14, the Docker image uses 3.12).
@@ -21,7 +23,7 @@ Python 3.11 or newer is required (developed on 3.14, the Docker image uses 3.12)
 | `SUPABASE_URL` | | Project URL, for example `https://xyz.supabase.co` |
 | `SUPABASE_PUBLISHABLE_KEY` | | Anon/publishable key, used only to verify user tokens |
 | `SUPABASE_SERVICE_ROLE_KEY` | | Service-role key. Server only, never expose it to the browser |
-| `GIF_PROVIDER` | `giphy` | `giphy` or `klipy` |
+| `GIF_PROVIDER` | `klipy` | `klipy` or `giphy` |
 | `GIPHY_API_KEY` | | Giphy API key |
 | `KLIPY_API_KEY` | | KLIPY API key |
 | `GIF_RATING` | `pg-13` | Content rating passed to the provider |
@@ -62,7 +64,7 @@ The app always runs the scheduler: daily at 07:00 (`expire_guests`, `post_celebr
 
 ### KLIPY
 
-KLIPY parsing is best-effort. The structure of the `files` object is not documented in our notes, so the provider looks for nested `url` entries and picks small keys (`xs`, `sm`, ...) for the preview and medium keys (`md`, ...) for the full GIF, tolerating missing sizes. Verify it with a real key before relying on it.
+KLIPY is the default. Create a key at [partner.klipy.com](https://partner.klipy.com) (API Keys, Add Platform); a test key allows 100 calls per hour, production access is requested in the partner panel. The provider follows the data models of KLIPY's official demo app: an item has a `slug`, a `file` object with the sizes `hd`, `md`, `sm` and `xs`, and per size the formats `gif`, `webp`, `jpg`, `mp4` and `webm`. We use the `gif` of `xs` for the preview and the `gif` of `md` for the message. Ads (`type: "ad"`) are skipped. The chat shows "Powered by KLIPY" under the picker, as the terms ask.
 
 ## Security notes
 
@@ -77,6 +79,7 @@ KLIPY parsing is best-effort. The structure of the `files` object is not documen
 
 ```bash
 npm run test:api      # from the project root
+ruff check .          # lint, from this folder
 ```
 
 All HTTP is mocked with `respx`; there is no network access. `tests/test_function_coverage.py` fails and lists any function or method in `app/` that has no test named `test_<module>__<function>...`.
@@ -87,4 +90,4 @@ The Node host that serves the React app proxies `/api/*` to this service (for ex
 
 ## Docker
 
-The root `Dockerfile` builds one image with the frontend, the Node host and this API (see the main README).
+The `infra/Dockerfile` builds one image with the frontend, the Node host and this API (see the main README).
