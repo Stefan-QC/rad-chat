@@ -1,7 +1,7 @@
 /* Message feed */
 
 #messages { flex: 1; overflow-y: auto; padding: 16px 0 8px; display: flex; flex-direction: column; }
-#messages::before { content: ""; flex: 1; } /* keeps few messages at the bottom */
+.feed { display: flex; flex-direction: column; flex: none; margin-top: auto; } /* houdt weinig berichten onderaan */
 .welcome { padding: 8px 16px 18px; }
 .welcome .big { width: 68px; height: 68px; border-radius: 50%; background: var(--red); display: grid; place-items: center; color: #fff; font-size: 40px; font-weight: 900; margin-bottom: 10px; }
 .welcome h3 { margin: 0 0 4px; font-size: 28px; font-weight: 900; letter-spacing: -.01em; }
