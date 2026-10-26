@@ -125,7 +125,11 @@ class ExportService:
             "admin.export",
             "export",
             str(channel_id) if channel_id else None,
-            {"channel_id": str(channel_id) if channel_id else None, "since": since.isoformat() if since else None, "format": fmt},
+            {
+                "channel_id": str(channel_id) if channel_id else None,
+                "since": since.isoformat() if since else None,
+                "format": fmt,
+            },
         )
         stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
         stream = self._csv_stream(params, first) if fmt == "csv" else self._json_stream(params, first)

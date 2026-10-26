@@ -1,4 +1,5 @@
 import httpx
+import pytest
 from fastapi import FastAPI, Request
 
 from app.security.middleware import (
@@ -8,8 +9,6 @@ from app.security.middleware import (
     ResponseTracker,
     SecurityHeadersMiddleware,
 )
-from tests.helpers import make_client, make_container, make_settings
-import pytest
 
 
 def build_client(max_bytes: int = 10) -> httpx.AsyncClient:

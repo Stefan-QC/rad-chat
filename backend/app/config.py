@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Alle configuratie van de API, gevuld vanuit omgevingsvariabelen."""
 
-    model_config = SettingsConfigDict(env_file=(".env", "../../.env"), extra="ignore", case_sensitive=False)
+    model_config = SettingsConfigDict(env_file=(".env", "../.env"), extra="ignore", case_sensitive=False)
 
     supabase_url: str = ""
     supabase_publishable_key: str = ""

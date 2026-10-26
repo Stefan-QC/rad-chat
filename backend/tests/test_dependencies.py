@@ -3,7 +3,7 @@ import pytest
 from fastapi import Depends, FastAPI
 from starlette.requests import Request
 
-from app.errors import ApiError, handle_api_error
+from app.errors import handle_api_error
 from app.main import create_app
 from app.security.dependencies import current_user, get_container, require_admin
 from app.security.models import CurrentUser
