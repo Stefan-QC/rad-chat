@@ -9,7 +9,7 @@ npm run setup    # alleen de eerste keer
 npm start
 ```
 
-Dat is alles. Op Windows kun je ook dubbelklikken op `start.cmd`.
+Dat is alles. Op Windows kun je ook dubbelklikken op `scripts/start.cmd`.
 
 Na `npm start` zie je in het scherm een adres, bijvoorbeeld `https://192.168.1.20:3000`.
 Open dat adres, of geef het aan collega's in hetzelfde netwerk. Je krijgt één keer een certificaatwaarschuwing: accepteer die.
@@ -33,7 +33,7 @@ Open dat adres, of geef het aan collega's in hetzelfde netwerk. Je krijgt één 
 Zolang jouw computer aan staat, werkt de chat. Wil je dat het altijd draait, zet het dan op een server:
 
 - **Render**: zet de code op GitHub, kies "New → Blueprint" en wijs naar `render.yaml`. Vul de drie geheimen in. Klaar.
-- **Andere server**: `docker build -t rad-chat .` en start de image met de waarden uit `.env`, poort 3000.
+- **Andere server**: `docker build -f infra/Dockerfile -t rad-chat .` en start de image met de waarden uit `.env`, poort 3000.
 
 Kies een abonnement dat niet in slaap valt, anders draaien de nachtelijke taken niet.
 
@@ -48,7 +48,17 @@ Kies een abonnement dat niet in slaap valt, anders draaien de nachtelijke taken 
 
 Mappen:
 
-- `frontend/` de React-app
-- `backend/server/` de Node-host (bestanden, beveiliging, start de API)
-- `backend/api/` de Python-API (GIF's, beheer, geplande taken)
-- `supabase/` de database (migraties en tests)
+```
+rad-chat/
+  frontend/    de React-app (zie frontend/README.md)
+  backend/
+    app/       de Python-API (FastAPI)
+    tests/     tests van de API
+    server/    de Node-host: serveert de app, beveiliging, start de API
+    run_api.py, pyproject.toml, requirements*.txt
+  infra/       Dockerfile en docker-compose
+  scripts/     setup, certificaat, start.cmd
+  supabase/    migraties en databasetests
+  .github/     CI (tests bij elke push)
+  .env         jouw instellingen (staat niet in git)
+```

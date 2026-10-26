@@ -1,8 +1,0 @@
-# docker compose up --build   (leest de instellingen uit .env)
-services:
-  rad-chat:
-    build: .
-    env_file: .env
-    ports:
-      - "${PORT:-3000}:3000"
-    restart: unless-stopped

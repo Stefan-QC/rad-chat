@@ -7,6 +7,7 @@ certs/
 .venv/
 __pycache__/
 .pytest_cache/
+.ruff_cache/
 supabase/tests/node_modules/
 .claude/
 *.pyc
