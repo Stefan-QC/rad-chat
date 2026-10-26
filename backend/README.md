@@ -23,7 +23,7 @@ Python 3.11 or newer is required (developed on 3.14, the Docker image uses 3.12)
 | `SUPABASE_URL` | | Project URL, for example `https://xyz.supabase.co` |
 | `SUPABASE_PUBLISHABLE_KEY` | | Anon/publishable key, used only to verify user tokens |
 | `SUPABASE_SERVICE_ROLE_KEY` | | Service-role key. Server only, never expose it to the browser |
-| `GIF_PROVIDER` | `giphy` | `giphy` or `klipy` |
+| `GIF_PROVIDER` | `klipy` | `klipy` or `giphy` |
 | `GIPHY_API_KEY` | | Giphy API key |
 | `KLIPY_API_KEY` | | KLIPY API key |
 | `GIF_RATING` | `pg-13` | Content rating passed to the provider |
@@ -64,7 +64,7 @@ The app always runs the scheduler: daily at 07:00 (`expire_guests`, `post_celebr
 
 ### KLIPY
 
-KLIPY parsing is best-effort. The structure of the `files` object is not documented in our notes, so the provider looks for nested `url` entries and picks small keys (`xs`, `sm`, ...) for the preview and medium keys (`md`, ...) for the full GIF, tolerating missing sizes. Verify it with a real key before relying on it.
+KLIPY is the default. Create a key at [partner.klipy.com](https://partner.klipy.com) (API Keys, Add Platform); a test key allows 100 calls per hour, production access is requested in the partner panel. The provider follows the data models of KLIPY's official demo app: an item has a `slug`, a `file` object with the sizes `hd`, `md`, `sm` and `xs`, and per size the formats `gif`, `webp`, `jpg`, `mp4` and `webm`. We use the `gif` of `xs` for the preview and the `gif` of `md` for the message. Ads (`type: "ad"`) are skipped. The chat shows "Powered by KLIPY" under the picker, as the terms ask.
 
 ## Security notes
 

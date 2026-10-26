@@ -7,4 +7,4 @@ def test_gif_models__gif_item_defaults() -> None:
 
 
 def test_gif_models__gif_page_next_defaults_to_none() -> None:
-    assert GifPage(results=[]).model_dump() == {"results": [], "next": None}
+    assert GifPage(results=[]).model_dump() == {"results": [], "next": None, "provider": ""}

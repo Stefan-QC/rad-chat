@@ -6,7 +6,7 @@ from app.gifs.klipy_provider import KlipyProvider
 from tests.helpers import make_settings
 
 
-def test_gif_factory__create_returns_giphy_by_default() -> None:
+def test_gif_factory__create_returns_giphy_when_configured() -> None:
     provider = GifProviderFactory.create(make_settings(), httpx.AsyncClient())
     assert isinstance(provider, GiphyProvider)
 

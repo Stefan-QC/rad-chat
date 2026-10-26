@@ -18,7 +18,7 @@ export class SecurityHeaders {
       "script-src 'self'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      `img-src 'self' data: blob: ${http} https://*.giphy.com https://*.klipy.com`.trim(),
+      `img-src 'self' data: blob: ${http} https://*.giphy.com https://*.klipy.com https://*.klipy.co`.trim(),
       `connect-src 'self' ${http} ${ws}`.trim(),
       "media-src 'self' blob:",
       "object-src 'none'",

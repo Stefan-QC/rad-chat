@@ -28,6 +28,7 @@ export function GifPicker({ anchor, onPick, onClose }: GifPickerProps) {
   const [query, setQuery] = useState('');
   const [items, setItems] = useState<GifItem[]>([]);
   const [next, setNext] = useState<string | null>(null);
+  const [provider, setProvider] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +39,7 @@ export function GifPicker({ anchor, onPick, onClose }: GifPickerProps) {
       const page = text ? await gifs.search(text, position) : await gifs.trending(position);
       setItems(current => (position ? [...current, ...page.results] : page.results));
       setNext(page.next);
+      if (page.provider) setProvider(page.provider);
     } catch (e) {
       setError(friendlyError(e));
     } finally {
@@ -84,7 +86,7 @@ export function GifPicker({ anchor, onPick, onClose }: GifPickerProps) {
         {loading && <p className="gif-note">Loading…</p>}
         {!loading && next && <button type="button" className="btn secondary small gif-more" onClick={() => void load(query.trim(), next)}>Load more</button>}
       </div>
-      <footer className="gif-foot">GIFs come from an external provider and are loaded through RAD Chat.</footer>
+      <footer className="gif-foot">{provider ? <>Powered by <b>{provider.toUpperCase()}</b></> : 'GIFs come from an external provider.'}</footer>
     </div>,
     document.body,
   );

@@ -2,25 +2,32 @@ import httpx
 import pytest
 
 from app.errors import ApiError
-from app.gifs.klipy_provider import KLIPY_BASE_URL, FileCandidate, KlipyProvider
+from app.gifs.klipy_provider import CUSTOMER_ID, KLIPY_BASE_URL, KlipyProvider
 
 SEARCH_URL = f"{KLIPY_BASE_URL}/kk/gifs/search"
 TRENDING_URL = f"{KLIPY_BASE_URL}/kk/gifs/trending"
 
 
 def make_provider(key: str = "kk") -> KlipyProvider:
-    return KlipyProvider(httpx.AsyncClient(), key, "pg-13")
+    return KlipyProvider(httpx.AsyncClient(), key)
+
+
+def sized(size: str, width: int, height: int) -> dict:
+    """Eén formaat zoals KLIPY het teruggeeft: dezelfde afbeelding als gif, webp en mp4."""
+    return {
+        "gif": {"url": f"https://static.klipy.com/{size}.gif", "width": width, "height": height, "size": 1000},
+        "webp": {"url": f"https://static.klipy.com/{size}.webp", "width": width, "height": height, "size": 500},
+        "mp4": {"url": f"https://static.klipy.com/{size}.mp4", "width": width, "height": height, "size": 300},
+    }
 
 
 def raw_item(**overrides) -> dict:
     item = {
-        "id": 77,
+        "slug": "dog-77",
         "title": "Dog",
-        "files": {
-            "sm": {"gif": {"url": "https://static.klipy.com/sm.gif", "width": 100, "height": 80}},
-            "md": {"gif": {"url": "https://static.klipy.com/md.gif", "width": 300, "height": 240}},
-            "hd": {"gif": {"url": "https://static.klipy.com/hd.gif", "width": 800, "height": 640}},
-        },
+        "blur_preview": "data:image/jpeg;base64,xx",
+        "type": "gif",
+        "file": {"hd": sized("hd", 800, 640), "md": sized("md", 300, 240), "sm": sized("sm", 100, 80), "xs": sized("xs", 50, 40)},
     }
     item.update(overrides)
     return item
@@ -45,93 +52,56 @@ def test_klipy_provider__endpoint_contains_key_in_path() -> None:
 
 @pytest.mark.parametrize("limit, expected", [(1, 8), (24, 24), (50, 50)])
 def test_klipy_provider__params_clamp_per_page(limit: int, expected: int) -> None:
-    assert make_provider()._params(limit, 1, "x")["per_page"] == expected
+    assert KlipyProvider._params(limit, 1, "x")["per_page"] == expected
 
 
-def test_klipy_provider__params_omit_query_when_none() -> None:
-    assert "q" not in make_provider()._params(24, 1, None)
+def test_klipy_provider__params_omit_query_when_none_and_send_an_anonymous_customer_id() -> None:
+    params = KlipyProvider._params(24, 1, None)
+    assert "q" not in params and params["customer_id"] == CUSTOMER_ID
 
 
-def test_klipy_provider__tokens_splits_and_lowercases() -> None:
-    assert KlipyProvider._tokens(("MD", "gif-x")) == frozenset({"md", "gif", "x"})
+def test_klipy_provider__gif_file_takes_the_first_available_size() -> None:
+    files = {"sm": sized("sm", 100, 80), "hd": sized("hd", 800, 640)}
+    assert KlipyProvider._gif_file(files, ("md", "sm", "hd")) == ("https://static.klipy.com/sm.gif", 100, 80)
 
 
-def test_klipy_provider__collect_finds_nested_urls() -> None:
-    found: list[FileCandidate] = []
-    make_provider()._collect(raw_item()["files"], (), found)
-    assert {c.url for c in found} == {
-        "https://static.klipy.com/sm.gif",
-        "https://static.klipy.com/md.gif",
-        "https://static.klipy.com/hd.gif",
-    }
+@pytest.mark.parametrize("files", [None, [], "x", {}, {"md": "x"}, {"md": {"mp4": {"url": "https://a.klipy.com/m.mp4"}}}, {"md": {"gif": {"width": 1}}}])
+def test_klipy_provider__gif_file_returns_none_without_a_gif(files) -> None:
+    assert KlipyProvider._gif_file(files, ("md",)) is None
 
 
-def test_klipy_provider__collect_handles_plain_strings_and_lists() -> None:
-    found: list[FileCandidate] = []
-    make_provider()._collect({"sm": "https://a.klipy.com/s.gif", "md": [{"url": "https://a.klipy.com/m.gif"}]}, (), found)
-    assert len(found) == 2
-
-
-def test_klipy_provider__collect_ignores_other_types_and_depth() -> None:
-    found: list[FileCandidate] = []
-    provider = make_provider()
-    provider._collect(5, (), found)
-    provider._collect({"a": {"url": "https://x"}}, (), found, depth=99)
-    assert found == []
-
-
-def test_klipy_provider__pick_prefers_matching_tokens() -> None:
-    cands = [
-        FileCandidate(frozenset({"md", "mp4"}), "https://a/v.mp4", 0, 0),
-        FileCandidate(frozenset({"md", "webp"}), "https://a/m.webp", 0, 0),
-        FileCandidate(frozenset({"md", "gif"}), "https://a/m.gif", 0, 0),
-    ]
-    assert KlipyProvider._pick(cands, ("md",), smallest=False).url == "https://a/m.gif"
-
-
-def test_klipy_provider__pick_falls_back_to_size() -> None:
-    cands = [
-        FileCandidate(frozenset({"a"}), "https://a/big", 500, 0),
-        FileCandidate(frozenset({"b"}), "https://a/small", 50, 0),
-    ]
-    assert KlipyProvider._pick(cands, ("zz",), smallest=True).url == "https://a/small"
-    assert KlipyProvider._pick(cands, ("zz",), smallest=False).url == "https://a/big"
-
-
-def test_klipy_provider__pick_falls_back_to_position_without_sizes() -> None:
-    cands = [FileCandidate(frozenset({"a"}), "https://a/1", 0, 0), FileCandidate(frozenset({"b"}), "https://a/2", 0, 0)]
-    assert KlipyProvider._pick(cands, ("zz",), smallest=True).url == "https://a/1"
-    assert KlipyProvider._pick(cands, ("zz",), smallest=False).url == "https://a/2"
-
-
-def test_klipy_provider__pick_returns_none_for_empty() -> None:
-    assert KlipyProvider._pick([], ("md",), smallest=True) is None
-
-
-def test_klipy_provider__parse_item_picks_small_preview_and_medium_url() -> None:
+def test_klipy_provider__parse_item_picks_small_preview_and_medium_gif() -> None:
     item = make_provider()._parse_item(raw_item())
-    assert item.preview_url.endswith("sm.gif") and item.url.endswith("md.gif")
-    assert (item.id, item.width, item.height) == ("77", 300, 240)
+    assert item.preview_url.endswith("xs.gif") and item.url.endswith("md.gif")
+    assert (item.id, item.title, item.width, item.height) == ("dog-77", "Dog", 300, 240)
 
 
-def test_klipy_provider__parse_item_uses_slug_and_tolerates_missing_size() -> None:
-    raw = {"slug": "dog-1", "files": {"sm": {"url": "https://a.klipy.com/s.gif"}}}
+def test_klipy_provider__parse_item_falls_back_to_other_sizes() -> None:
+    raw = raw_item(file={"hd": sized("hd", 800, 640)})
     item = make_provider()._parse_item(raw)
-    assert item.id == "dog-1" and item.width == 0 and item.url == item.preview_url
+    assert item.url.endswith("hd.gif") and item.preview_url.endswith("hd.gif")
 
 
-@pytest.mark.parametrize("raw", [None, [], {"title": "x"}, {"id": 1}, {"id": 1, "files": {}}])
-def test_klipy_provider__parse_item_skips_invalid(raw) -> None:
+def test_klipy_provider__parse_item_uses_id_when_there_is_no_slug() -> None:
+    assert make_provider()._parse_item(raw_item(slug=None, id=5)).id == "5"
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [None, [], {"title": "x"}, raw_item(slug=None), raw_item(file={}), raw_item(type="ad"), {"type": "ad", "content": "<div>", "width": 300}],
+)
+def test_klipy_provider__parse_item_skips_ads_and_invalid_items(raw) -> None:
     assert make_provider()._parse_item(raw) is None
 
 
-def test_klipy_provider__parse_page_sets_next_page() -> None:
-    page = make_provider()._parse_page(payload(has_next=True), 2, 24)
+def test_klipy_provider__parse_page_sets_next_page_and_skips_ads() -> None:
+    items = [raw_item(), {"type": "ad", "content": "<div>"}]
+    page = make_provider()._parse_page(payload(items, has_next=True), 2, 24)
     assert page.next == "3" and len(page.results) == 1
 
 
 def test_klipy_provider__parse_page_no_next_and_limit_applied() -> None:
-    items = [raw_item(id=i) for i in range(5)]
+    items = [raw_item(slug=f"g{i}") for i in range(5)]
     page = make_provider()._parse_page(payload(items, has_next=False), 1, 2)
     assert page.next is None and len(page.results) == 2
 

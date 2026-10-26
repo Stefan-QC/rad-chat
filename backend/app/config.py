@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_publishable_key: str = ""
     supabase_service_role_key: str = ""
-    gif_provider: Literal["giphy", "klipy"] = "giphy"
+    gif_provider: Literal["giphy", "klipy"] = "klipy"
     giphy_api_key: str = ""
     klipy_api_key: str = ""
     gif_rating: str = "pg-13"
