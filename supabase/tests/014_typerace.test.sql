@@ -99,7 +99,9 @@ begin
   sync := public.typerace_sync(lid);
   perform t.ok(sync ->> 'status' = 'finished', 'the round ends when the time is up');
 
-  -- host transfer and cleanup
+  -- host transfer and cleanup (a test runs in one transaction, so give the players distinct join times first)
+  perform t.as_owner();
+  update public.typerace_players set joined_at = now() - case user_id when u1 then interval '3 minutes' when u2 then interval '2 minutes' else interval '1 minute' end where lobby_id = lid;
   perform t.as_user(u1);
   perform public.typerace_leave();
   select * into l from public.typerace_lobbies where id = lid;
