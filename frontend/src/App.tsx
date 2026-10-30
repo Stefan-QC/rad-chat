@@ -23,6 +23,7 @@ const SettingsPage = lazyPage(() => import('./pages/SettingsPage'), 'SettingsPag
 const TasksPage = lazyPage(() => import('./pages/TasksPage'), 'TasksPage');
 const TeamsPage = lazyPage(() => import('./pages/TeamsPage'), 'TeamsPage');
 const WordlePage = lazyPage(() => import('./pages/WordlePage'), 'WordlePage');
+const TypeRacePage = lazyPage(() => import('./pages/TypeRacePage'), 'TypeRacePage');
 
 function Splash() {
   return <div className="splash">Loading…</div>;
@@ -68,6 +69,7 @@ export function App() {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="profile/:userId" element={<ProfilePage />} />
         <Route path="wordle" element={<WordlePage />} />
+        <Route path="typerace" element={<TypeRacePage />} />
         <Route path="craft" element={<CraftPage />} />
         <Route path="admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

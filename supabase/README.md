@@ -18,10 +18,11 @@ go through `security definer` functions with `search_path = ''`.
 | 011_social.sql | kudos, daily quiz, badges, coffee matching, period leaderboards (changes the `point_events` source check) |
 | 012_jobs.sql | `jobs_*` functions, service role only |
 | 013_typing.sql | Realtime topic `typing:<channel id>` for the typing indicator |
+| 014_typerace.sql | Type race: lobbies, players, results, a server-side state machine and the `typerace:<lobby id>` realtime topic |
 
 ## Status of the live project (`qenndahdvjaeiiwefwws`)
 
-001-012 are applied. **013 must still be run** (typing indicator).
+001-012 are applied. **014 must still be run** (type race).
 
 ## Tests
 

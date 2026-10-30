@@ -131,6 +131,9 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
         <NavLink to="/wordle" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="grid" />RAD Wordle<span className="tag">/wordle</span>
         </NavLink>
+        <NavLink to="/typerace" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
+          <Icon name="keyboard" />Type race
+        </NavLink>
         <NavLink to="/quiz" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="bulb" />Daily quiz
         </NavLink>
