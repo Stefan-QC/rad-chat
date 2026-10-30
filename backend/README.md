@@ -2,7 +2,7 @@
 
 Python API (FastAPI) in `app/`, tests in `tests/`, and the Node host in `server/` that serves the frontend, forwards `/api` and starts this API.
 
-The Python API It adds server-side features next to the React frontend and Supabase: GIF search, admin user management, message export, retention settings and scheduled maintenance jobs.
+The Python API adds server-side features next to the React frontend and Supabase: GIF search, a read-only member list for admins, message export, retention settings and scheduled maintenance jobs.
 
 ## Setup
 
@@ -40,19 +40,14 @@ All endpoints live under `/api`. Authenticated routes expect `Authorization: Bea
 | `GET /api/health` | public | Returns `{"status":"ok"}` |
 | `GET /api/gifs/search?q=&limit=24&pos=` | any active user | Search GIFs |
 | `GET /api/gifs/trending?limit=24&pos=` | any active user | Trending GIFs |
-| `GET /api/admin/users` | admin | List users (auth + profile merged) |
-| `POST /api/admin/users` | admin | Create a user (guests need a future `expires_at`) |
-| `POST /api/admin/users/invite` | admin | Invite by email |
-| `POST /api/admin/users/{id}/deactivate` / `reactivate` | admin | Ban or unban, not yourself |
-| `POST /api/admin/users/{id}/password` | admin | Set a new password (min 10 characters) |
-| `PUT /api/admin/users/{id}/role` | admin | Change role, you cannot demote yourself |
+| `GET /api/admin/users` | admin | List users (auth + profile merged), read only |
 | `GET /api/admin/export?channel_id=&since=&format=json\|csv` | admin | Streamed message export |
 | `GET/PUT /api/admin/settings/retention` | admin | Message retention in days (0 keeps everything) |
 | `POST /api/jobs/{name}` | admin | Run `expire_guests`, `purge_messages`, `post_celebrations` or `run_coffee_round` |
 
 The `purge_messages` job also removes the pasted images of the deleted messages from the `chat-images` bucket (only paths of the form `channel/user/file`, in chunks of 100); the paths themselves are kept out of the audit log.
 
-Every admin mutation is written to `audit_logs`. Passwords and tokens are never logged or audited.
+Every admin mutation is written to `audit_logs`. Passwords and tokens are never logged or audited. Accounts are created, changed, deactivated and deleted in the Supabase dashboard only: the API has no endpoints for it, not even for admins. Everyone changes their own password in Settings.
 
 ### Database expectations
 
