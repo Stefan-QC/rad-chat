@@ -249,4 +249,6 @@ begin
   end if;
 end $$;
 
+alter publication supabase_realtime add table public.game_scores;
+
 select private.lock_down_functions();
