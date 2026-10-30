@@ -21,8 +21,22 @@ Open dat adres, of geef het aan collega's in hetzelfde netwerk. Je krijgt één 
    (Supabase → Project Settings → API Keys): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` en `SUPABASE_SERVICE_ROLE_KEY`.
    GIF's nodig? Maak een gratis sleutel op [partner.klipy.com](https://partner.klipy.com) (API Keys → Add Platform) en zet die in `KLIPY_API_KEY`.
    Een testsleutel mag 100 verzoeken per uur doen; vraag daarna productietoegang aan in het Klipy-paneel.
-3. **Database**: voer de bestanden in `supabase/migrations/` in volgorde uit (001 t/m 014) in de SQL-editor van Supabase.
+3. **Database**: voer de bestanden in `supabase/migrations/` in volgorde uit (001 t/m 015) in de SQL-editor van Supabase.
    Maak daarna accounts onder Authentication → Users (eerste account = admin) en zet "Allow new users to sign up" uit.
+
+## Accounts beheren: alleen in Supabase
+
+Accounts aanmaken, wijzigen, deactiveren en verwijderen kan **alleen in het Supabase-dashboard**, ook niet als admin in de app.
+In de app kan iedereen alleen zijn eigen wachtwoord en profiel wijzigen (Instellingen → My account). De Admin-pagina toont de ledenlijst alleen-lezen.
+
+| Wat | Hoe in Supabase |
+| --- | --- |
+| Aanmaken | Authentication → Users → Add user (vink "Auto Confirm User" aan) |
+| Verwijderen | Authentication → Users → ⋯ → Delete user. Let op: dat verwijdert ook hun berichten en gegevens |
+| Rol (member, admin, guest) of einddatum gast | Table Editor → `profiles`, kolom `role` en `expires_at` |
+| Deactiveren | Authentication → Users → ⋯ → Ban user, en zet `deactivated_at` in `profiles` op de huidige tijd (leeg = actief) |
+
+Meer voorbeelden (SQL) staan in [supabase/README.md](supabase/README.md).
 
 ## Kunnen collega's er niet bij?
 

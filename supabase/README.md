@@ -18,13 +18,34 @@ go through `security definer` functions with `search_path = ''`.
 | 011_social.sql | kudos, daily quiz, badges, coffee matching, period leaderboards (changes the `point_events` source check) |
 | 012_jobs.sql | `jobs_*` functions, service role only |
 | 013_typing.sql | Realtime topic `typing:<channel id>` for the typing indicator |
+| 015_accounts_in_supabase.sql | Removes `set_user_role()`: roles and accounts are changed in Supabase only |
 | 014_typerace.sql | Type race: lobbies, players, results, a server-side state machine and the `typerace:<lobby id>` realtime topic |
 
 ## Status of the live project (`qenndahdvjaeiiwefwws`)
 
-001-012 are applied. **014 must still be run** (type race).
+001-012 are applied. **014 and 015 must still be run** (type race, accounts only in Supabase).
 
 ## Tests
 
 `npm run test:db` in the repository root runs `tests/*.test.sql` against a local embedded Postgres with stubs for the
 Supabase schemas (`tests/bootstrap.sql`), so migrations can be checked without touching the project.
+
+## Managing accounts
+
+Accounts are created, changed, deactivated and deleted here in Supabase only; the app has no way to do it, not even for admins.
+Create and delete users under Authentication → Users. For roles and status use the SQL editor (or the Table Editor on `profiles`):
+
+```sql
+-- role: member, admin or guest
+update public.profiles set role = 'admin' where username = 'colleague';
+
+-- a guest that expires automatically (a nightly job deactivates it)
+update public.profiles set role = 'guest', expires_at = now() + interval '14 days' where username = 'colleague';
+
+-- deactivate and reactivate (also ban the user under Authentication -> Users so they cannot sign in)
+update public.profiles set deactivated_at = now() where username = 'colleague';
+update public.profiles set deactivated_at = null where username = 'colleague';
+```
+
+Deleting a user also deletes their messages and other data (foreign keys cascade); deactivate instead to keep the history.
+
