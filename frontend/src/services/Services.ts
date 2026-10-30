@@ -10,6 +10,7 @@ import { AuthService } from './AuthService';
 import { ChannelService } from './ChannelService';
 import { CraftNetwork } from './CraftNetwork';
 import { CraftService } from './CraftService';
+import { GameService } from './GameService';
 import { GifService } from './GifService';
 import { KnowledgeService } from './KnowledgeService';
 import { LeaderboardService } from './LeaderboardService';
@@ -65,6 +66,7 @@ export class Services {
   readonly lobby: LobbyPresence;
   readonly typing: TypingService;
   readonly typeRace: TypeRaceService;
+  readonly games: GameService;
   readonly voice: VoiceHub;
 
   constructor(config: AppConfig) {
@@ -99,6 +101,7 @@ export class Services {
     this.lobby = new LobbyPresence(this.db);
     this.typing = new TypingService(this.db);
     this.typeRace = new TypeRaceService(this.db);
+    this.games = new GameService(this.db);
     this.voice = new VoiceHub(this.db, this.activity);
   }
 }

@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   envDir: '..',
-  server: { port: 5173, proxy: { '/api': 'http://127.0.0.1:8000' } },
+  // Alleen de migraties zijn extra leesbaar, voor de test die de DOOM-tabel met de database vergelijkt (niet de .env in de hoofdmap).
+  server: { port: 5173, proxy: { '/api': 'http://127.0.0.1:8000' }, fs: { allow: ['.', '../supabase/migrations'] } },
   build: { chunkSizeWarningLimit: 900 },
 });

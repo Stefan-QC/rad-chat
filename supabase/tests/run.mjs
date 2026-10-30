@@ -1,5 +1,6 @@
 // Draait de migraties en SQL-tests op een tijdelijke lokale Postgres (geen Supabase-project nodig).
 import { execFileSync } from 'node:child_process';
+import { createServer } from 'node:net';
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -10,7 +11,20 @@ import pg from 'pg';
 const here = dirname(fileURLToPath(import.meta.url));
 const migrationsDir = join(here, '..', 'migrations');
 const only = process.argv.slice(2);
-const port = 54000 + Math.floor(Math.random() * 900);
+
+/** Vraagt het besturingssysteem om een vrije poort, zodat een achtergebleven database van een eerdere run nooit in de weg zit. */
+function freePort() {
+  return new Promise((resolve, reject) => {
+    const probe = createServer();
+    probe.once('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
+}
+
+const port = await freePort();
 const dataDir = mkdtempSync(join(tmpdir(), 'radchat-pg-'));
 
 const server = new EmbeddedPostgres({ databaseDir: dataDir, user: 'postgres', password: 'postgres', port, persistent: false, initdbFlags: ['--encoding=UTF8', '--locale=C'] });

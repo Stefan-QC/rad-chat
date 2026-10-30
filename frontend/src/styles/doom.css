@@ -1,0 +1,50 @@
+/* DOOM: retro first-person shooter met pixelachtige graphics en een klassieke statusbalk */
+
+.dm-page { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 16px 12px; background: #0b0606; color: #f2d9a6; }
+.dm-screen { position: relative; flex: 1; min-height: 0; aspect-ratio: 8 / 5; max-width: 100%; max-height: 100%; width: auto; height: 100%; border: 3px solid #3a2418; border-radius: 4px; box-shadow: 0 0 0 2px #120a08, 0 14px 40px rgba(0,0,0,.6); overflow: hidden; background: #000; }
+.dm-canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; cursor: crosshair; }
+
+.dm-hud { position: absolute; left: 0; right: 0; bottom: 0; height: 15%; min-height: 54px; display: grid; grid-template-columns: 1.1fr 1.1fr auto 1.2fr 1.2fr 1.4fr; align-items: center; gap: 8px; padding: 0 12px;
+  background: linear-gradient(#3b2a1d, #26190f); border-top: 3px solid #5b4128; font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; text-transform: uppercase; }
+.dm-cell { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
+.dm-cell small { font-size: clamp(8px, 1.1vw, 11px); letter-spacing: .12em; color: #b69a6c; }
+.dm-cell b { font-size: clamp(14px, 2.2vw, 26px); color: #e03a1f; text-shadow: 0 2px 0 #000; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dm-cell b span { font-size: .55em; color: #b69a6c; font-weight: 400; }
+.dm-cell b.low { color: #ff2b2b; animation: dm-blink .6s steps(1) infinite; }
+.dm-cell b.blink { animation: dm-blink .5s steps(1) infinite; }
+.dm-bar { display: block; height: 5px; background: #150c07; border: 1px solid #000; margin-top: 3px; }
+.dm-bar u { display: block; height: 100%; background: #c8321a; text-decoration: none; transition: width .15s; }
+.dm-face { width: clamp(34px, 4.4vw, 52px); height: auto; image-rendering: pixelated; justify-self: center; background: #1a110b; border: 2px solid #5b4128; }
+@keyframes dm-blink { 50% { opacity: .35; } }
+
+.dm-message { position: absolute; top: 12px; left: 0; right: 0; text-align: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; color: #ffd34d; text-shadow: 0 2px 0 #000; text-transform: uppercase; letter-spacing: .06em; pointer-events: none; font-size: clamp(11px, 1.6vw, 16px); }
+.dm-hint { position: absolute; left: 0; right: 0; bottom: 19%; text-align: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; color: #7fffe0; text-shadow: 0 2px 0 #000; text-transform: uppercase; pointer-events: none; font-size: clamp(11px, 1.5vw, 15px); animation: dm-blink 1.2s steps(1) infinite; }
+
+.dm-overlay { position: absolute; inset: 0; background: rgba(12, 5, 4, .88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; overflow-y: auto; cursor: pointer; }
+.dm-overlay h2 { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: clamp(22px, 3.4vw, 40px); letter-spacing: .08em; text-transform: uppercase; color: #e03a1f; text-shadow: 0 3px 0 #000; }
+.dm-overlay p { margin: 0; color: #c9b28a; max-width: 460px; }
+.dm-overlay dl { margin: 0; display: grid; grid-template-columns: max-content max-content; gap: 4px 18px; text-align: left; font-size: 14px; }
+.dm-overlay dt { color: #f2d9a6; font-weight: 700; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.dm-overlay dd { margin: 0; color: #b69a6c; }
+.dm-overlay .gm-result { color: #f2d9a6; width: 100%; cursor: default; }
+.dm-overlay .gm-result h2 { color: #e03a1f; }
+.dm-overlay .gm-result .gm-big { color: #ffd34d; font-size: clamp(30px, 4vw, 46px); }
+.dm-overlay .gm-result dt { color: #b69a6c; }
+.dm-overlay .gm-saved { color: #b69a6c; }
+.dm-overlay .table tr.me, .dm-overlay .table tbody tr.me:hover { background: #4a2a1a; }
+.dm-overlay .table tbody tr:hover { background: #2a1a12; }
+.dm-overlay .gm-mini-board { width: min(520px, 100%); max-height: 170px; overflow-y: auto; }
+.dm-overlay .table { background: #1a110b; border-color: #3a2418; font-size: 12px; }
+.dm-overlay .table th { background: #0b0606; }
+.dm-overlay .table td { border-color: #3a2418; }
+.dm-overlay .btn.secondary { background: #3a2418; color: #f2d9a6; }
+.dm-overlay .btn.secondary:hover { background: #e03a1f; color: #fff; }
+
+.dm-bar-row { flex: none; display: flex; align-items: center; gap: 8px; width: 100%; max-width: 1100px; }
+.dm-bar-row .btn.secondary { background: #2a1a12; color: #f2d9a6; }
+.dm-bar-row .btn.secondary:hover:not(:disabled) { background: #e03a1f; color: #fff; }
+.dm-bar-row .btn:disabled { opacity: .5; }
+.dm-keys { margin-left: auto; font-size: 12px; color: #8a7455; }
+
+@media (max-width: 900px) { .dm-keys { display: none; } }
+@media (prefers-reduced-motion: reduce) { .dm-cell b.low, .dm-cell b.blink, .dm-hint { animation: none; } }

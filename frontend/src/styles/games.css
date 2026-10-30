@@ -1,0 +1,51 @@
+/* Gamespagina, klassementen en persoonlijke statistieken */
+
+.gm-page { gap: 18px; }
+.gm-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.gm-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(56,8,10,.05); transition: transform .15s, box-shadow .15s; }
+.gm-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(56,8,10,.12); }
+.gm-preview { height: 170px; display: grid; place-items: center; overflow: hidden; background: #0f1020; }
+.gm-preview svg { height: 100%; width: auto; max-width: 100%; display: block; }
+.gm-preview.typerace { background: #fff5f5; }
+.gm-preview.doom { background: #1a0d0d; }
+.gm-preview.doom svg, .gm-preview.typerace svg { width: 100%; height: 100%; }
+.gm-card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.gm-card-body h2 { margin: 0; font-size: 22px; font-weight: 900; }
+.gm-card-body p { margin: 0; color: var(--muted); font-size: 14px; flex: 1; }
+.gm-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.gm-best { display: flex; flex-direction: column; line-height: 1.15; }
+.gm-best small { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.gm-best b { font-size: 22px; font-variant-numeric: tabular-nums; }
+
+.gm-lower { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; }
+.gm-lower .card h3 { margin: 0 0 12px; }
+.gm-boards { display: flex; flex-direction: column; gap: 12px; }
+.gm-note { margin: 0; font-size: 13px; }
+.gm-board .who-cell small { margin-left: 6px; font-size: 12px; }
+.gm-board .num small { font-size: 11px; }
+
+.gm-stats { display: flex; flex-direction: column; gap: 14px; }
+.gm-stat-head { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.gm-stat-head div { background: var(--input); border-radius: 12px; padding: 10px 14px; display: flex; flex-direction: column; }
+.gm-stat-head b { font-size: 22px; font-variant-numeric: tabular-nums; }
+.gm-stat-head small { color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
+.gm-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.gm-stat-card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.gm-stat-card h4 { margin: 0 0 8px; font-size: 14px; font-weight: 900; }
+.gm-stat-card dl { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.gm-stat-card dl div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+.gm-stat-card dt { color: var(--muted); }
+.gm-stat-card dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.gm-stat-card dd small { font-weight: 400; color: var(--muted); }
+
+/* resultaat na een run (Tetris en DOOM) */
+.gm-result { display: flex; flex-direction: column; gap: 10px; align-items: center; text-align: center; }
+.gm-result h2 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: .02em; }
+.gm-result .gm-big { font-size: 44px; font-weight: 900; font-variant-numeric: tabular-nums; color: var(--red); }
+.gm-result dl { margin: 0; display: grid; grid-template-columns: repeat(2, max-content); gap: 4px 22px; text-align: left; font-size: 14px; }
+.gm-result dt { color: var(--muted); }
+.gm-result dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.gm-result .gm-saved { font-size: 13px; color: var(--muted); }
+.gm-result .gm-actions { display: flex; gap: 10px; margin-top: 6px; }
+
+@media (max-width: 1100px) { .gm-cards { grid-template-columns: 1fr; } .gm-lower { grid-template-columns: 1fr; } .gm-preview { height: 150px; } }

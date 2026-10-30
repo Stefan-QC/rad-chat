@@ -1,0 +1,39 @@
+/* Tetris: strakke arcade-interface; het veld schaalt mee met de beschikbare hoogte zodat er niet gescrold hoeft te worden */
+
+.tt-page { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: stretch; gap: 22px; padding: 16px 20px 20px; background: #0d0f1d; color: #e7e9f5; }
+.tt-side { width: 190px; flex: none; display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+.tt-box { background: #151832; border: 1px solid #262a52; border-radius: 12px; padding: 12px 14px; }
+.tt-box h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #8b90c0; }
+.tt-preview { display: block; width: 100%; height: auto; }
+.tt-stats { display: flex; flex-direction: column; gap: 10px; }
+.tt-stats div { display: flex; flex-direction: column; }
+.tt-stats small { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #8b90c0; }
+.tt-stats b { font-size: 26px; font-variant-numeric: tabular-nums; font-family: var(--tr-mono, 'JetBrains Mono', ui-monospace, Consolas, monospace); }
+.tt-buttons { display: flex; flex-direction: column; gap: 8px; }
+.tt-buttons .btn { background: #262a52; color: #e7e9f5; }
+.tt-buttons .btn:hover:not(:disabled) { background: var(--red); }
+.tt-buttons .btn:disabled { opacity: .5; }
+.tt-help dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 12px; }
+.tt-help dt { color: #fff; font-weight: 700; font-family: var(--tr-mono, ui-monospace, monospace); }
+.tt-help dd { margin: 0; color: #8b90c0; }
+
+.tt-board-wrap { position: relative; height: 100%; aspect-ratio: 1 / 2; max-height: 100%; flex: none; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 3px #262a52, 0 12px 40px rgba(0,0,0,.5); }
+.tt-board { display: block; width: 100%; height: 100%; }
+.tt-overlay { position: absolute; inset: 0; background: rgba(9, 10, 22, .86); backdrop-filter: blur(3px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 14px; text-align: center; overflow-y: auto; }
+.tt-overlay h2 { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: .06em; }
+.tt-overlay p { margin: 0; color: #8b90c0; }
+.tt-overlay .gm-result { color: #e7e9f5; width: 100%; }
+.tt-overlay .gm-result .gm-big { color: #ffd34d; font-size: 40px; }
+.tt-overlay .gm-result dt { color: #8b90c0; }
+.tt-overlay .gm-saved { color: #8b90c0; }
+.tt-overlay .table { background: #151832; border-color: #262a52; font-size: 12px; }
+.tt-overlay .table th { background: #0d0f1d; }
+.tt-overlay .table td { border-color: #262a52; }
+.tt-overlay .table tr.me, .tt-overlay .table tbody tr.me:hover { background: #2a2f5e; }
+.tt-overlay .table tbody tr:hover { background: #1c2044; }
+.tt-overlay .gm-mini-board { width: 100%; max-height: 190px; overflow-y: auto; }
+.tt-flash { position: absolute; left: 0; right: 0; top: 38%; text-align: center; font-size: 30px; font-weight: 900; letter-spacing: .08em; color: #ffd34d; text-shadow: 0 2px 12px rgba(0,0,0,.7); animation: tt-flash .9s ease-out both; pointer-events: none; }
+@keyframes tt-flash { 0% { opacity: 0; transform: translateY(14px) scale(.9); } 20% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-26px); } }
+
+@media (max-width: 900px) { .tt-side { width: 130px; } .tt-help { display: none; } }
+@media (prefers-reduced-motion: reduce) { .tt-flash { animation: none; opacity: 0; } }

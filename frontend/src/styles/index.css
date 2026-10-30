@@ -15,4 +15,7 @@
 @import './settings.css';
 @import './wordle.css';
 @import './typerace.css';
+@import './games.css';
+@import './tetris.css';
+@import './doom.css';
 @import './responsive.css';
