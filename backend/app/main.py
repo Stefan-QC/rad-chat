@@ -15,7 +15,7 @@ from app.errors import (
     handle_unexpected_error,
     handle_validation_error,
 )
-from app.routers import admin_export, admin_settings, admin_users, gifs, health, jobs
+from app.routers import admin_export, admin_settings, admin_users, gifs, health, jobs, ai_chat
 from app.security.middleware import BodySizeLimitMiddleware, SecurityHeadersMiddleware
 
 
@@ -60,6 +60,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
     app.add_exception_handler(RequestValidationError, handle_validation_error)
     app.add_exception_handler(Exception, handle_unexpected_error)
     app.include_router(health.router)
+    app.include_router(ai_chat.router)
     app.include_router(gifs.router)
     app.include_router(admin_users.router)
     app.include_router(admin_export.router)

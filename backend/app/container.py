@@ -18,6 +18,7 @@ from app.jobs.job_scheduler import JobScheduler
 from app.security.job_auth import JobAuthenticator
 from app.security.rate_limiter import RateLimiter
 from app.security.token_verifier import SupabaseTokenVerifier
+from app.ai_chat.model import generate_reply
 
 
 class Container:
@@ -39,6 +40,7 @@ class Container:
         self.job_auth = JobAuthenticator(self.verifier, self.rate_limiter)
         self.scheduler = JobScheduler(self.job_runner, settings.timezone)
         self.gif_service = GifService(GifProviderFactory.create(settings, self.http))
+        self.generate_reply = generate_reply
 
     async def aclose(self) -> None:
         """Sluit de gedeelde HTTP-client."""
