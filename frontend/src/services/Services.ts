@@ -27,6 +27,7 @@ import { SettingsService } from './SettingsService';
 import { SocialService } from './SocialService';
 import { TaskService } from './TaskService';
 import { TeamService } from './TeamService';
+import { TypeRaceService } from './TypeRaceService';
 import { TypingService } from './TypingService';
 import { WordleService } from './WordleService';
 import { VoiceHub } from './voice/VoiceHub';
@@ -63,6 +64,7 @@ export class Services {
   readonly craftNetwork: CraftNetwork;
   readonly lobby: LobbyPresence;
   readonly typing: TypingService;
+  readonly typeRace: TypeRaceService;
   readonly voice: VoiceHub;
 
   constructor(config: AppConfig) {
@@ -96,6 +98,7 @@ export class Services {
     this.craftNetwork = new CraftNetwork(this.db);
     this.lobby = new LobbyPresence(this.db);
     this.typing = new TypingService(this.db);
+    this.typeRace = new TypeRaceService(this.db);
     this.voice = new VoiceHub(this.db, this.activity);
   }
 }
