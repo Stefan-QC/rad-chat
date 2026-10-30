@@ -106,8 +106,17 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
         <NavLink to="/wordle" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="grid" />RAD Wordle<span className="tag">/wordle</span>
         </NavLink>
+        <NavLink to="/games" end className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
+          <Icon name="trophy" />All games<span className="tag">scores</span>
+        </NavLink>
         <NavLink to="/typerace" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="keyboard" />Type race
+        </NavLink>
+        <NavLink to="/games/tetris" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
+          <Icon name="blocks" />Tetris
+        </NavLink>
+        <NavLink to="/games/doom" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
+          <Icon name="target" />DOOM
         </NavLink>
         <NavLink to="/quiz" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="bulb" />Daily quiz

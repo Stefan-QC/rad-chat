@@ -24,6 +24,9 @@ const TasksPage = lazyPage(() => import('./pages/TasksPage'), 'TasksPage');
 const TeamsPage = lazyPage(() => import('./pages/TeamsPage'), 'TeamsPage');
 const WordlePage = lazyPage(() => import('./pages/WordlePage'), 'WordlePage');
 const TypeRacePage = lazyPage(() => import('./pages/TypeRacePage'), 'TypeRacePage');
+const GamesPage = lazyPage(() => import('./pages/GamesPage'), 'GamesPage');
+const TetrisPage = lazyPage(() => import('./pages/TetrisPage'), 'TetrisPage');
+const DoomPage = lazyPage(() => import('./pages/DoomPage'), 'DoomPage');
 
 function Splash() {
   return <div className="splash">Loading…</div>;
@@ -70,6 +73,9 @@ export function App() {
         <Route path="profile/:userId" element={<ProfilePage />} />
         <Route path="wordle" element={<WordlePage />} />
         <Route path="typerace" element={<TypeRacePage />} />
+        <Route path="games" element={<GamesPage />} />
+        <Route path="games/tetris" element={<TetrisPage />} />
+        <Route path="games/doom" element={<DoomPage />} />
         <Route path="craft" element={<CraftPage />} />
         <Route path="admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
