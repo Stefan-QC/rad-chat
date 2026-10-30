@@ -1,4 +1,5 @@
 import type { Session } from '@supabase/supabase-js';
+import { AppError } from '../core/AppError';
 import { expectOk, type Db } from '../core/supabase';
 
 export class AuthService {
@@ -18,7 +19,10 @@ export class AuthService {
     await this.db.auth.signOut();
   }
 
-  async changePassword(newPassword: string): Promise<void> {
+  /** Wijzigt het wachtwoord van de ingelogde gebruiker na controle van het huidige; een ander account kan hiermee nooit worden aangepast. */
+  async changePassword(email: string, currentPassword: string, newPassword: string): Promise<void> {
+    const check = await this.db.auth.signInWithPassword({ email, password: currentPassword });
+    if (check.error) throw new AppError('wrong_current_password', 'Your current password is not correct.');
     expectOk(await this.db.auth.updateUser({ password: newPassword }));
   }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../app/AuthContext';
 import { useSettings } from '../app/SettingsContext';
+import { ChangePasswordForm } from '../components/account/ChangePasswordForm';
 import { Avatar } from '../components/Avatar';
 import { Icon } from '../components/Icon';
 import { PageHeader } from '../components/PageHeader';
@@ -94,6 +95,9 @@ function AccountTab() {
           {me.job_title && <div><dt>Job title</dt><dd>{me.job_title}</dd></div>}
         </dl>
       </div>
+      <h3>Password</h3>
+      <p className="muted">Change your own password. You need your current password for this, and nobody else can change it for you, not even an admin.</p>
+      <ChangePasswordForm />
       <h3>Sign out</h3>
       <p className="muted">You will have to sign in again to use RAD Chat on this device.</p>
       <button className="btn danger" disabled={busy} onClick={() => { setBusy(true); void signOut(); }}>Sign out</button>

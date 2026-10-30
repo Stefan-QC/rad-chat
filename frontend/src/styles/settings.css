@@ -43,3 +43,6 @@
   .st-close { display: none; }
   .st-fields { grid-template-columns: 1fr; }
 }
+
+.st-password { max-width: 420px; }
+.st-hint { margin: 0; color: var(--muted); font-size: 13px; }

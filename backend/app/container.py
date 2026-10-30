@@ -32,7 +32,7 @@ class Container:
         self.verifier = SupabaseTokenVerifier(settings, self.http, self.rest)
         self.rate_limiter = RateLimiter(settings.rate_limit_per_minute)
         self.audit = AuditService(self.rest)
-        self.user_admin = UserAdminService(self.auth_admin, self.rest, self.audit)
+        self.user_admin = UserAdminService(self.auth_admin, self.rest)
         self.export_service = ExportService(self.rest, self.audit)
         self.retention_service = RetentionSettingsService(self.rest, self.audit)
         self.job_runner = JobRunner(self.rest, self.audit, self.storage)
