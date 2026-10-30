@@ -130,38 +130,9 @@ function EditProfile({ profile }: { profile: Profile }) {
         {notice && <div className={`banner ${notice.kind}`} role="status">{notice.text}</div>}
         <div className="actions"><button className="btn" disabled={saving || !displayName.trim()}>{saving ? 'Saving…' : 'Save changes'}</button></div>
       </form>
-      <PasswordForm />
       <div className="card"><h3>Statistics</h3><ProfileStats userId={profile.id} /><BadgeShelf userId={profile.id} own /></div>
       <div className="card"><button className="btn secondary" onClick={() => void signOut()}>Sign out</button></div>
     </>
-  );
-}
-
-function PasswordForm() {
-  const { auth } = useServices();
-  const [password, setPassword] = useState('');
-  const [notice, setNotice] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
-
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    try {
-      await auth.changePassword(password);
-      setPassword('');
-      setNotice({ kind: 'ok', text: 'Password changed.' });
-    } catch (e) {
-      setNotice({ kind: 'error', text: messageOf(e) });
-    }
-  };
-
-  return (
-    <form className="card form" onSubmit={submit}>
-      <h3>Change password</h3>
-      <label>New password
-        <input className="text-input" type="password" autoComplete="new-password" minLength={8} required value={password} onChange={e => setPassword(e.target.value)} />
-      </label>
-      {notice && <div className={`banner ${notice.kind}`} role="status">{notice.text}</div>}
-      <div className="actions"><button className="btn secondary" disabled={password.length < 8}>Update password</button></div>
-    </form>
   );
 }
 

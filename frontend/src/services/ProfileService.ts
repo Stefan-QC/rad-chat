@@ -1,6 +1,6 @@
 import { expectOk, unwrap, type Db } from '../core/supabase';
 import { watchTables } from '../core/realtime';
-import type { Profile, ProfilePatch, Role } from '../core/types';
+import type { Profile, ProfilePatch } from '../core/types';
 
 export class ProfileService {
   constructor(private readonly db: Db) {}
@@ -28,10 +28,6 @@ export class ProfileService {
 
   async setCoffeeOptIn(userId: string, value: boolean): Promise<void> {
     expectOk(await this.db.from('profiles').update({ coffee_opt_in: value }).eq('id', userId));
-  }
-
-  async setRole(userId: string, role: Role): Promise<void> {
-    expectOk(await this.db.rpc('set_user_role', { p_user: userId, p_role: role }));
   }
 
   watch(onChange: () => void): () => void {

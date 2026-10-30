@@ -3,7 +3,6 @@ import { AppError, messageOf } from './AppError';
 import { Emitter } from './Emitter';
 import { dayKey, formatDuration, isoDay } from './format';
 import { findMentionQuery, matchPeople } from '../components/chat/MentionSuggestions';
-import { generatePassword } from '../services/AdminService';
 import { AttachmentService, MAX_IMAGE_BYTES } from '../services/AttachmentService';
 import type { Profile } from './types';
 
@@ -74,18 +73,6 @@ describe('mention helpers', () => {
     expect(matchPeople(people, 'an').map(p => p.username)).toEqual(['anna', 'anouk']);
     expect(matchPeople(people, 'ram').map(p => p.username)).toEqual(['bram']);
     expect(matchPeople(people, '', 2)).toHaveLength(2);
-  });
-});
-
-describe('generatePassword', () => {
-  it('has the requested length and avoids lookalike characters', () => {
-    const password = generatePassword(24);
-    expect(password).toHaveLength(24);
-    expect(password).not.toMatch(/[Il1O0]/);
-  });
-
-  it('is different every time', () => {
-    expect(generatePassword()).not.toBe(generatePassword());
   });
 });
 
