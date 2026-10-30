@@ -46,18 +46,18 @@ export function Rail() {
         <Icon name="logo" />
       </NavLink>
       <span className="rail-sep" />
-      <div className="rail-dms">
-        {conversations.map(channel => <ConversationButton key={channel.id} channel={channel} />)}
-      </div>
       {me?.role !== 'guest' && (
-        <button className="rail-btn rail-add" data-tip="New message" aria-label="New message" onClick={() => setNewMessage(true)}>
+        <button className="rail-btn rail-add" data-tip="New message or group chat" aria-label="New message or group chat" onClick={() => setNewMessage(true)}>
           <Icon name="plus" />
         </button>
       )}
+      <div className="rail-dms">
+        {conversations.map(channel => <ConversationButton key={channel.id} channel={channel} />)}
+      </div>
       <NavLink to="/settings" className={({ isActive }) => `rail-btn rail-settings${isActive ? ' active' : ''}`} data-tip="Settings" aria-label="Settings">
         <Icon name="gear" />
       </NavLink>
-      {newMessage && <NewConversationDialog initialTab="message" onClose={() => setNewMessage(false)} />}
+      {newMessage && <NewConversationDialog initialTab="message" showTabs={false} onClose={() => setNewMessage(false)} />}
     </nav>
   );
 }

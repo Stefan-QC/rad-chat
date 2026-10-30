@@ -126,7 +126,7 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
       </div>
       <VoiceBar />
       <UserBar />
-      {newChannel && <NewConversationDialog initialTab="channel" onClose={() => setNewChannel(false)} />}
+      {newChannel && <NewConversationDialog initialTab="channel" showTabs={false} onClose={() => setNewChannel(false)} />}
     </aside>
   );
 }
