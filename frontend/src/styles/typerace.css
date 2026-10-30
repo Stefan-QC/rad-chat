@@ -116,3 +116,7 @@
   .tr-words-inner, .tr-caret, .tr-fill, .tr-runner { transition: none; }
   .tr-countdown, .tr-timeup { animation: none; }
 }
+
+.tr-yourscore { margin: 0 0 10px; padding: 8px 12px; border-radius: 10px; background: var(--red-tint); color: var(--text); font-size: 14px; }
+.tr-yourscore b { color: var(--red); font-size: 18px; }
+.tr-formula { margin: 10px 0 0; color: var(--muted); font-size: 12px; }

@@ -21,8 +21,32 @@ Open dat adres, of geef het aan collega's in hetzelfde netwerk. Je krijgt één 
    (Supabase → Project Settings → API Keys): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` en `SUPABASE_SERVICE_ROLE_KEY`.
    GIF's nodig? Maak een gratis sleutel op [partner.klipy.com](https://partner.klipy.com) (API Keys → Add Platform) en zet die in `KLIPY_API_KEY`.
    Een testsleutel mag 100 verzoeken per uur doen; vraag daarna productietoegang aan in het Klipy-paneel.
-3. **Database**: voer de bestanden in `supabase/migrations/` in volgorde uit (001 t/m 015) in de SQL-editor van Supabase.
+3. **Database**: voer de bestanden in `supabase/migrations/` in volgorde uit (001 t/m 016) in de SQL-editor van Supabase.
    Maak daarna accounts onder Authentication → Users (eerste account = admin) en zet "Allow new users to sign up" uit.
+
+## Games en punten
+
+Onder **Games** (zijbalk, "All games") staan drie games met elk een eigen pagina: **TypeRace**, **Tetris** en **DOOM**.
+Elke game toont je highscore. Daaronder staan de klassementen (top 10 per game en een algemeen klassement) en je eigen statistieken.
+
+**Punten** (de database rekent de score altijd zelf uit, de browser meldt alleen wat er gebeurde):
+
+| Game | Punten |
+| --- | --- |
+| TypeRace | WPM × accuracy × voortgang × 10, plus 500 / 250 / 100 voor plaats 1 / 2 / 3 (alleen bij minstens twee spelers die typten) |
+| Tetris | 1 lijn 100, 2 lijnen 300, 3 lijnen 500, Tetris (4) 800, keer het level; zacht vallen 1 per cel, hard droppen 2 per cel |
+| DOOM | gewone vijand 100, sterke 250, boss 1000, level voltooid 500, 10 per resterend HP bij het voltooien, alle vijanden van een level 500 |
+
+**Algemeen klassement**: de games hebben andere puntenschalen, dus er worden geen ruwe punten opgeteld. Per game krijgt de beste speler 100 rangpunten,
+de volgende iets minder (100 × (spelers − rang + 1) / spelers). Het totaal telt die rangpunten bij elkaar op.
+
+**Eerlijk spelen**: een Tetris- of DOOM-run opent eerst een sessie bij de server en kan precies één keer worden ingeleverd. Je stuurt alleen de gebeurtenissen
+(welke lijnen, welke vijanden), de server berekent de score en weigert onmogelijke meldingen (te veel blokken voor de tijd, meer vijanden dan er zijn, enzovoort).
+TypeRace-punten worden door de server uitgedeeld zodra een ronde klaar is. Een score kan dus niet door de browser worden aangepast.
+
+**Besturing**: Tetris met pijltjes (verplaatsen, zacht vallen), ↑ of X rechtsom draaien, Z linksom, spatie hard drop, C hold en P of Esc pauze.
+DOOM met WASD, muis (pointer lock), linkermuisknop schieten, Shift sprinten, R herladen, spatie voor de uitgangsschakelaar en Esc pauze.
+Alle graphics, geluiden en levels van DOOM zijn zelf gemaakt; er is niets van de originele game gebruikt.
 
 ## Accounts beheren: alleen in Supabase
 

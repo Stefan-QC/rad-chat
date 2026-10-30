@@ -1,6 +1,8 @@
 import { messageOf } from '../../core/AppError';
 import { Emitter } from '../../core/Emitter';
+import type { GameService } from '../../services/GameService';
 import type { ProgressReport, TypeRaceService } from '../../services/TypeRaceService';
+import type { GameScore } from '../games/types';
 import { RaceChannel } from './RaceChannel';
 import { ServerClock } from './ServerClock';
 import type { LiveProgress } from './standings';
@@ -10,6 +12,8 @@ export interface RoomState {
   lobby: RaceLobby | null;
   players: RacePlayer[];
   results: RaceResult[];
+  /** De punten die de server na afloop van de ronde heeft vastgelegd (basisscore, bonus en totaal). */
+  scores: GameScore[];
   live: Record<string, LiveProgress>;
   /** False zodra de server meldt dat je niet meer in deze lobby zit (bijvoorbeeld na een lange verbindingsonderbreking). */
   inLobby: boolean;
@@ -28,7 +32,7 @@ const FULL_REFRESH_MS = 4000;
 export class TypeRaceRoom extends Emitter<{ change: RoomState }> {
   readonly clock = new ServerClock();
   private readonly channel: RaceChannel;
-  private state: RoomState = { lobby: null, players: [], results: [], live: {}, inLobby: true, loading: true, error: null };
+  private state: RoomState = { lobby: null, players: [], results: [], scores: [], live: {}, inLobby: true, loading: true, error: null };
   private stopWatching: (() => void) | null = null;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private lastRefresh = 0;
@@ -36,6 +40,7 @@ export class TypeRaceRoom extends Emitter<{ change: RoomState }> {
 
   constructor(
     private readonly service: TypeRaceService,
+    private readonly games: GameService,
     readonly lobbyId: string,
     readonly userId: string,
   ) {
@@ -112,9 +117,20 @@ export class TypeRaceRoom extends Emitter<{ change: RoomState }> {
       const data = await this.service.load(this.lobbyId);
       this.lastRefresh = Date.now();
       const newRound = data.lobby?.round !== this.state.lobby?.round;
-      this.update({ ...data, live: newRound ? {} : this.state.live, inLobby: data.lobby !== null, loading: false, error: null });
+      const scores = await this.loadScores(data.lobby, newRound);
+      this.update({ ...data, scores, live: newRound ? {} : this.state.live, inLobby: data.lobby !== null, loading: false, error: null });
     } catch (e) {
       this.update({ error: messageOf(e), loading: false });
+    }
+  }
+
+  /** De punten van de laatste ronde; die bestaan pas als de ronde is afgelopen, en ontbreken ze, dan blijft het spel gewoon werken. */
+  private async loadScores(lobby: RaceLobby | null, newRound: boolean): Promise<GameScore[]> {
+    if (!lobby || lobby.status !== 'finished' || lobby.round === 0) return newRound ? [] : this.state.scores;
+    try {
+      return await this.games.typeRaceScores(lobby.id, lobby.round);
+    } catch {
+      return [];
     }
   }
 

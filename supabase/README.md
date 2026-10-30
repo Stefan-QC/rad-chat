@@ -18,12 +18,13 @@ go through `security definer` functions with `search_path = ''`.
 | 011_social.sql | kudos, daily quiz, badges, coffee matching, period leaderboards (changes the `point_events` source check) |
 | 012_jobs.sql | `jobs_*` functions, service role only |
 | 013_typing.sql | Realtime topic `typing:<channel id>` for the typing indicator |
+| 016_games.sql | Central game scores: sessions, server-side Tetris and DOOM scoring, TypeRace points, leaderboards and personal stats |
 | 015_accounts_in_supabase.sql | Removes `set_user_role()`: roles and accounts are changed in Supabase only |
 | 014_typerace.sql | Type race: lobbies, players, results, a server-side state machine and the `typerace:<lobby id>` realtime topic |
 
 ## Status of the live project (`qenndahdvjaeiiwefwws`)
 
-001-012 are applied. **014 and 015 must still be run** (type race, accounts only in Supabase).
+001-012 are applied. **014, 015 and 016 must still be run** (type race, accounts only in Supabase, game scores).
 
 ## Tests
 

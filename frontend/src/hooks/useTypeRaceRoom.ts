@@ -4,8 +4,8 @@ import { TypeRaceRoom, type RoomState } from '../features/typerace/TypeRaceRoom'
 
 /** Verbindt React met één type-race-lobby; de verbinding stopt vanzelf als je de pagina verlaat. */
 export function useTypeRaceRoom(lobbyId: string, userId: string): { room: TypeRaceRoom; state: RoomState } {
-  const { typeRace } = useServices();
-  const room = useMemo(() => new TypeRaceRoom(typeRace, lobbyId, userId), [typeRace, lobbyId, userId]);
+  const { typeRace, games } = useServices();
+  const room = useMemo(() => new TypeRaceRoom(typeRace, games, lobbyId, userId), [typeRace, games, lobbyId, userId]);
   const [state, setState] = useState<RoomState>(room.snapshot);
 
   useEffect(() => {
