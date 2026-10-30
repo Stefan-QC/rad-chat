@@ -33,24 +33,6 @@ function TextChannelLink({ channel }: { channel: Channel }) {
   );
 }
 
-function ConversationLink({ channel }: { channel: Channel }) {
-  const { presenter, onlineIds } = useWorkspace();
-  const others = presenter.others(channel);
-  const first = others[0];
-  const unread = (useNotifications().unreadOf(channel.id)?.unread ?? 0) > 0;
-  return (
-    <NavLink to={`/channels/${channel.id}`} className={({ isActive }) => `chan convo${isActive ? ' active' : ''}${unread ? ' has-unread' : ''}`}>
-      {channel.kind === 'dm' && first ? (
-        <Avatar name={first.display_name} color={first.avatar_color} size="xs" online={onlineIds.has(first.id)} />
-      ) : (
-        <span className="group-badge" aria-hidden="true">{others.length + 1}</span>
-      )}
-      <span className="chan-name">{presenter.title(channel)}</span>
-      <UnreadBadge channelId={channel.id} />
-    </NavLink>
-  );
-}
-
 function VoiceChannelRow({ channel }: { channel: Channel }) {
   const { voice } = useServices();
   const { voiceParticipants, voiceSelf, speaking, profileById } = useWorkspace();
@@ -101,10 +83,9 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
   const { channels, myTeams, closeDrawer } = useWorkspace();
   const { tasks } = useTasks();
   const openTasks = tasks.filter(t => t.status === 'open' && t.assignee_id === me?.id).length;
-  const [dialog, setDialog] = useState<'message' | 'channel' | null>(null);
+  const [newChannel, setNewChannel] = useState(false);
   const company = channels.filter(c => c.team_id === null && !c.is_private && (c.kind === 'text' || c.kind === 'voice'));
   const companyPrivate = channels.filter(c => c.team_id === null && c.is_private && c.kind === 'text');
-  const conversations = channels.filter(c => c.kind === 'dm' || c.kind === 'group').sort((a, b) => b.created_at.localeCompare(a.created_at));
 
   return (
     <aside id="sidebar" onClick={closeDrawer}>
@@ -116,17 +97,11 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
         <Icon name="search" size={16} /><span>Search</span><kbd>Ctrl K</kbd>
       </button>
       <div className="side-body">
-        <ChannelGroup title="Company" channels={company} onAdd={me?.role !== 'guest' ? () => setDialog('channel') : undefined} />
+        <ChannelGroup title="Company" channels={company} onAdd={me?.role !== 'guest' ? () => setNewChannel(true) : undefined} />
         {companyPrivate.length > 0 && <ChannelGroup title="Private channels" channels={companyPrivate} />}
         {myTeams.map(team => (
           <ChannelGroup key={team.id} title={team.name} channels={channels.filter(c => c.team_id === team.id && (c.kind === 'text' || c.kind === 'voice'))} />
         ))}
-        <div className="cat">
-          <span>Direct messages</span>
-          {me?.role !== 'guest' && <button className="cat-add" aria-label="New message" title="New message" onClick={() => setDialog('message')}><Icon name="plus" size={14} /></button>}
-        </div>
-        {conversations.map(c => <ConversationLink key={c.id} channel={c} />)}
-        {conversations.length === 0 && <p className="side-empty">No conversations yet.</p>}
         <div className="cat">Activities</div>
         <NavLink to="/wordle" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}>
           <Icon name="grid" />RAD Wordle<span className="tag">/wordle</span>
@@ -148,13 +123,10 @@ export function Sidebar({ onSearch }: { onSearch: () => void }) {
         <NavLink to="/teams" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="users" />Teams</NavLink>
         <NavLink to="/kudos" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="star" />Kudos</NavLink>
         <NavLink to="/leaderboard" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="trophy" />Leaderboard</NavLink>
-        {me?.role === 'admin' && (
-          <NavLink to="/admin" className={({ isActive }) => `chan${isActive ? ' active' : ''}`}><Icon name="shield" />Admin</NavLink>
-        )}
       </div>
       <VoiceBar />
       <UserBar />
-      {dialog && <NewConversationDialog initialTab={dialog} onClose={() => setDialog(null)} />}
+      {newChannel && <NewConversationDialog initialTab="channel" onClose={() => setNewChannel(false)} />}
     </aside>
   );
 }

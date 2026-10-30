@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../app/AuthContext';
 import { useSettings } from '../app/SettingsContext';
+import { Avatar } from '../components/Avatar';
+import { Icon } from '../components/Icon';
 import { PageHeader } from '../components/PageHeader';
 import { Switch } from '../components/ui/Switch';
 import { useToast } from '../components/ui/Toast';
@@ -9,12 +11,45 @@ import type { ThemePreference } from '../core/ThemeService';
 import { useTheme } from '../hooks/useTheme';
 import { BrowserNotifier } from '../services/BrowserNotifier';
 
-const TABS = [
-  { id: 'appearance', label: 'Appearance' },
-  { id: 'notifications', label: 'Notifications' },
-  { id: 'chat', label: 'Chat' },
-  { id: 'account', label: 'Account' },
-] as const;
+/** Een paneel van de instellingen zelf (rechts) of een snelkoppeling naar een pagina van de app. */
+interface NavItem {
+  label: string;
+  icon: string;
+  /** Het id van een paneel in de instellingen; zonder id is het een link naar een andere pagina. */
+  tab?: 'account' | 'appearance' | 'notifications' | 'chat';
+  to?: string;
+}
+
+interface NavGroup {
+  title: string;
+  adminOnly?: boolean;
+  items: NavItem[];
+}
+
+const GROUPS: NavGroup[] = [
+  {
+    title: 'User settings',
+    items: [
+      { label: 'My account', icon: 'user', tab: 'account' },
+      { label: 'Appearance', icon: 'palette', tab: 'appearance' },
+      { label: 'Notifications', icon: 'bell', tab: 'notifications' },
+      { label: 'Chat', icon: 'chat', tab: 'chat' },
+    ],
+  },
+  {
+    title: 'Apps and games',
+    items: [
+      { label: 'Teams', icon: 'users', to: '/teams' },
+      { label: 'Leaderboard', icon: 'trophy', to: '/leaderboard' },
+      { label: 'RAD Wordle', icon: 'grid', to: '/wordle' },
+      { label: 'Type race', icon: 'keyboard', to: '/typerace' },
+      { label: 'RAD Craft', icon: 'cube', to: '/craft' },
+    ],
+  },
+  { title: 'Administration', adminOnly: true, items: [{ label: 'Admin console', icon: 'shield', to: '/admin' }] },
+];
+
+const TABS = GROUPS.flatMap(group => group.items).filter(item => item.tab).map(item => item.tab as string);
 
 const THEMES: { value: ThemePreference; label: string; hint: string }[] = [
   { value: 'system', label: 'System', hint: 'Follows your device' },
@@ -30,6 +65,39 @@ function ThemePreview({ theme }: { theme: 'light' | 'dark' }) {
       <span className="tp-side"><i /><i /><i /></span>
       <span className="tp-main"><i /><i /><i className="short" /></span>
     </div>
+  );
+}
+
+function AccountTab() {
+  const { me, session, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  if (!me) return null;
+  return (
+    <section>
+      <h2>My account</h2>
+      <div className="st-profile">
+        <div className="st-banner" style={{ backgroundColor: me.avatar_color }} />
+        <div className="st-profile-body">
+          <Avatar name={me.display_name} color={me.avatar_color} size="lg" />
+          <div className="st-profile-name">
+            <b>{me.display_name}</b>
+            <small>@{me.username}</small>
+          </div>
+          <span className="badge">{me.role}</span>
+          <button className="btn small" onClick={() => navigate('/profile')}>Edit profile</button>
+        </div>
+        <dl className="st-fields">
+          <div><dt>Display name</dt><dd>{me.display_name}</dd></div>
+          <div><dt>Username</dt><dd>@{me.username}</dd></div>
+          <div><dt>Email</dt><dd>{session?.user.email}</dd></div>
+          {me.job_title && <div><dt>Job title</dt><dd>{me.job_title}</dd></div>}
+        </dl>
+      </div>
+      <h3>Sign out</h3>
+      <p className="muted">You will have to sign in again to use RAD Chat on this device.</p>
+      <button className="btn danger" disabled={busy} onClick={() => { setBusy(true); void signOut(); }}>Sign out</button>
+    </section>
   );
 }
 
@@ -104,52 +172,68 @@ function ChatTab() {
         <dt><kbd>Enter</kbd></dt><dd>Send a message</dd>
         <dt><kbd>Shift</kbd> + <kbd>Enter</kbd></dt><dd>New line</dd>
         <dt><kbd>Ctrl</kbd> + <kbd>V</kbd></dt><dd>Paste a screenshot from the clipboard</dd>
-        <dt><kbd>Esc</kbd></dt><dd>Close a dialog or cancel editing</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Close settings, a dialog or cancel editing</dd>
       </dl>
     </section>
   );
 }
 
-function AccountTab() {
-  const { me, session, signOut } = useAuth();
-  const navigate = useNavigate();
-  const [busy, setBusy] = useState(false);
-  return (
-    <section>
-      <h2>Account</h2>
-      <dl className="facts">
-        <dt>Name</dt><dd>{me?.display_name}</dd>
-        <dt>Username</dt><dd>@{me?.username}</dd>
-        <dt>Email</dt><dd>{session?.user.email}</dd>
-        <dt>Role</dt><dd>{me?.role}</dd>
-      </dl>
-      <div className="actions left">
-        <button className="btn" onClick={() => navigate('/profile')}>Edit profile</button>
-        <button className="btn secondary" disabled={busy} onClick={() => { setBusy(true); void signOut(); }}>Sign out</button>
-      </div>
-    </section>
-  );
-}
-
-/** Instellingen met tabbladen, bereikbaar via het tandwieltje onderin de zijbalk. */
+/**
+ * Instellingen in de stijl van Discord: links de categorieën, rechts het gekozen paneel.
+ * Onder "Apps and games" en "Administration" staan de snelkoppelingen die eerder in de zwarte balk stonden.
+ */
 export function SettingsPage() {
   const { tab } = useParams();
-  const current = TABS.find(item => item.id === tab);
-  if (!current) return <Navigate to="/settings/appearance" replace />;
+  const { me } = useAuth();
+  const navigate = useNavigate();
+
+  // Esc sluit de instellingen, zoals in Discord.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const typing = event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName);
+      if (event.key === 'Escape' && !typing && !document.querySelector('[role="dialog"]')) navigate('/');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [navigate]);
+
+  if (!tab || !TABS.includes(tab)) return <Navigate to="/settings/account" replace />;
+  const groups = GROUPS.filter(group => !group.adminOnly || me?.role === 'admin');
+
   return (
     <>
-      <PageHeader title="Settings" />
-      <div className="page settings-page">
-        <nav className="settings-tabs" aria-label="Settings sections">
-          {TABS.map(item => (
-            <NavLink key={item.id} to={`/settings/${item.id}`} className={({ isActive }) => (isActive ? 'on' : '')}>{item.label}</NavLink>
+      <PageHeader title="Settings" prefix={<Icon name="gear" size={20} />} />
+      <div className="st">
+        <nav className="st-nav" aria-label="Settings sections">
+          {groups.map(group => (
+            <div className="st-group" key={group.title}>
+              <h4>{group.title}</h4>
+              {group.items.map(item => (
+                <NavLink
+                  key={item.label}
+                  to={item.to ?? `/settings/${item.tab}`}
+                  className={({ isActive }) => `st-link${item.tab && isActive ? ' on' : ''}${item.to ? ' ext' : ''}`}
+                >
+                  <Icon name={item.icon} size={18} />
+                  <span>{item.label}</span>
+                  {item.to && <Icon name="arrow" size={14} className="st-arrow" />}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
-        <div className="card settings-body">
-          {current.id === 'appearance' && <AppearanceTab />}
-          {current.id === 'notifications' && <NotificationsTab />}
-          {current.id === 'chat' && <ChatTab />}
-          {current.id === 'account' && <AccountTab />}
+        <div className="st-content">
+          <button className="st-close" onClick={() => navigate('/')} aria-label="Close settings" title="Close settings">
+            <Icon name="close" size={18} /><small>ESC</small>
+          </button>
+          <div className="st-scroll">
+            <div className="st-pane">
+              {tab === 'account' && <AccountTab />}
+              {tab === 'appearance' && <AppearanceTab />}
+              {tab === 'notifications' && <NotificationsTab />}
+              {tab === 'chat' && <ChatTab />}
+            </div>
+          </div>
         </div>
       </div>
     </>
