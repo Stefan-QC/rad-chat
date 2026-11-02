@@ -5,7 +5,8 @@ React 19 + Vite + TypeScript. Praat met Supabase (data, inloggen, realtime) en m
 ```sh
 npm run dev      # live herladen op http://localhost:5173 (vanuit de hoofdmap)
 npm run build    # typecontrole + productiebuild naar frontend/dist
-npm test         # unit-tests (vitest)
+npm test         # unit-tests (vitest), geen inlog of Supabase nodig
+npx vitest       # blijft draaien en herhaalt de tests bij elke wijziging
 ```
 
 De instellingen komen uit het `.env`-bestand in de hoofdmap (`VITE_SUPABASE_URL` en `VITE_SUPABASE_PUBLISHABLE_KEY`).

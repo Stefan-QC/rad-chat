@@ -82,8 +82,20 @@ Kies een abonnement dat niet in slaap valt, anders draaien de nachtelijke taken 
 | --- | --- |
 | Live herladen tijdens het programmeren | `npm run dev` (draai ook `npm start` voor de API) |
 | Opnieuw bouwen na een wijziging | `npm run build` |
-| Alle tests (frontend en API) | `npm test` |
+| Alle tests (frontend en API) | `npm test` (of `npm run test`) |
+| Alleen de frontend-tests | `npm run test:frontend` |
+| Alleen de API-tests | `npm run test:api` |
 | Databasetests | `npm run test:db` |
+
+### Je code testen zonder inloggen
+
+Draai `npm test` om je eigen wijzigingen te controleren. Je hebt daarvoor **geen account, inlog, Supabase of internet** nodig:
+
+- De frontend-tests (vitest, in `frontend/src/**/*.test.ts`) testen alleen logica, zoals de spelengines, het puntensysteem en de opmaak.
+- De API-tests (pytest, in `backend/tests/`) onderscheppen al het netwerkverkeer, dus er gaat nooit een echt verzoek naar Supabase of Klipy.
+- `npm run test:db` start een tijdelijke lokale database en draait de migraties en de SQL-tests daarop. Je echte Supabase-project blijft onaangeraakt.
+
+Alleen de eerste keer is `npm run setup` nodig (voor de Python-omgeving van de API-tests). Een test toevoegen? Zet een `*.test.ts`-bestand naast je code, of een `test_*.py`-bestand in `backend/tests/`.
 
 Mappen:
 
